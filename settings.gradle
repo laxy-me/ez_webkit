@@ -1,0 +1,5 @@
+rootProject.name = 'lax'
+include ':easyweb'
+include ':aspectj'
+include ':permission'
+include ':example'

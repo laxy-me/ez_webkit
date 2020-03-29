@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Luckybooth</string>
+    <string name="need_permissions">Needs permission</string>
+    <string name="go_to_settings">Jump to settings</string>
+    <!-- Dialog -->
+    <string name="ok">Confirm</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="android_web_agent">ANDROID_AGENT_NATIVE/1.0</string>
+
+    <string name="take_phone_from_camera">Camera</string>
+    <string name="take_phone_from_phone">Gallery</string>
+    <string name="take_phone_cancel">Cancel</string>
+
+    <string name="save_image">Save</string>
+    <string name="save_image_to_local">Save to gallery</string>
+    <string name="save_success">Save success</string>
+    <string name="save_fail">Save fail</string>
+    <string name="notification_error_ssl_cert_invalid">Error ssl cert invalid</string>
+    <string name="app_not_installed">Application not installed</string>
+    <string name="count_down_text">%1$ds</string>
+</resources>
