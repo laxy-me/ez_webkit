@@ -6,7 +6,6 @@ import android.content.Context
 import android.os.AsyncTask
 import android.util.Log
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
-import com.songbai.apparms.utils.ToastUtil
 import io.branch.referral.Branch
 
 /**

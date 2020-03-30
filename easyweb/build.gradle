@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'android-aspectjx'
+apply plugin: 'com.jfrog.bintray'
 
 android {
     dataBinding {
@@ -79,3 +80,5 @@ dependencies {
     implementation 'com.google.android.gms:play-services-analytics:16.0.4'
     implementation 'com.android.installreferrer:installreferrer:1.0'
 }
+
+apply from: "bintrayUpload.gradle"
