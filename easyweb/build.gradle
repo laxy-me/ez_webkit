@@ -81,4 +81,4 @@ dependencies {
     implementation 'com.android.installreferrer:installreferrer:1.0'
 }
 
-apply from: "bintrayUpload.gradle"
+apply from: "${rootProject.projectDir}/bintrayUpload.gradle"

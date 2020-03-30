@@ -118,10 +118,10 @@
 -keep class javax.annotation.** { *; }
 -keep interface androidx.** { *; }
 
--keep class com.buyluck.**$Companion{
+-keep class lax.**$Companion{
     *;
 }
--keep class com.buyluck.permission.Permission{
+-keep class lax.permission.Permission{
     *;
 }
 ## ------------------------------------------------------------------------------------------------
@@ -162,7 +162,7 @@
 -keep class com.google.gson.stream.** { *; }
 # 使用Gson时需要配置Gson的解析对象及变量都不混淆。不然Gson会找不到变量。
 # 将下面替换成自己的实体类
--keep class com.buyluck.booth.model.** { *; }
+-keep class lax.booth.model.** { *; }
 
 ## retrofit
 # Retain generic type information for use by reflection by converters and adapters.

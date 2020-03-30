@@ -2,7 +2,7 @@
           package="com.example.ne.permission">
     <application>
         <activity
-            android:name="com.buyluck.permission.PermissionActivity"
+            android:name="com.lax.permission.PermissionActivity"
             android:theme="@style/Translucent"/>
     </application>
 </manifest>

@@ -5,7 +5,7 @@
         path="."/>
     <external-path
         name="files_root"
-        path="Android/data/com.buyluck.booth/"/>
+        path="Android/data/com.lax.booth/"/>
     <external-path
         name="external_storage_root"
         path="."/>

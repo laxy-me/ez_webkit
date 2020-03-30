@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.buyluck.example">
+    package="com.lax.example">
 
     <application
         android:allowBackup="true"
@@ -13,7 +13,7 @@
         tools:replace="android:roundIcon">
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.lax.example.MainActivity"
             android:theme="@style/AppTheme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
