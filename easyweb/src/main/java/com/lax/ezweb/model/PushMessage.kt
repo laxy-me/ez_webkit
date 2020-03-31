@@ -11,5 +11,4 @@ class PushMessage {
     var pushTopic: String? = null
     var pushContent: String? = null
     var url: String? = null
-
 }
