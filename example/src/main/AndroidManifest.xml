@@ -2,18 +2,77 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.lax.example">
+    <!--普通权限组-->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!--敏感权限组-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="android:roundIcon">
+        android:usesCleartextTraffic="true">
+        <meta-data
+            android:name="io.branch.sdk.BranchKey"
+            android:value="key_live_bdSUVL0lvacQrxBPu7p1ycjlyyaTS64Y" />
+        <meta-data
+            android:name="io.branch.sdk.BranchKey.test"
+            android:value="" />
+        <meta-data
+            android:name="io.branch.sdk.TestMode"
+            android:value="false" />
+        <meta-data
+            android:name="PUSH_APPID"
+            android:value="${GETUI_APP_ID}" />
+        <meta-data
+            android:name="PUSH_APPKEY"
+            android:value="${GETUI_APP_KEY}" />
+        <meta-data
+            android:name="PUSH_APPSECRET"
+            android:value="${GETUI_APP_SECRET}" />
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="${FACEBOOK_APP_ID}" />
+
+        <provider
+            android:name="com.facebook.FacebookContentProvider"
+            android:authorities="com.facebook.app.FacebookContentProvider${FACEBOOK_APP_ID}"
+            android:exported="false" />
 
         <activity
-            android:name="com.lax.example.MainActivity"
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter><action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="fb${FACEBOOK_APP_ID}" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="com.lax.ezweb.EzWebInitProvider"
+            android:authorities="${applicationId}.ezwebprovider"
+            android:exported="false" />
+
+        <activity
+            android:name=".SplashActivity"
             android:theme="@style/AppTheme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,17 +105,6 @@
                     android:host="sg506-alternate.app.link"
                     android:scheme="https" />
             </intent-filter>
-
         </activity>
     </application>
-
-    <meta-data
-        android:name="io.branch.sdk.BranchKey"
-        android:value="key_live_bdSUVL0lvacQrxBPu7p1ycjlyyaTS64Y" />
-    <meta-data
-        android:name="io.branch.sdk.BranchKey.test"
-        android:value="" />
-    <meta-data
-        android:name="io.branch.sdk.TestMode"
-        android:value="false" />
 </manifest>

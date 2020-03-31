@@ -309,10 +309,10 @@ class SmartDialog private constructor(private val mActivity: Activity?) {
             val key = getKey(activity)
             val dialogList = mListMap[key]
             val dialog: SmartDialog
-            if (dialogList != null && dialogList.size > 0) {
-                dialog = dialogList[0]
+            dialog = if (dialogList != null && dialogList.isNotEmpty()) {
+                dialogList[0]
             } else {
-                dialog = with(activity)
+                with(activity)
             }
             dialog.init()
             dialog.setMessage(msg)

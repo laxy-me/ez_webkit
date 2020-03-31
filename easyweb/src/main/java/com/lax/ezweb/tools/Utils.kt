@@ -1,4 +1,4 @@
-package com.lax.ezweb
+package com.lax.ezweb.tools
 
 import android.annotation.SuppressLint
 import android.content.Context

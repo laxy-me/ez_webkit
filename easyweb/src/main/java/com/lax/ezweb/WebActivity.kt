@@ -26,18 +26,24 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
-import com.lax.ezweb.dialog.ImageSelectController
-import com.lax.ezweb.dialog.SmartDialog
-import com.lax.ezweb.model.PayTmInfo
-import com.lax.ezweb.model.ShareData
-import com.lax.permission.Permission
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.share.Sharer
 import com.facebook.share.model.ShareLinkContent
 import com.facebook.share.widget.ShareDialog
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.google.gson.Gson
+import com.lax.ezweb.dialog.ImageSelectController
+import com.lax.ezweb.dialog.SmartDialog
+import com.lax.ezweb.model.*
+import com.lax.ezweb.tools.*
+import com.lax.permission.Permission
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
@@ -59,6 +65,7 @@ open class WebActivity : BaseActivity() {
             "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\">"
 
         const val SHARE_RESULT_CODE = 11111
+        const val GOOGLE_LOGIN = 46507
 
         const val EX_TITLE_BG = "backgroundCol"
         const val EX_TITLE_FIELD_COLOR = "fieldCol"
@@ -271,7 +278,7 @@ open class WebActivity : BaseActivity() {
         webSettings.javaScriptCanOpenWindowsAutomatically = true
         webSettings.cacheMode = WebSettings.LOAD_NO_CACHE
         var userAgentString = webSettings.userAgentString
-        userAgentString = getString(R.string.android_web_agent) + " " + userAgentString
+        userAgentString = getString(R.string.android_web_agent, userAgentString)
         webSettings.userAgentString = userAgentString
         //mWebView.getSettings().setAppCacheEnabled(true);l
         //webSettings.setAppCachePath(getExternalCacheDir().getPath());
@@ -428,6 +435,13 @@ open class WebActivity : BaseActivity() {
     }
 
     protected inner class MyWebViewClient : android.webkit.WebViewClient() {
+        override fun shouldInterceptRequest(
+            view: WebView?,
+            request: WebResourceRequest?
+        ): WebResourceResponse? {
+            return super.shouldInterceptRequest(view, request)
+        }
+
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             resetForbid()
@@ -627,6 +641,79 @@ open class WebActivity : BaseActivity() {
         }
     }
 
+    private lateinit var gso: GoogleSignInOptions
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private var host = ""
+    private var sign = ""
+    open fun googleLogin(data: String?) {
+        val googleData: LoginGoogleData =
+            Gson().fromJson<LoginGoogleData>(data, LoginGoogleData::class.java)
+        this.host = googleData.host!!
+        this.sign = googleData.sign!!
+        gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .requestId()
+            .requestProfile()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+        val intent = googleSignInClient.signInIntent
+        startActivityForResult(intent, GOOGLE_LOGIN)
+    }
+
+    private fun handleResult(googleData: Task<GoogleSignInAccount>) {
+        try {
+            val signInAccount = googleData.getResult(ApiException::class.java)
+            val acct = GoogleSignIn.getLastSignedInAccount(this)
+            if (signInAccount != null) {
+                val id = signInAccount.id
+                val name = signInAccount.displayName
+                runBlocking {
+                    launch() {
+                        val response = async(Dispatchers.IO) {
+                            val okHttpClient = OkHttpClient()
+                            okHttpClient.followRedirects
+                            val url =
+                                "${host}/user/google/doLogin2.do?id=${id}&name=${name}&sign=${sign}"
+                            val request = Request.Builder().url(url).get().build()
+                            okHttpClient.newCall(request).execute()
+                        }.await()
+                        if (response.isSuccessful) {
+                            val body = response.body!!.string()
+                            val googleToken: GoogleLoginToken? =
+                                Gson().fromJson(body, GoogleLoginResponse::class.java).data
+                            val rawCookie: String = createTokenStr(
+                                "token1",
+                                googleToken?.token1!!
+                            ) + "\n" + createTokenStr("token2", googleToken.token2!!)
+                            if (!TextUtils.isEmpty(rawCookie) && !TextUtils.isEmpty(host)) {
+                                val cookies = rawCookie.split("\n").toTypedArray()
+                                for (cookie in cookies) {
+                                    CookieManager.getInstance().setCookie(host, cookie)
+                                }
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    CookieManager.getInstance().flush()
+                                } else {
+                                    CookieSyncManager.getInstance().sync()
+                                }
+                                mPageUrl = URLDecoder.decode(googleToken.url)
+                                loadPage()
+                            }
+                        }
+                    }
+                }
+            } else {
+                Log.e("account", "si为空:" + "\n")
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            Log.e("account", "si异常:\n$e")
+        }
+    }
+
+    private fun createTokenStr(name: String, value: String): String {
+        return "$name=\"$value\";expires=1; path=/"
+    }
+
     private inner class NetworkReceiver : Network.NetworkChangeReceiver() {
         override fun onNetworkChanged(availableNetworkType: Int) {
             if (availableNetworkType > Network.NET_NONE && !mLoadSuccess) {
@@ -816,8 +903,7 @@ open class WebActivity : BaseActivity() {
             }
         }
         if (requestCode == PAYTM_REQUEST_CODE && data != null) {
-            Log.i("wtf", "PayTmCallback:" + data.getStringExtra("response"))
-            ToastUtil.showToast("PayTmCallback:" + data.getStringExtra("response"))
+            Log.i("PayTm", "PayTmCallback:" + data.getStringExtra("response"))
         }
     }
 

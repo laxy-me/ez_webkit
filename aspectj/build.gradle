@@ -24,7 +24,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     //AOP
     api 'org.aspectj:aspectjrt:1.8.13'
 }

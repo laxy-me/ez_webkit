@@ -118,10 +118,10 @@
 -keep class javax.annotation.** { *; }
 -keep interface androidx.** { *; }
 
--keep class lax.**$Companion{
+-keep class **.$Companion{
     *;
 }
--keep class lax.permission.Permission{
+-keep class com.lax.permission.Permission{
     *;
 }
 ## ------------------------------------------------------------------------------------------------

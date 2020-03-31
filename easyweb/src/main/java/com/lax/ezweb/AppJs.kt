@@ -11,8 +11,10 @@ import android.view.View
 import android.webkit.JavascriptInterface
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustEvent
-import com.lax.ezweb.model.ShareData
 import com.google.gson.Gson
+import com.lax.ezweb.model.ShareData
+import com.lax.ezweb.tools.AppInfo
+import com.lax.ezweb.tools.Utils
 
 class AppJs(private val mContext: Context) {
 
@@ -25,6 +27,7 @@ class AppJs(private val mContext: Context) {
         if (deviceHardwareId.isEmpty()) {
             deviceHardwareId = Preference.get().Gaid
         }
+        Log.v(TAG, "getDeviceId:${deviceHardwareId}")
         return deviceHardwareId
     }
 
@@ -33,6 +36,7 @@ class AppJs(private val mContext: Context) {
      */
     @JavascriptInterface
     fun takePushId(): String {
+        Log.v(TAG, "takePushId:${Preference.get().pushId}")
         return Preference.get().pushId
     }
 
@@ -41,6 +45,7 @@ class AppJs(private val mContext: Context) {
      */
     @JavascriptInterface
     fun takeChannel(): String {
+        Log.v(TAG, "takeChannel:${AppInfo.getMetaData(mContext, "UMENG_CHANNEL")}")
         return AppInfo.getMetaData(mContext, "UMENG_CHANNEL")
     }
 
@@ -53,6 +58,7 @@ class AppJs(private val mContext: Context) {
         if (deviceHardwareId.isEmpty()) {
             deviceHardwareId = Preference.get().Gaid
         }
+        Log.v(TAG, "getGoogleId:${deviceHardwareId}")
         return deviceHardwareId
     }
 
@@ -61,7 +67,19 @@ class AppJs(private val mContext: Context) {
      */
     @JavascriptInterface
     fun getGaId(): String? {
+        Log.v(TAG, "getGaId:${Preference.get().Gaid}")
         return Preference.get().Gaid;
+    }
+
+    /**
+     * 调取谷歌登录方法
+     */
+    @JavascriptInterface
+    fun openGoogle(data: String) {
+        if (mContext is WebActivity) {
+            Log.v(TAG, "openGoogle:${data}")
+            mContext.googleLogin(data)
+        }
     }
 
     /**
@@ -69,6 +87,7 @@ class AppJs(private val mContext: Context) {
      */
     @JavascriptInterface
     fun adjustTrackEvent(eventToken: String) {
+        Log.v(TAG, "adjustTrackEvent:${eventToken}")
         val adjustEvent = AdjustEvent(eventToken)
         Adjust.trackEvent(adjustEvent)
     }
@@ -78,6 +97,7 @@ class AppJs(private val mContext: Context) {
      */
     @JavascriptInterface
     fun openPayTm(data: String) {
+        Log.v(TAG, "openPayTm:${data}")
         if (mContext is WebActivity) {
             mContext.openPayTm(data)
         }
@@ -90,6 +110,7 @@ class AppJs(private val mContext: Context) {
      */
     @JavascriptInterface
     fun takePortraitPicture(callbackMethod: String) {
+        Log.v(TAG, "takePortraitPicture:${callbackMethod}")
         if (mContext is WebActivity) {
             mContext.takePortraitPicture(callbackMethod)
         }
@@ -101,6 +122,7 @@ class AppJs(private val mContext: Context) {
      */
     @JavascriptInterface
     fun shouldForbidSysBackPress(forbid: Int) {
+        Log.v(TAG, "shouldForbidSysBackPress:${forbid}")
         if (mContext is WebActivity) {
             mContext.setShouldForbidBackPress(forbid)
         }
@@ -114,6 +136,7 @@ class AppJs(private val mContext: Context) {
      */
     @JavascriptInterface
     fun forbidBackForJS(forbid: Int, methodName: String) {
+        Log.v(TAG, "shouldForbidSysBackPress:${forbid},name=${methodName}")
         if (mContext is WebActivity) {
             mContext.setShouldForbidBackPress(forbid)
             mContext.setBackPressJSMethod(methodName)
@@ -140,7 +163,7 @@ class AppJs(private val mContext: Context) {
 
     @JavascriptInterface
     fun shareInAndroid(type: String, data: String) {
-        Log.v("shareInAndroid", data);
+        Log.v(TAG, "shareInAndroid:${data}");
         val shareData: ShareData = Gson().fromJson<ShareData>(data, ShareData::class.java)
         if (mContext is WebActivity) {
             when (type) {
@@ -254,6 +277,7 @@ class AppJs(private val mContext: Context) {
         const val NET_2G = 2
         const val NET_3G = 3
         const val NET_4G = 4
+        const val TAG = "AppJs"
     }
 
     /**

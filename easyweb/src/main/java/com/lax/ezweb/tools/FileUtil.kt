@@ -1,4 +1,4 @@
-package com.lax.ezweb
+package com.lax.ezweb.tools
 
 import android.content.Context
 import android.graphics.Bitmap

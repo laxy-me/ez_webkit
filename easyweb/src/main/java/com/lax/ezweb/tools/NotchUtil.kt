@@ -1,4 +1,4 @@
-package com.lax.ezweb
+package com.lax.ezweb.tools
 
 import android.app.Activity
 import android.content.Context
@@ -104,7 +104,10 @@ object NotchUtil {
         }
 
     val meizuFlymeOSFlag: String
-        get() = getSystemProperty("ro.build.display.id", "")
+        get() = getSystemProperty(
+            "ro.build.display.id",
+            ""
+        )
 
     fun setDisplayCutMode(activity: Activity) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1) {
@@ -149,7 +152,9 @@ object NotchUtil {
                 }
             }
         } else {
-            ret = hasNotchInHuawei(context) || hasNotchInOppo(context) || hasNotchInVivo(context) || hasNotchInMIUI()
+            ret = hasNotchInHuawei(context) || hasNotchInOppo(
+                context
+            ) || hasNotchInVivo(context) || hasNotchInMIUI()
         }
         return ret
     }
@@ -292,7 +297,9 @@ object NotchUtil {
             val cl = context.classLoader
             val FtFeature = cl.loadClass("com.util.FtFeature")
             val get = FtFeature.getMethod("isFeatureSupport", Int::class.javaPrimitiveType!!)
-            ret = get.invoke(FtFeature, NOTCH_IN_SCREEN_VOIO) as Boolean
+            ret = get.invoke(FtFeature,
+                NOTCH_IN_SCREEN_VOIO
+            ) as Boolean
 
         } catch (e: ClassNotFoundException) {
             Log.e("test", "hasNotchInHuawei ClassNotFoundException")

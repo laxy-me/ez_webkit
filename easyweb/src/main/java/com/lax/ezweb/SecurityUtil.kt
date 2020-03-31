@@ -9,9 +9,9 @@ import javax.crypto.spec.SecretKeySpec
 
 object SecurityUtil {
 
-    private val AES_SECRET_KEY = "7634f7c34c02805afd241dec53b7fa53"
+    private const val AES_SECRET_KEY = "7634f7c34c02805afd241dec53b7fa53"
 
-    internal val CIPHER_ALGORITHM_CBC = "AES/CBC/PKCS5Padding"
+    internal const val CIPHER_ALGORITHM_CBC = "AES/CBC/PKCS5Padding"
 
     internal val iv: ByteArray?
         get() = Str2Byte(AES_SECRET_KEY)

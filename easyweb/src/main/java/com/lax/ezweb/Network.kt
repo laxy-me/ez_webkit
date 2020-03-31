@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
+import com.lax.ezweb.tools.Utils
 
 
 object Network {

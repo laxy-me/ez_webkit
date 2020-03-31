@@ -1,4 +1,4 @@
-package com.lax.ezweb
+package com.lax.ezweb.tools
 
 import android.content.Context
 import android.view.MotionEvent
@@ -12,17 +12,20 @@ import android.widget.EditText
 object KeyBoardUtils {
 
     fun closeKeyboard(context: Context, view: View) {
-        val imm = context.applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            context.applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     fun closeOrOpenKeyBoard(context: Context) {
-        val inputMethodManager = context.applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager =
+            context.applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS)
     }
 
     fun openKeyBoard(context: Context, view: View) {
-        val inputMethodManager = context.applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager =
+            context.applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.showSoftInput(view, 0)
     }
 

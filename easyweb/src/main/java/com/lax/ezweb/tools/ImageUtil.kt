@@ -1,4 +1,4 @@
-package com.lax.ezweb
+package com.lax.ezweb.tools
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -15,7 +15,9 @@ import java.io.IOException
 class ImageUtil {
     companion object {
         fun compressImageToBase64(urlPath: String): String? {
-            return bitmapToBase64(compressScale(urlPath))
+            return bitmapToBase64(
+                compressScale(urlPath)
+            )
         }
 
         /**
@@ -49,7 +51,10 @@ class ImageUtil {
             newOpts.inSampleSize = be// 设置缩放比例
             // 重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
             bitmap = BitmapFactory.decodeFile(srcPath, newOpts)
-            return reviewPicRotate(bitmap, srcPath)
+            return reviewPicRotate(
+                bitmap,
+                srcPath
+            )
         }
 
         /**
@@ -59,16 +64,17 @@ class ImageUtil {
          * @param path   图片的路径
          */
         fun reviewPicRotate(bitmap: Bitmap, path: String): Bitmap {
-            var bitmap = bitmap
-            val degree = getPicRotate(path)
+            var b = bitmap
+            val degree =
+                getPicRotate(path)
             if (degree != 0) {
                 val m = Matrix()
                 val width = bitmap.width
                 val height = bitmap.height
                 m.setRotate(degree.toFloat()) // 旋转angle度
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, m, true)// 从新生成图片
+                b = Bitmap.createBitmap(bitmap, 0, 0, width, height, m, true)// 从新生成图片
             }
-            return bitmap
+            return b
         }
 
         /**

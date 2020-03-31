@@ -1,17 +1,21 @@
-package com.lax.ezweb
+package com.lax.example
 
 import android.Manifest
-import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import com.google.gson.Gson
+import com.lax.ezweb.BaseActivity
+import com.lax.ezweb.Launcher
+import com.lax.ezweb.WebActivity
 import com.lax.ezweb.model.VestConfig
 import com.lax.ezweb.model.VestModel
+import com.lax.ezweb.tools.AppInfo
 import com.lax.permission.Permission
-import com.google.gson.Gson
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
 import kotlinx.coroutines.Dispatchers

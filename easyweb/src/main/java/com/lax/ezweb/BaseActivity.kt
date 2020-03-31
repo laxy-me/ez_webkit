@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import androidx.core.content.ContextCompat
+import com.lax.ezweb.tools.KeyBoardUtils
 import com.lax.permission.GPermission
 import com.lax.permission.PermissionCallback
 import com.lax.permission.PermissionGlobalConfigCallback
@@ -34,7 +35,6 @@ open class BaseActivity : TranslucentActivity() {
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
         TAG = this::class.java.simpleName
-        Log.e("wtf",TAG)
     }
 
     fun initPermissionGlobalConfigCallback() {

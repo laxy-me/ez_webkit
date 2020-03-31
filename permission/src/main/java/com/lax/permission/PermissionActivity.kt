@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.Nullable
 
 /**
@@ -40,13 +41,14 @@ class PermissionActivity : Activity() {
             return
         }
         // 当api大于23时，才进行权限申请
-        val permissions = getIntent().getStringArrayExtra(KEY_PERMISSIONS)
+        val permissions = getIntent().getStringArrayExtra(KEY_PERMISSIONS) ?: arrayOf()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (hasSelfPermissions(permissions)) {
                 finish()
                 CALLBACK?.onPermissionGranted()
             } else {
-                requestPermissions(permissions,
+                requestPermissions(
+                    permissions,
                     RC_REQUEST_PERMISSION
                 )
             }
@@ -65,20 +67,33 @@ class PermissionActivity : Activity() {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         if (requestCode != RC_REQUEST_PERMISSION) {
             return
         }
         // 处理申请结果
         val shouldShowRequestPermissionRationale = BooleanArray(permissions.size)
         for (i in permissions.indices) {
-            shouldShowRequestPermissionRationale[i] = shouldShowRequestPermissionRationale(permissions[i])
+            shouldShowRequestPermissionRationale[i] =
+                shouldShowRequestPermissionRationale(permissions[i])
         }
-        this.onRequestPermissionsResult(permissions, grantResults, shouldShowRequestPermissionRationale)
+        this.onRequestPermissionsResult(
+            permissions,
+            grantResults,
+            shouldShowRequestPermissionRationale
+        )
     }
-    
+
     @TargetApi(Build.VERSION_CODES.M)
-    internal fun onRequestPermissionsResult(permissions: Array<String>, grantResults: IntArray, shouldShowRequestPermissionRationale: BooleanArray) {
+    internal fun onRequestPermissionsResult(
+        permissions: Array<String>,
+        grantResults: IntArray,
+        shouldShowRequestPermissionRationale: BooleanArray
+    ) {
         val length = permissions.size
         var granted = 0
         val rationalList: ArrayList<String> = ArrayList()

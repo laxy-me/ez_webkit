@@ -76,7 +76,7 @@ public class CookieManger {
     private String indexOfNameValuePair(String cookie, String keyword) {
         String[] splits = cookie.split(";");
         for (String split : splits) {
-            if (split.indexOf(keyword) != -1) {
+            if (split.contains(keyword)) {
                 return split;
             }
         }

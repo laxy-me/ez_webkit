@@ -1,4 +1,4 @@
-package com.lax.ezweb
+package com.lax.ezweb.tools
 
 import android.Manifest
 import android.content.Context
@@ -8,6 +8,7 @@ import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.webkit.WebSettings
+import com.lax.ezweb.SecurityUtil
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.FileReader
@@ -47,8 +48,10 @@ object AppInfo {
         val packageManager = context.packageManager
         var result = ""
         try {
-            val info = packageManager.getApplicationInfo(context.packageName,
-                    PackageManager.GET_META_DATA)
+            val info = packageManager.getApplicationInfo(
+                context.packageName,
+                PackageManager.GET_META_DATA
+            )
             result = info.metaData.get(name)!!.toString()
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
@@ -84,7 +87,7 @@ object AppInfo {
 
     fun checkPermission(context: Context, permission: String): Boolean {
         var result = false
-        if (Build.VERSION.SDK_INT >= 23) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             result = try {
                 val rest = context.checkSelfPermission(permission)
                 rest == PackageManager.PERMISSION_GRANTED
@@ -93,7 +96,11 @@ object AppInfo {
             }
         } else {
             val pm = context.packageManager
-            if (pm.checkPermission(permission, context.packageName) == PackageManager.PERMISSION_GRANTED) {
+            if (pm.checkPermission(
+                    permission,
+                    context.packageName
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
                 result = true
             }
         }
@@ -109,9 +116,13 @@ object AppInfo {
         try {
             val json = org.json.JSONObject()
             val tm = context
-                    .getSystemService(Context.TELEPHONY_SERVICE) as android.telephony.TelephonyManager
+                .getSystemService(Context.TELEPHONY_SERVICE) as android.telephony.TelephonyManager
             var deviceId: String? = null
-            if (checkPermission(context, Manifest.permission.READ_PHONE_STATE)) {
+            if (checkPermission(
+                    context,
+                    Manifest.permission.READ_PHONE_STATE
+                )
+            ) {
                 deviceId = tm.deviceId
             }
             var mac: String? = null
@@ -152,7 +163,8 @@ object AppInfo {
                 deviceId = mac
             }
             if (TextUtils.isEmpty(deviceId)) {
-                deviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+                deviceId =
+                    Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
             }
             json.put("device_id", deviceId)
             return json.toString()
@@ -165,7 +177,7 @@ object AppInfo {
     fun getDeviceHardwareId(context: Context): String {
         try {
             val tm = context
-                    .getSystemService(Context.TELEPHONY_SERVICE) as android.telephony.TelephonyManager
+                .getSystemService(Context.TELEPHONY_SERVICE) as android.telephony.TelephonyManager
             var typePrefix = "DEVICE_ID_"
             var deviceId = tm.deviceId
 
@@ -174,13 +186,15 @@ object AppInfo {
                 typePrefix = "SERIAL_"
             }
             if (TextUtils.isEmpty(deviceId)) {
-                val wifi = context.getSystemService(Context.WIFI_SERVICE) as android.net.wifi.WifiManager
+                val wifi =
+                    context.getSystemService(Context.WIFI_SERVICE) as android.net.wifi.WifiManager
                 val mac = wifi.connectionInfo.macAddress
                 deviceId = mac
                 typePrefix = "MAC_"
             }
             if (TextUtils.isEmpty(deviceId)) {
-                deviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+                deviceId =
+                    Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
                 typePrefix = "ANDROID_ID_"
             }
             Log.d("AppInfo", "getDeviceHardwareId: " + (typePrefix + deviceId))
@@ -196,7 +210,8 @@ object AppInfo {
     }
 
     fun getImei(context: Context): String {
-        val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as android.telephony.TelephonyManager
+        val tm =
+            context.getSystemService(Context.TELEPHONY_SERVICE) as android.telephony.TelephonyManager
         val imei = tm.deviceId
         return imei
     }

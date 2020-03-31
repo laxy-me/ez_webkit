@@ -6,6 +6,7 @@ import android.os.Build
 import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
+import com.lax.ezweb.tools.NotchUtil
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader

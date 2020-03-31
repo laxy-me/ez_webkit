@@ -18,7 +18,7 @@ import java.util.*
  */
 @Aspect
 open class PermissionAspect {
-    @Around("execution(@com.luck.permission.Permission * *(..))")
+    @Around("execution(@com.lax.permission.Permission * *(..))")
     fun aroundJoinPoint(joinPoint: ProceedingJoinPoint) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             joinPoint.proceed()
@@ -32,7 +32,7 @@ open class PermissionAspect {
                 val permissions = annotation.permissions
                 val rationales = annotation.rationales
                 val rejects = annotation.rejects
-                val permissionList = Arrays.asList<String>(*permissions)
+                val permissionList = mutableListOf<String>(*permissions)
 
                 // 获取上下文
                 val `object` = joinPoint.getThis()
@@ -46,33 +46,39 @@ open class PermissionAspect {
 
                 // 申请权限
                 GPermission.with(context!!)
-                        .permission(permissions)
-                        .callback(object :
-                            PermissionCallback {
-
-                            override fun onPermissionGranted() {
-                                try {
-                                    // 权限申请通过，执行原方法
-                                    joinPoint.proceed()
-                                } catch (throwable: Throwable) {
-                                    throwable.printStackTrace()
-                                }
-
+                    .permission(permissions)
+                    .callback(object :
+                        PermissionCallback {
+                        override fun onPermissionGranted() {
+                            try {
+                                // 权限申请通过，执行原方法
+                                joinPoint.proceed()
+                            } catch (throwable: Throwable) {
+                                throwable.printStackTrace()
                             }
 
-                            override fun shouldShowRational(permissions: Array<String>) {
-                                // 申请被拒绝，但没有勾选“不再提醒”，这里我们让外部自行处理
-                                GPermission.globalConfigCallback?.shouldShowRational(permissions, rationales)
-                            }
+                        }
 
-                            override fun onPermissionReject(permissions: Array<String>) {
-                                // 申请被拒绝，且勾选“不再提醒”，这里我们让外部自行处理
-                                GPermission.globalConfigCallback?.onPermissionReject(permissions, rejects)
-                            }
-                        }).request()
+                        override fun shouldShowRational(permissions: Array<String>) {
+                            // 申请被拒绝，但没有勾选“不再提醒”，这里我们让外部自行处理
+                            GPermission.globalConfigCallback?.shouldShowRational(
+                                permissions,
+                                rationales
+                            )
+                        }
+
+                        override fun onPermissionReject(permissions: Array<String>) {
+                            // 申请被拒绝，且勾选“不再提醒”，这里我们让外部自行处理
+                            GPermission.globalConfigCallback?.onPermissionReject(
+                                permissions,
+                                rejects
+                            )
+                        }
+                    }).request()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
 }
+
