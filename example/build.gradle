@@ -1,0 +1,81 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'android-aspectjx'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+    defaultConfig {
+        applicationId "com.lax.example"
+        minSdkVersion 17
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        manifestPlaceholders = [
+                GETUI_APP_ID      : "",
+                GETUI_APP_KEY     : "",
+                GETUI_APP_SECRET  : "",
+                ADJUST_CODE       : "",
+                ADJUST_TRACK_TOKEN: "",
+                FACEBOOK_APP_ID   : "21236787664368",
+                UMENG_CHANNEL     : "origin",
+        ]
+
+        buildConfigField("String", "HOST", '\"http://api.nicknobody.com\"')
+        buildConfigField("String", "VEST_CODE", '\"W37WTLSF\"')
+    }
+
+    flavorDimensions("app")
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            ndk {
+                abiFilters "armeabi-v7a", "arm64-v8a", "x86"
+            }
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    //根据渠道名替换友盟渠道控制
+    productFlavors.all { flavor ->
+        if (flavor.name != 'dev' && flavor.name != 'alpha') {
+            flavor.manifestPlaceholders = [UMENG_CHANNEL: name]
+        }
+    }
+
+    productFlavors {
+        google {}
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation("com.squareup.okhttp3:okhttp:4.4.0")
+
+    implementation project(path: ':easyweb')
+//    implementation 'bintray.com.lax.easyweb:easyweb:0.0.1'
+}

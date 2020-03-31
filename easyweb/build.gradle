@@ -1,0 +1,81 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'android-aspectjx'
+
+android {
+    dataBinding {
+        enabled = true
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+
+    defaultConfig {
+        minSdkVersion 17
+        targetSdkVersion 29
+        versionCode 1
+        versionName "0.0.1"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation("com.squareup.okhttp3:okhttp:4.4.0")
+    //image selector
+    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.3'
+    api project(path: ':permission')
+    api project(path: ':aspectj')
+    //个推推送
+    api 'com.getui:sdk-for-google-play:4.3.8.0'
+    //--facebook share--
+    api 'com.facebook.android:facebook-share:[5,6)'
+    //--google login--
+    api 'com.google.firebase:firebase-core:16.0.4'
+    api 'com.google.firebase:firebase-auth:16.0.4'
+    api 'com.google.android.gms:play-services-auth:15.0.1'
+    //--branch--
+    // required for all Android apps
+    api 'io.branch.sdk.android:library:4.+'
+    // required if your app is in the Google Play Store (tip: avoid using bundled play services libs)
+    api 'com.google.firebase:firebase-appindexing:19.0.0' // App indexing
+    api 'com.google.android.gms:play-services-ads:16+' // GAID matching
+    // optional
+    // Chrome Tab matching (enables 100% guaranteed matching based on cookies), androidx.browser:browser works just the same
+    api 'androidx.browser:browser:1.0.0'
+    //--adjust--
+    api 'com.adjust.sdk:adjust-android:4.19.1'
+    api 'com.adjust.sdk:adjust-android-webbridge:4.19.1'
+    api 'com.android.installreferrer:installreferrer:1.0'
+    api 'com.google.android.gms:play-services-analytics:16.0.4'
+    api 'com.android.installreferrer:installreferrer:1.0'
+}
+
+apply from: "${rootProject.projectDir}/bintrayUpload.gradle"
