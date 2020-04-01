@@ -23,6 +23,7 @@ import android.view.WindowManager
 import android.webkit.*
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
@@ -583,6 +584,7 @@ open class WebActivity : BaseActivity() {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE]
     )
+    @Keep
     fun takePortraitPicture(callbackMethod: String) {
         val customViewController = ImageSelectController(this)
         customViewController.setOnGetPhotoClickListener(object :

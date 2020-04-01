@@ -30,12 +30,11 @@ class PermissionAspect {
                 // 获取方法注解
                 val methodSignature = joinPoint.signature
                 if (methodSignature is MethodSignature) {
-//                    val method = joinPoint.target.javaClass
-//                        .getDeclaredMethod(
-//                            methodSignature.name,
-//                            *methodSignature.parameterTypes
-//                        )
-                    val method =  methodSignature.method
+                    val method = joinPoint.target.javaClass
+                        .getDeclaredMethod(
+                            methodSignature.name,
+                            *methodSignature.parameterTypes
+                        )
                     val annotation: Permission? =
                         method.getAnnotation<Permission>(Permission::class.java)
                     // 获取注解参数，这里我们有3个参数需要获取

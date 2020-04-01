@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.Keep
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
@@ -91,6 +92,7 @@ class SplashActivity : BaseActivity() {
     }
 
     @Permission(permissions = [Manifest.permission.READ_PHONE_STATE])
+    @Keep
     private fun init() {
         request()
     }
@@ -124,7 +126,7 @@ class SplashActivity : BaseActivity() {
         val launcher = Launcher.with(this, WebActivity::class.java)
             .putExtra(WebActivity.EX_TITLE, "")
             .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
-            .putExtra(WebActivity.EX_URL, data?.h5Url ?: "")
+            .putExtra(WebActivity.EX_URL, "http://47.104.65.60:443/topup")
             .putExtra(WebActivity.EX_TITLE_BG, data?.backgroundCol ?: "")
             .putExtra(WebActivity.EX_TITLE_FIELD_COLOR, data?.fieldCol ?: "")
         if (data?.advOn == 1) {

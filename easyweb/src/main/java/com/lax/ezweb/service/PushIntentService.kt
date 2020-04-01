@@ -79,9 +79,9 @@ open class PushIntentService : GTIntentService() {
         builder.setWhen(System.currentTimeMillis())
         val brand = Build.BRAND
         val intent = setPendingIntent(context, pushMessageModel)
-        builder.setSmallIcon(R.mipmap.ic_launcher)
+        builder.setSmallIcon(R.drawable.push)
         if (!TextUtils.isEmpty(brand) && brand.equals(PHONE_BRAND_SAMSUNG, ignoreCase = true)) {
-            val bitmap = BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher)
+            val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.push)
             builder.setLargeIcon(bitmap)
         }
         builder.setContentIntent(intent)

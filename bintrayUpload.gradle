@@ -1,7 +1,7 @@
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 // This is the library version used when deploying the artifact
-version = "0.0.1"//这里是你的版本，当你需要上传新的版本到bintry上时，只需要修改这里的版本即可
+version = "0.0.2"//这里是你的版本，当你需要上传新的版本到bintry上时，只需要修改这里的版本即可
 
 def siteUrl = 'https://github.com/talkeryang/ez_webkit'      // 项目的主页
 def gitUrl = 'https://github.com/talkeryang/ez_webkit.git'   // Git仓库的url
@@ -13,7 +13,7 @@ install {
             project {
                 packaging 'aar'
                 // Add your description here
-                name 'easy webkit for company.'
+                name 'easy webkit library for company.'
                 url siteUrl
                 // Set your license
                 licenses {
