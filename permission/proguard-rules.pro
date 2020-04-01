@@ -19,8 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-<<<<<<< HEAD
-
 #############################################
 #
 # Android开发中一些需要保留的公共部分
