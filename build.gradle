@@ -13,11 +13,9 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.5.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.hujiang.aspectjx:gradle-android-plugin-aspectjx:2.0.8' //aop组件
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1' //用于打包Maven所需文件
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6' //用于上传Maven生成的文件到Bintray
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.1.1" //用于上传JFrog Artifactory本地
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+        classpath 'com.novoda:bintray-release:0.9.2'
     }
 }
 
@@ -30,7 +28,12 @@ allprojects {
         maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
         maven { url 'https://jitpack.io' }
 //        maven { url "https://lax.bintray.com/easyweb" }
-        maven { url 'file:///Users/WorkSpace/localRepository' }
+//        maven { url 'file:///Users/WorkSpace/localRepository' }
+    }
+
+    tasks.withType(Javadoc) { // 新增
+        options.addStringOption('Xdoclint:none', '-quiet')
+        options.addStringOption('encoding', 'UTF-8')
     }
 }
 

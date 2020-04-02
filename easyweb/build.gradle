@@ -76,4 +76,5 @@ dependencies {
 }
 
 //apply from: "${rootProject.projectDir}/bintrayUpload.gradle"
-apply from: "${rootProject.projectDir}/uploadLocal.gradle"
+apply from: "${rootProject.projectDir}/novodaPublish.gradle"
+//apply from: "${rootProject.projectDir}/uploadLocal.gradle"
