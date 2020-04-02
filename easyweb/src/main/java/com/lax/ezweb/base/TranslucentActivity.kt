@@ -1,4 +1,4 @@
-package com.lax.ezweb
+package com.lax.ezweb.base
 
 import android.app.Activity
 import android.graphics.Color
@@ -6,6 +6,7 @@ import android.os.Build
 import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
+import androidx.annotation.Keep
 import com.lax.ezweb.tools.NotchUtil
 import java.io.BufferedReader
 import java.io.IOException
@@ -16,6 +17,7 @@ import java.io.InputStreamReader
  * @author yangguangda
  * @date 2018/11/6
  */
+@Keep
 open class TranslucentActivity : Activity() {
 
     fun translucentStatusBar() {

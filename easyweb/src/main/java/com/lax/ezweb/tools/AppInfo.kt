@@ -8,13 +8,13 @@ import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.webkit.WebSettings
-import com.lax.ezweb.SecurityUtil
+import androidx.annotation.Keep
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.FileReader
 import java.io.IOException
 
-
+@Keep
 object AppInfo {
 
     interface Meta {

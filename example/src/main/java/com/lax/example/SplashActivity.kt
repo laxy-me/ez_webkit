@@ -6,17 +6,15 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import androidx.annotation.Keep
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
-import com.lax.ezweb.BaseActivity
 import com.lax.ezweb.Launcher
 import com.lax.ezweb.WebActivity
-import com.lax.ezweb.model.VestConfig
-import com.lax.ezweb.model.VestModel
+import com.lax.ezweb.base.BaseActivity
+import com.lax.ezweb.data.model.VestConfig
+import com.lax.ezweb.data.model.VestModel
 import com.lax.ezweb.tools.AppInfo
-import com.lax.permission.Permission
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +33,6 @@ class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initPermissionGlobalConfigCallback()
         init()
     }
 
@@ -91,10 +88,8 @@ class SplashActivity : BaseActivity() {
         return localIntent
     }
 
-    @Permission(permissions = [Manifest.permission.READ_PHONE_STATE])
-    @Keep
     private fun init() {
-        request()
+        requestPermission(arrayOf(Manifest.permission.READ_PHONE_STATE), intArrayOf(), request())
     }
 
     private fun request() {

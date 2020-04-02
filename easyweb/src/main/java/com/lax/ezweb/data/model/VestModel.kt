@@ -1,4 +1,4 @@
-package com.lax.ezweb.model
+package com.lax.ezweb.data.model
 
 import androidx.annotation.Keep
 

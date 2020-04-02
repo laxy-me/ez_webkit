@@ -1,33 +1,40 @@
-package com.lax.ezweb
+package com.lax.ezweb.base
 
+import android.Manifest
 import android.app.AlertDialog
+import android.content.ContextWrapper
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
+import androidx.annotation.Keep
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import com.lax.ezweb.R
+import com.lax.ezweb.permission.GPermission
+import com.lax.ezweb.permission.PermissionCallback
 import com.lax.ezweb.tools.KeyBoardUtils
-import com.lax.permission.GPermission
-import com.lax.permission.PermissionCallback
-import com.lax.permission.PermissionGlobalConfigCallback
-
+import java.util.*
 
 /**
  *
  * @author yangguangda
  * @date 2018/11/16
  */
+@Keep
 open class BaseActivity : TranslucentActivity() {
     protected var TAG = ""
 
     companion object {
         const val REQ_CODE_LOGIN = 808
+        const val REQ_CODE_PERMISSION = 8008
     }
 
     private var mShouldHideInputMethod: Boolean = false
@@ -37,44 +44,51 @@ open class BaseActivity : TranslucentActivity() {
         TAG = this::class.java.simpleName
     }
 
-    fun initPermissionGlobalConfigCallback() {
-        GPermission.init(object : PermissionGlobalConfigCallback() {
-            override fun shouldShowRational(permissions: Array<String>, ration: IntArray) {
-                showRationaleDialog(permissions, ration)
+    protected open fun requestPermission(
+        permissions: Array<String>,
+        ration: IntArray,
+        callback: Any
+    ) {
+        GPermission.with(this).permission(
+            permissions
+        ).callback(object : PermissionCallback {
+            override fun onPermissionGranted() {
+                callback
             }
 
-            override fun onPermissionReject(permissions: Array<String>, reject: IntArray) {
-                showRejectDialog(permissions, reject)
+            override fun shouldShowRational(permissions: Array<String>) {
+                showRationaleDialog(permissions, intArrayOf())
             }
-        })
+
+            override fun onPermissionReject(permissions: Array<String>) {
+                showRationaleDialog(permissions, intArrayOf())
+            }
+        }).request()
     }
 
     protected open fun showRationaleDialog(permissions: Array<String>, ration: IntArray) {
         val alertDialog = AlertDialog.Builder(this)
             .setTitle(getString(R.string.need_permissions))
             .setMessage(permissionDesc(permissions))
-            .setPositiveButton(getString(R.string.ok)) { dialog, which ->
-                GPermission.with(this)
-                    .permission(permissions)
-                    .callback(object :
-                        PermissionCallback {
-                        override fun onPermissionGranted() {
-                        }
-
-                        override fun shouldShowRational(permissions: Array<String>) {
-                        }
-
-                        override fun onPermissionReject(permissions: Array<String>) {
-                        }
-                    }).request()
+            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.dismiss()
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            .setTextColor(ContextCompat.getColor(this, R.color.colorPrimary))
+            .setTextColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorPrimary
+                )
+            )
         alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE)
-            .setTextColor(ContextCompat.getColor(this, R.color.textColorAssist))
+            .setTextColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.textColorAssist
+                )
+            )
     }
 
     protected open fun showRejectDialog(permissions: Array<String>, reject: IntArray) {
@@ -93,9 +107,19 @@ open class BaseActivity : TranslucentActivity() {
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
         dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            .setTextColor(ContextCompat.getColor(this, R.color.colorPrimary))
+            .setTextColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorPrimary
+                )
+            )
         dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
-            .setTextColor(ContextCompat.getColor(this, R.color.textColorAssist))
+            .setTextColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.textColorAssist
+                )
+            )
     }
 
     private fun getAppDetailSettingIntent(): Intent {

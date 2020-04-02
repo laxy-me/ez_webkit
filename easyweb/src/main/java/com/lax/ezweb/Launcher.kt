@@ -5,10 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.annotation.Keep
 import androidx.fragment.app.Fragment
 import java.lang.ref.WeakReference
 import java.util.*
 
+@Keep
 class Launcher private constructor() {
 
     private var mContext: Context? = null
@@ -91,10 +93,12 @@ class Launcher private constructor() {
         }
     }
 
+    @Keep
     companion object {
 
         private var sInstance: Launcher? = null
 
+        @JvmStatic
         fun with(fragment: Fragment, clazz: Class<*>): Launcher {
             sInstance = Launcher()
             sInstance!!.mContext = WeakReference<Context>(fragment.getActivity()).get()
@@ -102,6 +106,7 @@ class Launcher private constructor() {
             return sInstance as Launcher
         }
 
+        @JvmStatic
         fun with(context: Context, clazz: Class<*>): Launcher {
             sInstance = Launcher()
             sInstance!!.mContext = WeakReference(context).get()

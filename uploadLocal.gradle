@@ -1,0 +1,15 @@
+apply plugin: 'maven'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri('/Users/WorkSpace/localRepository'))
+            pom {
+                groupId = 'com.lax.ezweb'
+                artifactId = 'easyweb'
+                version = '0.0.2'
+                packaging = 'aar'
+            }
+        }
+    }
+}

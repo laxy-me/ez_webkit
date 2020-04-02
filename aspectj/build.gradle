@@ -27,5 +27,3 @@ dependencies {
     //AOP
     api 'org.aspectj:aspectjrt:1.9.5'
 }
-
-apply from: "${rootProject.projectDir}/bintrayUpload.gradle"

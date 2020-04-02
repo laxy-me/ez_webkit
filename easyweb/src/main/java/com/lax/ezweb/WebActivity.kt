@@ -40,11 +40,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.gson.Gson
+import com.lax.ezweb.base.BaseActivity
+import com.lax.ezweb.data.CookieManger
+import com.lax.ezweb.data.model.*
 import com.lax.ezweb.dialog.ImageSelectController
 import com.lax.ezweb.dialog.SmartDialog
-import com.lax.ezweb.model.*
 import com.lax.ezweb.tools.*
-import com.lax.permission.Permission
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
@@ -58,7 +59,7 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.net.URLDecoder
 
-
+@Keep
 open class WebActivity : BaseActivity() {
     companion object {
         const val TAG = "WebActivity"
@@ -81,9 +82,11 @@ open class WebActivity : BaseActivity() {
         const val EX_AD_TIME = "ad_time"
 
         const val PAYTM_REQUEST_CODE = 11112
+
         //生产环境
         const val URL_PAYTM_PRODUCTION: String =
             "https://securegw.paytm.in/theia/api/v1/showPaymentPage"
+
         //测试环境
         const val URL_PAYTM_TEST: String =
             "https://securegw-stage.paytm.in/theia/api/v1/showPaymentPage"
@@ -381,7 +384,7 @@ open class WebActivity : BaseActivity() {
             .setMessage(getString(R.string.save_image_to_local))
             .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 val url = result.extra
-                //保存图片到相册
+                //保存图片到相册]
                 saveImage(url)
                 dialog.dismiss()
             }
@@ -395,13 +398,13 @@ open class WebActivity : BaseActivity() {
             .setTextColor(ContextCompat.getColor(this, R.color.sixtyPercentWhite))
     }
 
-    @Permission(
-        permissions = [
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE]
-    )
     private fun saveImage(url: String?) {
-        DownloadTask().execute(url)
+        requestPermission(
+            arrayOf(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ), intArrayOf(), DownloadTask().execute(url)
+        )
     }
 
     private fun syncCookies(pageUrl: String?) {
@@ -578,14 +581,17 @@ open class WebActivity : BaseActivity() {
     private var mIsBase64: Boolean = true
     private var mArg1: String? = null
 
-    @Permission(
-        permissions = [
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE]
-    )
-    @Keep
     fun takePortraitPicture(callbackMethod: String) {
+        requestPermission(
+            arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ), intArrayOf(), selectImage(callbackMethod)
+        )
+    }
+
+    private fun selectImage(callbackMethod: String) {
         val customViewController = ImageSelectController(this)
         customViewController.setOnGetPhotoClickListener(object :
             ImageSelectController.OnGetPhotoClickListener {

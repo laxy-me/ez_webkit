@@ -1,4 +1,4 @@
-package com.lax.ezweb;
+package com.lax.ezweb.data;
 
 import android.text.TextUtils;
 import android.util.Log;

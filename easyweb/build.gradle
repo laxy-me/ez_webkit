@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'android-aspectjx'
 
 android {
     dataBinding {
@@ -26,7 +25,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -51,8 +50,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.4.0")
     //image selector
     implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.3'
-    api project(path: ':permission')
-    api project(path: ':aspectj')
     //个推推送
     api 'com.getui:sdk-for-google-play:4.3.8.0'
     //--facebook share--
@@ -69,7 +66,7 @@ dependencies {
     api 'com.google.android.gms:play-services-ads:16+' // GAID matching
     // optional
     // Chrome Tab matching (enables 100% guaranteed matching based on cookies), androidx.browser:browser works just the same
-    implementation 'androidx.browser:browser:1.0.0'
+    // implementation 'androidx.browser:browser:1.0.0'
     //--adjust--
     api 'com.adjust.sdk:adjust-android:4.19.1'
     api 'com.adjust.sdk:adjust-android-webbridge:4.19.1'
@@ -78,4 +75,5 @@ dependencies {
     api 'com.android.installreferrer:installreferrer:1.0'
 }
 
-apply from: "${rootProject.projectDir}/bintrayUpload.gradle"
+//apply from: "${rootProject.projectDir}/bintrayUpload.gradle"
+apply from: "${rootProject.projectDir}/uploadLocal.gradle"

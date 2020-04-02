@@ -37,5 +37,8 @@
             android:name=".WebActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".permission.PermissionActivity"
+            android:theme="@style/Translucent" />
     </application>
 </manifest>

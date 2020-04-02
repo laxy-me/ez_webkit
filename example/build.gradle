@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'android-aspectjx'
 
 android {
     compileSdkVersion 29
@@ -38,7 +37,7 @@ android {
 
     buildTypes {
         debug {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
@@ -62,11 +61,6 @@ android {
         google {}
     }
 
-    aspectjx {
-        exclude 'com.lax.example.**'
-        exclude 'com.lax.permission.**'
-        exclude 'com.lax.ezweb.**'
-    }
 }
 
 dependencies {
@@ -82,6 +76,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation("com.squareup.okhttp3:okhttp:4.4.0")
 
-    implementation project(path: ':easyweb')
-//    implementation 'bintray.com.lax.easyweb:easyweb:0.0.1'
+//    implementation project(path: ':easyweb')
+    implementation 'com.lax.ezweb:easyweb:0.0.2'
 }

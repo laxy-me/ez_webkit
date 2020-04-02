@@ -9,13 +9,15 @@ import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.View
 import android.webkit.JavascriptInterface
+import androidx.annotation.Keep
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustEvent
 import com.google.gson.Gson
-import com.lax.ezweb.model.ShareData
+import com.lax.ezweb.data.model.ShareData
 import com.lax.ezweb.tools.AppInfo
 import com.lax.ezweb.tools.Utils
 
+@Keep
 class AppJs(private val mContext: Context) {
 
     /**

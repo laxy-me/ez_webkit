@@ -19,6 +19,11 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keep class com.lax.ezweb.** { *; }
+-keep object com.lax.ezweb.** { *; }
+-keep class **.$Companion{
+    *;
+}
 #############################################
 #
 # Android开发中一些需要保留的公共部分
@@ -121,11 +126,7 @@
 -keep class **.$Companion{
     *;
 }
--keep class com.lax.permission.Permission{
-    *;
-}
 ## ------------------------------------------------------------------------------------------------
-
 ## 友盟
 -keep class com.umeng.** {*;}
 -keepclassmembers class * {
@@ -162,7 +163,7 @@
 -keep class com.google.gson.stream.** { *; }
 # 使用Gson时需要配置Gson的解析对象及变量都不混淆。不然Gson会找不到变量。
 # 将下面替换成自己的实体类
--keep class lax.booth.model.** { *; }
+-keep class com.lax.ezweb.data.model.** { *; }
 
 ## retrofit
 # Retain generic type information for use by reflection by converters and adapters.
@@ -196,6 +197,25 @@
 -dontwarn com.yalantis.ucrop**
 -keep class com.yalantis.ucrop** { *; }
 -keep interface com.yalantis.ucrop** { *; }
+
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.android.gms.**
+-keep class * extends java.util.ListResourceBundle {
+    protected Object[][] getContents();
+}
+
+-keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {
+    public static final *** NULL;
+}
+
+-keepnames @com.google.android.gms.common.annotation.KeepName class *
+-keepclassmembernames class * {
+    @com.google.android.gms.common.annotation.KeepName *;
+}
+
+-keepnames class * implements android.os.Parcelable {
+    public static final ** CREATOR;
+}
 
 #Adjust
 -keep class com.adjust.sdk.** { *; }

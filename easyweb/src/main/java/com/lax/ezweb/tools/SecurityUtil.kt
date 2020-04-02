@@ -1,4 +1,4 @@
-package com.lax.ezweb
+package com.lax.ezweb.tools
 
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -20,7 +20,9 @@ object SecurityUtil {
     fun md5Encrypt(value: String): String {
         val digester = MessageDigest.getInstance("MD5")
         digester.update(value.toByteArray())
-        return convertByteArrayToHexString(digester.digest())
+        return convertByteArrayToHexString(
+            digester.digest()
+        )
     }
 
     private fun convertByteArrayToHexString(arrayBytes: ByteArray): String {
@@ -87,7 +89,8 @@ object SecurityUtil {
      */
 
     fun AESEncrypt(message: String): String? {
-        val key = Str2Byte(AES_SECRET_KEY)
+        val key =
+            Str2Byte(AES_SECRET_KEY)
         return try {
             val sks = SecretKeySpec(key, "AES")
             val cipher = Cipher.getInstance(CIPHER_ALGORITHM_CBC)
@@ -103,7 +106,8 @@ object SecurityUtil {
 
     fun AESDecrypt(encrypted: String): String? {
         val tmp = Str2Byte(encrypted)
-        val key = Str2Byte(AES_SECRET_KEY)
+        val key =
+            Str2Byte(AES_SECRET_KEY)
         return try {
             val sks = SecretKeySpec(key, "AES")
             val cipher = Cipher.getInstance(CIPHER_ALGORITHM_CBC)
@@ -136,7 +140,11 @@ object SecurityUtil {
             val key = SecretKeySpec(arrB, "DES")// 生成密钥
             val cipher = Cipher.getInstance("DES")
             cipher.init(Cipher.DECRYPT_MODE, key)
-            String(cipher.doFinal(Str2Byte(encrypted)))
+            String(cipher.doFinal(
+                Str2Byte(
+                    encrypted
+                )
+            ))
         } catch (e: Exception) {
             null
         }

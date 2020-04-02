@@ -22,7 +22,7 @@ import com.igexin.sdk.message.*
 import com.lax.ezweb.Preference
 import com.lax.ezweb.R
 import com.lax.ezweb.WebActivity
-import com.lax.ezweb.model.PushMessage
+import com.lax.ezweb.data.model.PushMessage
 
 
 open class PushIntentService : GTIntentService() {
