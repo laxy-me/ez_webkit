@@ -21,6 +21,7 @@ import com.lax.ezweb.R
 import com.lax.ezweb.permission.GPermission
 import com.lax.ezweb.permission.PermissionCallback
 import com.lax.ezweb.tools.KeyBoardUtils
+import com.umeng.analytics.MobclickAgent
 import java.util.*
 
 /**
@@ -39,6 +40,12 @@ open class BaseActivity : TranslucentActivity() {
 
     private var mShouldHideInputMethod: Boolean = false
     private var mLastFocusView: View? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        TAG = this::class.java.simpleName
+    }
+
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
         TAG = this::class.java.simpleName
@@ -124,7 +131,7 @@ open class BaseActivity : TranslucentActivity() {
 
     private fun getAppDetailSettingIntent(): Intent {
         val localIntent = Intent()
-        localIntent.action = "android.settings.APPLICATION_DETAILS_SETTINGS"
+        localIntent.action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
         localIntent.data = Uri.fromParts("package", packageName, null)
         return localIntent
     }

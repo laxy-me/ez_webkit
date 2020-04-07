@@ -10,10 +10,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/aspectj" />
             <option value="$PROJECT_DIR$/easyweb" />
             <option value="$PROJECT_DIR$/example" />
-            <option value="$PROJECT_DIR$/permission" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

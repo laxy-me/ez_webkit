@@ -19,6 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+
         <service
             android:name=".service.PushIntentService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
@@ -29,14 +30,11 @@
             android:label="PushService"
             android:process=":pushservice" />
 
-        <meta-data
-            android:name="UMENG_CHANNEL"
-            android:value="${UMENG_CHANNEL}" />
-
         <activity
             android:name=".WebActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
+
         <activity
             android:name=".permission.PermissionActivity"
             android:theme="@style/Translucent" />

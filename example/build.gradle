@@ -23,10 +23,12 @@ android {
                 GETUI_APP_ID      : "",
                 GETUI_APP_KEY     : "",
                 GETUI_APP_SECRET  : "",
+                UMENG_APP_KEY     : "",
+                UMENG_CHANNEL     : "origin",
                 ADJUST_CODE       : "",
                 ADJUST_TRACK_TOKEN: "",
                 FACEBOOK_APP_ID   : "21236787664368",
-                UMENG_CHANNEL     : "origin",
+                CHANNEL           : "origin",
         ]
 
         buildConfigField("String", "HOST", '\"http://api.nicknobody.com\"')
@@ -77,6 +79,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.4.0")
 
     implementation project(path: ':easyweb')
+
+    implementation 'com.google.firebase:firebase-core:17.0.0'
+    implementation 'com.google.firebase:firebase-messaging:20.0.0'
 //    implementation 'com.lax.ezweb:easyweb:0.0.2'
-//    implementation 'com.lax.ezweb:ez_webkit:unspecified'
 }

@@ -108,7 +108,7 @@ class SplashActivity : BaseActivity() {
         newBuilder.addQueryParameter("version", BuildConfig.VERSION_NAME)
         newBuilder.addQueryParameter(
             "channelCode",
-            AppInfo.getMetaData(applicationContext, AppInfo.Meta.UMENG_CHANNEL)
+            AppInfo.getMetaData(applicationContext, AppInfo.Meta.CHANNEL)
         )
         newBuilder.addQueryParameter("deviceId", AppInfo.getDeviceHardwareId(this))
         newBuilder.addQueryParameter("timestamp", System.currentTimeMillis().toString())

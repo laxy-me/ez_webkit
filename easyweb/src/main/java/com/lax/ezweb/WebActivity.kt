@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.*
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -25,6 +26,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.facebook.CallbackManager
@@ -51,8 +53,6 @@ import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import kotlinx.android.synthetic.main.web.*
 import kotlinx.coroutines.*
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
@@ -284,7 +284,7 @@ open class WebActivity : BaseActivity() {
         var userAgentString = webSettings.userAgentString
         userAgentString = getString(R.string.android_web_agent, userAgentString)
         webSettings.userAgentString = userAgentString
-        //mWebView.getSettings().setAppCacheEnabled(true);l
+        //mWebView.getSettings().setAppCacheEnabled(true);
         //webSettings.setAppCachePath(getExternalCacheDir().getPath());
         webSettings.allowFileAccess = true
 
@@ -543,7 +543,7 @@ open class WebActivity : BaseActivity() {
         } else if (url.startsWith("market://")) {
             val intent = Intent()
             intent.action = Intent.ACTION_VIEW
-            if ("google" == AppInfo.getMetaData(this, AppInfo.Meta.UMENG_CHANNEL)) {
+            if ("google" == AppInfo.getMetaData(this, AppInfo.Meta.CHANNEL)) {
                 intent.setPackage("com.android.vending")
             }
             intent.data = Uri.parse(url)
@@ -677,18 +677,33 @@ open class WebActivity : BaseActivity() {
                 val name = signInAccount.displayName
                 runBlocking {
                     launch() {
-                        val response = async(Dispatchers.IO) {
-                            val okHttpClient = OkHttpClient()
-                            okHttpClient.followRedirects
-                            val url =
-                                "${host}/user/google/doLogin2.do?id=${id}&name=${name}&sign=${sign}"
-                            val request = Request.Builder().url(url).get().build()
-                            okHttpClient.newCall(request).execute()
-                        }.await()
-                        if (response.isSuccessful) {
-                            val body = response.body!!.string()
+                        val response = withContext(Dispatchers.IO) {
+                            val url = "${host}/user/google/doLogin2.do" +
+                                    "?id=${id}&name=${name}&sign=${sign}"
+                            try {
+                                val conn = URL(url).openConnection()
+                                conn.connectTimeout = 5000
+                                conn.connect()
+                                val inputStream = conn.getInputStream()
+                                val bufferSize = 1024
+                                val buffer = CharArray(bufferSize)
+                                val out = java.lang.StringBuilder()
+                                val `in`: Reader =
+                                    InputStreamReader(inputStream, "UTF-8")
+                                while (true) {
+                                    val rsz = `in`.read(buffer, 0, buffer.size)
+                                    if (rsz < 0) break
+                                    out.append(buffer, 0, rsz)
+                                }
+                                out.toString()
+                            } catch (e: Exception) {
+                                e.stackTrace
+                                ""
+                            }
+                        }
+                        if (response.isNotBlank()) {
                             val googleToken: GoogleLoginToken? =
-                                Gson().fromJson(body, GoogleLoginResponse::class.java).data
+                                Gson().fromJson(response, GoogleLoginResponse::class.java).data
                             val rawCookie: String = createTokenStr(
                                 "token1",
                                 googleToken?.token1!!
@@ -757,11 +772,9 @@ open class WebActivity : BaseActivity() {
             } catch (e: MalformedURLException) {
                 println("[getNetWorkBitmap->]MalformedURLException")
                 e.printStackTrace()
-                Log.e("wtf", e.toString())
             } catch (e: IOException) {
                 println("[getNetWorkBitmap->]IOException")
                 e.printStackTrace()
-                Log.e("wtf", e.toString())
             }
             return null
         }
@@ -796,7 +809,6 @@ open class WebActivity : BaseActivity() {
                 ).show()
             }
             e.printStackTrace()
-            Log.e("wtf", e.toString())
         } finally {
             try {
                 fos!!.close()
@@ -806,9 +818,36 @@ open class WebActivity : BaseActivity() {
         return file
     }
 
+//    fun requestPermission() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//            if (ContextCompat.checkSelfPermission(
+//                    this,
+//                    Manifest.permission.READ_MEDIA_IMAGES
+//                )
+//                != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+//                    this,
+//                    Manifest.permission.READ_MEDIA_AUDIO
+//                )
+//                != PackageManager.PERMISSION_GRANTED
+//            ) {
+//                requestPermissions(
+//                    this,
+//                    arrayOf<String>(
+//                        Manifest.permission.READ_MEDIA_IMAGES,
+//                        Manifest.permission.READ_MEDIA_AUDIO
+//                    ),
+//                    MY_PERMISSIONS_REQUEST_READ_MEDIA_IMAGES
+//                )
+//            }
+//        } else {
+//            // request old storage permission
+//        }
+//    }
+
     fun saveImage2Gallery(file: File) {
         // 其次把文件插入到系统图库
         try {
+//            MediaStore.setIncludePending(Uri.fromFile(file))
             MediaStore.Images.Media.insertImage(
                 Utils.context.contentResolver,
                 file.absolutePath, file.name, null
@@ -865,7 +904,7 @@ open class WebActivity : BaseActivity() {
     ) {
         if (AppInfo.isAPPInstalled(this, packageName)) {
             try {
-                val vIt = Intent("android.intent.action.SEND")
+                val vIt = Intent(Intent.ACTION_SEND)
                 vIt.type = "text/plain"
                 vIt.setPackage(packageName)
                 if (!TextUtils.isEmpty(className)) {
@@ -901,14 +940,11 @@ open class WebActivity : BaseActivity() {
                         callback2Web(ImageUtil.compressImageToBase64(path)!!)
                     }
                 }
-                SHARE_RESULT_CODE -> {
-                    shareCallBack(
-                        shareData?.domainUrl ?: "",
-                        shareData?.inviteCode ?: "",
-                        2
-                    )
-                }
+
             }
+        }
+        if (requestCode == SHARE_RESULT_CODE) {
+            shareCallBack(shareData?.domainUrl ?: "", shareData?.inviteCode ?: "", 2)
         }
         if (requestCode == PAYTM_REQUEST_CODE && data != null) {
             Log.i("PayTm", "PayTmCallback:" + data.getStringExtra("response"))
@@ -921,21 +957,23 @@ open class WebActivity : BaseActivity() {
      * inviteCode 邀请码
      * type  1:facebook  2 whatsApp
      */
-    private fun shareCallBack(
-        domainUrl: String,
-        inviteCode: String,
-        type: Int
-    ) {
+    private fun shareCallBack(domainUrl: String, inviteCode: String, type: Int) {
         runBlocking {
-            val response = withContext(Dispatchers.IO) {
-                val okHttpClient = OkHttpClient()
-                okHttpClient.followRedirects
+            val response = withContext<Int>(Dispatchers.IO) {
                 val url =
                     "${domainUrl}/user/userTask/dailyFaceAndWhats.do?inviteCode=${inviteCode}&type=${type}"
-                val request = Request.Builder().url(url).get().build()
-                okHttpClient.newCall(request).execute()
+                try {
+                    val conn = URL(url).openConnection()
+                    conn.connectTimeout = 5000
+                    conn.connect()
+                    (conn as HttpURLConnection).responseCode
+                } catch (e: Exception) {
+                    e.stackTrace
+                    500
+                }
             }
-            if (response.code == 200) {
+            if (response in 200..299) {
+                Log.e(TAG, "share success")
                 webView.reload()
             }
         }

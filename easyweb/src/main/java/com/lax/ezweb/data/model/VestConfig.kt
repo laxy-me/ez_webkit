@@ -19,9 +19,9 @@ class VestConfig(
     var vestCode: String,
     var vestName: String,
     //业务链接
-    var h5Url: String,
+    var h5Url: String? = "",
     //马甲链接
-    var vestUrl: String,
+    var vestUrl: String? = "",
     var backgroundCol: String,
     var fieldCol: String,
     var status: Int,

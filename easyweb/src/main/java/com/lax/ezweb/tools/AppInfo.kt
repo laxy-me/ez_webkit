@@ -19,7 +19,7 @@ object AppInfo {
 
     interface Meta {
         companion object {
-            const val UMENG_CHANNEL = "UMENG_CHANNEL"
+            const val CHANNEL = "CHANNEL"
         }
     }
 

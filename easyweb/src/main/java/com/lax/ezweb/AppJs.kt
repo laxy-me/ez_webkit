@@ -47,8 +47,8 @@ class AppJs(private val mContext: Context) {
      */
     @JavascriptInterface
     fun takeChannel(): String {
-        Log.v(TAG, "takeChannel:${AppInfo.getMetaData(mContext, "UMENG_CHANNEL")}")
-        return AppInfo.getMetaData(mContext, "UMENG_CHANNEL")
+        Log.v(TAG, "takeChannel:${AppInfo.getMetaData(mContext, AppInfo.Meta.CHANNEL)}")
+        return AppInfo.getMetaData(mContext, AppInfo.Meta.CHANNEL)
     }
 
     /**
@@ -70,7 +70,7 @@ class AppJs(private val mContext: Context) {
     @JavascriptInterface
     fun getGaId(): String? {
         Log.v(TAG, "getGaId:${Preference.get().Gaid}")
-        return Preference.get().Gaid;
+        return Preference.get().Gaid
     }
 
     /**
@@ -155,7 +155,7 @@ class AppJs(private val mContext: Context) {
         if (mContext is WebActivity) {
             val uri = Uri.parse(url)
             val intent = Intent()
-            intent.action = "android.intent.action.VIEW"
+            intent.action = Intent.ACTION_VIEW
             intent.data = uri
             if (intent.resolveActivity(mContext.packageManager) != null) {
                 mContext.startActivity(intent)
@@ -170,10 +170,10 @@ class AppJs(private val mContext: Context) {
         if (mContext is WebActivity) {
             when (type) {
                 "facebook" -> {
-                    mContext.shareToFacebook(shareData);
+                    mContext.shareToFacebook(shareData)
                 }
                 "whatsapp" -> {
-                    mContext.shareToWhatsApp(shareData);
+                    mContext.shareToWhatsApp(shareData)
                 }
                 else -> {
                 }
@@ -250,11 +250,11 @@ class AppJs(private val mContext: Context) {
                         .putExtra(WebActivity.EX_HAS_TITLE_BAR, hasTitleBar).execute()
                 }
                 url.contains("app.adjust.com") -> {
-                    Log.e("wtf", url)
+                    Log.e(TAG, url)
                     val replaceUrl = url
                         .replace("{network_androidId_macro}", AppInfo.getAndroidId(mContext))
                         .replace("{network_gaid_macro}", Preference.get().Gaid)
-                    Log.e("wtf", replaceUrl)
+                    Log.e(TAG, replaceUrl)
                     launcher.putExtra(WebActivity.EX_URL, replaceUrl)
                         .putExtra(WebActivity.EX_HAS_TITLE_BAR, hasTitleBar).execute()
                 }

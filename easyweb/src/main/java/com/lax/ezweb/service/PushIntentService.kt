@@ -12,6 +12,7 @@ import android.graphics.Color
 import android.os.Build
 import android.text.TextUtils
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -91,6 +92,7 @@ open class PushIntentService : GTIntentService() {
         val notificationId = System.currentTimeMillis().toInt()
         if (notificationManager != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                //android 8.0 消息通知渠道
                 val notificationChannel =
                     createNotificationChannel(channelId, notificationManager)
             }
@@ -98,7 +100,7 @@ open class PushIntentService : GTIntentService() {
         }
     }
 
-    @SuppressLint("InlinedApi")
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel(
         channelId: String,
         notificationManager: NotificationManager
@@ -173,31 +175,18 @@ open class PushIntentService : GTIntentService() {
         Log.d(TAG, "onReceiveServicePid -> $pid")
     }
 
-    override fun onReceiveClientId(
-        context: Context,
-        clientid: String
-    ) {
-        Log.e(
-            TAG,
-            "onReceiveClientId -> clientid = $clientid"
-        )
+    override fun onReceiveClientId(context: Context, clientid: String) {
+        Log.e(TAG, "onReceiveClientId -> clientid = $clientid")
         Preference.get().pushId = clientid
     }
 
     override fun onReceiveOnlineState(context: Context, online: Boolean) {
-        Log.d(
-            TAG,
-            "onReceiveOnlineState -> " + if (online) "online" else "offline"
-        )
+        Log.d(TAG, "onReceiveOnlineState -> " + if (online) "online" else "offline")
     }
 
     override fun onReceiveCommandResult(context: Context, cmdMessage: GTCmdMessage) {
-        Log.d(
-            TAG,
-            "onReceiveCommandResult -> $cmdMessage"
-        )
-        val action = cmdMessage.action
-        when (action) {
+        Log.d(TAG, "onReceiveCommandResult -> $cmdMessage")
+        when (cmdMessage.action) {
             PushConsts.SET_TAG_RESULT -> {
                 setTagResult(cmdMessage as SetTagCmdMessage)
             }
