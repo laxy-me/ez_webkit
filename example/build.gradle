@@ -36,7 +36,17 @@ android {
     }
 
     flavorDimensions("app")
+    signingConfigs {
+        release {
+            Properties properties = new Properties()
+            properties.load(rootProject.file('local.properties').newDataInputStream())
 
+            storeFile file(properties.get('keystore_storeFile'))
+            storePassword properties.get('keystore_storePassword')
+            keyAlias properties.get('keystore_keyAlias')
+            keyPassword properties.get('keystore_keyPassword')
+        }
+    }
     buildTypes {
         debug {
             minifyEnabled false
@@ -49,6 +59,7 @@ android {
             }
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
@@ -80,7 +91,7 @@ dependencies {
 
     implementation project(path: ':easyweb')
 
-    implementation 'com.google.firebase:firebase-core:17.0.0'
-    implementation 'com.google.firebase:firebase-messaging:20.0.0'
+//    implementation 'com.google.firebase:firebase-core:17.0.0'
+//    implementation 'com.google.firebase:firebase-messaging:20.0.0'
 //    implementation 'com.lax.ezweb:easyweb:0.0.2'
 }

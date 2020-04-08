@@ -22,11 +22,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.webkit.*
+import android.webkit.CookieManager
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.facebook.CallbackManager
@@ -54,10 +54,7 @@ import com.luck.picture.lib.config.PictureMimeType
 import kotlinx.android.synthetic.main.web.*
 import kotlinx.coroutines.*
 import java.io.*
-import java.net.HttpURLConnection
-import java.net.MalformedURLException
-import java.net.URL
-import java.net.URLDecoder
+import java.net.*
 
 @Keep
 open class WebActivity : BaseActivity() {
@@ -579,7 +576,6 @@ open class WebActivity : BaseActivity() {
 
     private lateinit var mCallbackMethodName: String
     private var mIsBase64: Boolean = true
-    private var mArg1: String? = null
 
     fun takePortraitPicture(callbackMethod: String) {
         requestPermission(
@@ -598,7 +594,6 @@ open class WebActivity : BaseActivity() {
             override fun takePhoto(dialog: SmartDialog) {
                 mIsBase64 = true
                 mCallbackMethodName = callbackMethod
-                mArg1 = null
                 PictureSelector.create(this@WebActivity)
                     .openCamera(PictureMimeType.ofImage())
                     .forResult(PictureConfig.CHOOSE_REQUEST)
@@ -608,7 +603,6 @@ open class WebActivity : BaseActivity() {
             override fun takeFromGallery(dialog: SmartDialog) {
                 mIsBase64 = true
                 mCallbackMethodName = callbackMethod
-                mArg1 = null
                 PictureSelector.create(this@WebActivity)
                     .openGallery(PictureMimeType.ofImage())
                     .maxSelectNum(1)
@@ -629,12 +623,7 @@ open class WebActivity : BaseActivity() {
         if (!TextUtils.isEmpty(mCallbackMethodName)) {
             val builder = StringBuilder(mCallbackMethodName).append("(")
             if (mIsBase64) {
-                if (TextUtils.isEmpty(mArg1)) {
-                    builder.append("'").append("data:image/png;base64,$str").append("'")
-                } else {
-                    builder.append("'").append(mArg1).append("', ")
-                        .append("'").append("data:image/png;base64,$str").append("'")
-                }
+                builder.append("'").append("data:image/png;base64,$str").append("'")
             } else {
                 builder.append("'").append(str).append("'")
             }
@@ -684,20 +673,24 @@ open class WebActivity : BaseActivity() {
                                 val conn = URL(url).openConnection()
                                 conn.connectTimeout = 5000
                                 conn.connect()
-                                val inputStream = conn.getInputStream()
-                                val bufferSize = 1024
-                                val buffer = CharArray(bufferSize)
-                                val out = java.lang.StringBuilder()
-                                val `in`: Reader =
-                                    InputStreamReader(inputStream, "UTF-8")
-                                while (true) {
-                                    val rsz = `in`.read(buffer, 0, buffer.size)
-                                    if (rsz < 0) break
-                                    out.append(buffer, 0, rsz)
+                                if ((conn as HttpURLConnection).responseCode in 200..299) {
+                                    val inputStream = conn.getInputStream()
+                                    val bufferSize = 1024
+                                    val buffer = CharArray(bufferSize)
+                                    val out = java.lang.StringBuilder()
+                                    val `in`: Reader =
+                                        InputStreamReader(inputStream, "UTF-8")
+                                    while (true) {
+                                        val rsz = `in`.read(buffer, 0, buffer.size)
+                                        if (rsz < 0) break
+                                        out.append(buffer, 0, rsz)
+                                    }
+                                    out.toString()
+                                } else {
+                                    ""
                                 }
-                                out.toString()
                             } catch (e: Exception) {
-                                e.stackTrace
+                                e.printStackTrace()
                                 ""
                             }
                         }
@@ -813,6 +806,7 @@ open class WebActivity : BaseActivity() {
             try {
                 fos!!.close()
             } catch (ignored: Exception) {
+                ignored.printStackTrace()
             }
         }
         return file
@@ -886,6 +880,7 @@ open class WebActivity : BaseActivity() {
                 }
 
                 override fun onError(error: FacebookException?) {
+                    error?.printStackTrace()
                     Log.e("wtf", error.toString())
                 }
             })
@@ -917,6 +912,7 @@ open class WebActivity : BaseActivity() {
                 )
                 startActivityForResult(vIt, SHARE_RESULT_CODE)
             } catch (ex: Exception) {
+                ex.printStackTrace()
             }
         } else {
             ToastUtil.showToast(R.string.app_not_installed)
@@ -943,11 +939,15 @@ open class WebActivity : BaseActivity() {
 
             }
         }
+        if (requestCode == GOOGLE_LOGIN) {
+            val signedInAccountFromIntent = GoogleSignIn.getSignedInAccountFromIntent(data)
+            handleResult(signedInAccountFromIntent)
+        }
         if (requestCode == SHARE_RESULT_CODE) {
             shareCallBack(shareData?.domainUrl ?: "", shareData?.inviteCode ?: "", 2)
         }
         if (requestCode == PAYTM_REQUEST_CODE && data != null) {
-            Log.i("PayTm", "PayTmCallback:" + data.getStringExtra("response"))
+            Log.i(TAG, "PayTmCallback:" + data.getStringExtra("response"))
         }
     }
 
@@ -968,7 +968,7 @@ open class WebActivity : BaseActivity() {
                     conn.connect()
                     (conn as HttpURLConnection).responseCode
                 } catch (e: Exception) {
-                    e.stackTrace
+                    e.printStackTrace()
                     500
                 }
             }
@@ -979,7 +979,7 @@ open class WebActivity : BaseActivity() {
         }
     }
 
-    public fun openPayTm(data: String) {
+    fun openPayTm(data: String) {
         val payInfo: PayTmInfo = Gson().fromJson<PayTmInfo>(data, PayTmInfo::class.java)
         try {
             val bundle = Bundle()

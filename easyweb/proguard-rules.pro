@@ -20,7 +20,6 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -keep class com.lax.ezweb.** { *; }
--keep object com.lax.ezweb.** { *; }
 -keep class **.$Companion{
     *;
 }

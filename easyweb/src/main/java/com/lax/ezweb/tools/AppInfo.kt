@@ -2,7 +2,9 @@ package com.lax.ezweb.tools
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
@@ -127,10 +129,10 @@ object AppInfo {
             }
             var mac: String? = null
             var fstream: FileReader? = null
-            try {
-                fstream = FileReader("/sys/class/net/wlan0/address")
+            fstream = try {
+                FileReader("/sys/class/net/wlan0/address")
             } catch (e: FileNotFoundException) {
-                fstream = FileReader("/sys/class/net/eth0/address")
+                FileReader("/sys/class/net/eth0/address")
             }
 
             var `in`: BufferedReader? = null
@@ -225,5 +227,23 @@ object AppInfo {
             }
         }
         return false
+    }
+
+    /**
+     * 跳转到应用市场app详情界面
+     * @param appPkg App的包名
+     * @param marketPkg 应用市场包名
+     */
+    fun launchAppDetail(context: Context, appPkg: String, marketPkg: String?) {
+        try {
+            if (TextUtils.isEmpty(appPkg)) return
+            val uri = Uri.parse("market://details?id=$appPkg")
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            if (!TextUtils.isEmpty(marketPkg)) intent.setPackage(marketPkg)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

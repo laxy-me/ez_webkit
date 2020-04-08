@@ -17,6 +17,7 @@ import com.lax.ezweb.data.model.ShareData
 import com.lax.ezweb.tools.AppInfo
 import com.lax.ezweb.tools.Utils
 
+
 @Keep
 class AppJs(private val mContext: Context) {
 
@@ -181,9 +182,13 @@ class AppJs(private val mContext: Context) {
         }
     }
 
+    @JavascriptInterface
+    fun launchAppDetail() {
+        AppInfo.launchAppDetail(mContext, mContext.packageName, null)
+    }
+
     /**
      * 关闭web页面
-
      */
     @JavascriptInterface
     fun finishWeb() {
