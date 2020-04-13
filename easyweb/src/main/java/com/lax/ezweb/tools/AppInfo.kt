@@ -183,36 +183,29 @@ object AppInfo {
 
     /**
      * 获取设备id
-     * 暂用方法
      */
     fun getDeviceHardwareId(context: Context): String {
         try {
-            val result = StringBuilder()
-            val deviceId = getImei(context)
-            val serial = getSerial(context)
-            val mac = getMac(context)
-            val androidId = getAndroidId(context)
-            val uuid = getUUID(context)
-            if (!TextUtils.isEmpty(deviceId)) {
-                result.append(deviceId)
+            var typePrefix = "DEVICE_ID_"
+            var deviceId = getImei(context)
+            if (TextUtils.isEmpty(deviceId)) {
+                typePrefix = "SERIAL_"
+                deviceId = getSerial(context)
             }
-            if (!TextUtils.isEmpty(serial)) {
-                result.append(serial)
+            if (TextUtils.isEmpty(deviceId)) {
+                typePrefix = "MAC_"
+                deviceId = getMac(context)
             }
-            if (!TextUtils.isEmpty(mac)) {
-                result.append(mac)
+            if (TextUtils.isEmpty(deviceId)) {
+                typePrefix = "ANDROID_ID_"
+                deviceId = getAndroidId(context)
             }
-            if (!TextUtils.isEmpty(androidId)) {
-                result.append(androidId)
+            if (TextUtils.isEmpty(deviceId)) {
+                typePrefix = "UUID_"
+                deviceId = getUUID(context)
             }
-            return if (result.isNotEmpty()) {
-                Log.d("AppInfo", "getDeviceHardwareId: $result")
-                SecurityUtil.md5Encrypt(result.toString())
-            } else {
-                result.append(uuid)
-                Log.d("AppInfo", "getDeviceHardwareId: $result")
-                SecurityUtil.md5Encrypt(result.toString())
-            }
+            Log.d("AppInfo", "getDeviceHardwareId: " + (typePrefix + deviceId))
+            return SecurityUtil.md5Encrypt(typePrefix + deviceId)
         } catch (e: Exception) {
             e.printStackTrace()
             return ""
@@ -221,6 +214,9 @@ object AppInfo {
 
     fun getSerial(context: Context): String {
         var serial = ""
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return serial
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (checkPermission(context, Manifest.permission.READ_PHONE_STATE)) {
                 try {
