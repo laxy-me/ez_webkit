@@ -3,19 +3,14 @@ This repository is create for songbai
 ## Getting Started
 
 ```
-dependencies {
-    classpath 'com.hujiang.aspectjx:gradle-android-plugin-aspectjx:2.0.4' //aop组件
-}
-
 allprojects {
 	repositories {
-	    maven {
-	        url  "https://lax.bintray.com/easyweb" 
-	    }
-	}
+	    maven { url 'https://jitpack.io' }
+        maven { url 'https://dl.bintray.com/umsdk/release' }
+        maven { url "https://lax.bintray.com/easyweb" }	}
 }
  
-implementation 'bintray.com.lax.easyweb:easyweb:0.0.1'
+implementation 'bintray.com.lax.easyweb:easyweb:0.0.4'
 ```
 
 ## In app gradle
@@ -24,10 +19,12 @@ manifestPlaceholders = [
 	GETUI_APP_ID      : "",
 	GETUI_APP_KEY     : "",
 	GETUI_APP_SECRET  : "",
+	UMENG_APP_KEY     : "",
+    UMENG_CHANNEL     : "origin",
 	ADJUST_CODE       : "",
 	ADJUST_TRACK_TOKEN: "",
 	FACEBOOK_APP_ID   : "",
-	UMENG_CHANNEL     : "",
+	CHANNEL     : "",
 ]
 ```
 
@@ -35,7 +32,7 @@ manifestPlaceholders = [
 ```
 <meta-data
     android:name="io.branch.sdk.BranchKey"
-    android:value="key_live_bdSUVL0lvacQrxBPu7p1ycjlyyaTS64Y" />
+    android:value="{Branch Key}" />
 <meta-data
     android:name="io.branch.sdk.BranchKey.test"
     android:value="" />
@@ -100,7 +97,7 @@ android:theme="@style/AppTheme.Splash">
 	
 	<!-- Branch URI Scheme -->
 	<intent-filter>
-	    <data android:scheme="luckybooth" />
+	    <data android:scheme="{your scheme}" />
 	    <action android:name="android.intent.action.VIEW" />
 	
 	    <category android:name="android.intent.category.DEFAULT" />
@@ -115,11 +112,11 @@ android:theme="@style/AppTheme.Splash">
 	    <category android:name="android.intent.category.BROWSABLE" />
 	
 	    <data
-	        android:host="sg506.app.link"
+	        android:host="{Default Link Domain}"
 	        android:scheme="https" />
 	    <!-- example-alternate domain is required for App Links when the Journeys/Web SDK and Deepviews are used inside your website.  -->
 	    <data
-	        android:host="sg506-alternate.app.link"
+	        android:host="{Alternate Link Domaininfo_outline}"
 	        android:scheme="https" />
 	</intent-filter>
 </activity>
