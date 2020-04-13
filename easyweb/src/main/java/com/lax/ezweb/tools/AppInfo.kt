@@ -1,6 +1,8 @@
 package com.lax.ezweb.tools
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,6 +17,9 @@ import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.FileReader
 import java.io.IOException
+import java.lang.StringBuilder
+import java.util.*
+
 
 @Keep
 object AppInfo {
@@ -176,46 +181,133 @@ object AppInfo {
         return null
     }
 
+    /**
+     * 获取设备id
+     * 暂用方法
+     */
     fun getDeviceHardwareId(context: Context): String {
         try {
-            val tm = context
-                .getSystemService(Context.TELEPHONY_SERVICE) as android.telephony.TelephonyManager
-            var typePrefix = "DEVICE_ID_"
-            var deviceId = tm.deviceId
-
-            if (TextUtils.isEmpty(deviceId)) {
-                deviceId = Build.SERIAL
-                typePrefix = "SERIAL_"
+            val result = StringBuilder()
+            val deviceId = getImei(context)
+            val serial = getSerial(context)
+            val mac = getMac(context)
+            val androidId = getAndroidId(context)
+            val uuid = getUUID(context)
+            if (!TextUtils.isEmpty(deviceId)) {
+                result.append(deviceId)
             }
-            if (TextUtils.isEmpty(deviceId)) {
-                val wifi =
-                    context.getSystemService(Context.WIFI_SERVICE) as android.net.wifi.WifiManager
-                val mac = wifi.connectionInfo.macAddress
-                deviceId = mac
-                typePrefix = "MAC_"
+            if (!TextUtils.isEmpty(serial)) {
+                result.append(serial)
             }
-            if (TextUtils.isEmpty(deviceId)) {
-                deviceId =
-                    Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
-                typePrefix = "ANDROID_ID_"
+            if (!TextUtils.isEmpty(mac)) {
+                result.append(mac)
             }
-            Log.d("AppInfo", "getDeviceHardwareId: " + (typePrefix + deviceId))
-            return SecurityUtil.md5Encrypt(typePrefix + deviceId)
+            if (!TextUtils.isEmpty(androidId)) {
+                result.append(androidId)
+            }
+            return if (result.isNotEmpty()) {
+                Log.d("AppInfo", "getDeviceHardwareId: $result")
+                SecurityUtil.md5Encrypt(result.toString())
+            } else {
+                result.append(uuid)
+                Log.d("AppInfo", "getDeviceHardwareId: $result")
+                SecurityUtil.md5Encrypt(result.toString())
+            }
         } catch (e: Exception) {
             e.printStackTrace()
+            return ""
         }
-        return ""
     }
 
+    fun getSerial(context: Context): String {
+        var serial = ""
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (checkPermission(context, Manifest.permission.READ_PHONE_STATE)) {
+                try {
+                    serial = Build.getSerial()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        } else {
+            serial = Build.SERIAL
+        }
+        if (serial.isBlank() || Build.UNKNOWN == serial) {
+            serial = ""
+        }
+        return serial
+    }
+
+    /**
+     * Returns the unique device ID, for example, the IMEI for GSM and the MEID or ESN for CDMA phones.
+     * Return null if device ID is not available.
+     * imei会变，主要是因为双卡和全网通的问题
+     */
+    @TargetApi(Build.VERSION_CODES.O)
+    fun getImei(context: Context): String {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            return ""
+        if (!checkPermission(context, Manifest.permission.READ_PHONE_STATE))
+            return ""
+        return try {
+            val tm =
+                context.getSystemService(Context.TELEPHONY_SERVICE) as android.telephony.TelephonyManager
+            tm.deviceId
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ""
+        }
+    }
+
+    /**
+     * 在 Android 6.0（API 级别 23）到 Android 9（API 级别 28）中，无法通过第三方 API 使用 Wi-Fi 和蓝牙等本地设备 Mac 地址。
+     * WifiInfo.getMacAddress() 方法和 BluetoothAdapter.getDefaultAdapter().getAddress() 方法
+     * 都返回 02:00:00:00:00:00。
+     */
+    @TargetApi(Build.VERSION_CODES.M)
+    fun getMac(context: Context): String {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return ""
+        }
+        var macAddress = ""
+        val wifiManager =
+            context.applicationContext.getSystemService(Context.WIFI_SERVICE) as android.net.wifi.WifiManager
+        val info = wifiManager.connectionInfo
+        if (!wifiManager.isWifiEnabled && checkPermission(
+                context,
+                Manifest.permission.CHANGE_WIFI_STATE
+            )
+        ) {
+            //必须先打开，才能获取到MAC地址
+            wifiManager.isWifiEnabled = true
+            wifiManager.isWifiEnabled = false
+        }
+        if (null != info) {
+            try {
+                macAddress = info.macAddress
+            } catch (e: Exception) {
+            }
+        }
+        return macAddress
+    }
+
+    /**
+     * Returns the Android hardware device ID that is unique between the device + user and app
+     * signing. This key will change if the app is uninstalled or its data is cleared. Device factory
+     * reset will also result in a value change.
+     *
+     * @return The android ID
+     */
+    @SuppressLint("HardwareIds")
     fun getAndroidId(context: Context): String {
         return Settings.System.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-    fun getImei(context: Context): String {
-        val tm =
-            context.getSystemService(Context.TELEPHONY_SERVICE) as android.telephony.TelephonyManager
-        val imei = tm.deviceId
-        return imei
+    /**
+     *  UUID.randomUUID()
+     */
+    fun getUUID(context: Context): String {
+        return Installation.id(context)
     }
 
     fun isAPPInstalled(context: Context, packageName: String): Boolean {
