@@ -400,7 +400,11 @@ open class WebActivity : BaseActivity() {
             arrayOf(
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE
-            ), intArrayOf(), DownloadTask().execute(url)
+            ), intArrayOf(), object : AfterPermissionGranted {
+                override fun permissionGranted() {
+                    DownloadTask().execute(url)
+                }
+            }
         )
     }
 
@@ -583,7 +587,11 @@ open class WebActivity : BaseActivity() {
                 Manifest.permission.CAMERA,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE
-            ), intArrayOf(), selectImage(callbackMethod)
+            ), intArrayOf(), object : AfterPermissionGranted {
+                override fun permissionGranted() {
+                    selectImage(callbackMethod)
+                }
+            }
         )
     }
 

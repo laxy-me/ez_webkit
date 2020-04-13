@@ -67,6 +67,7 @@ android {
     productFlavors.all { flavor ->
         if (flavor.name != 'dev' && flavor.name != 'alpha') {
             flavor.manifestPlaceholders = [UMENG_CHANNEL: name]
+            flavor.manifestPlaceholders = [CHANNEL: name]
         }
     }
 

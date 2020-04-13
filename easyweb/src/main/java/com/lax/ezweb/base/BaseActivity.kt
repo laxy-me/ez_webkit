@@ -54,13 +54,13 @@ open class BaseActivity : TranslucentActivity() {
     protected open fun requestPermission(
         permissions: Array<String>,
         ration: IntArray,
-        callback: Any
+        callback: AfterPermissionGranted
     ) {
         GPermission.with(this).permission(
             permissions
         ).callback(object : PermissionCallback {
             override fun onPermissionGranted() {
-                callback
+                callback.permissionGranted()
             }
 
             override fun shouldShowRational(permissions: Array<String>) {
@@ -71,6 +71,10 @@ open class BaseActivity : TranslucentActivity() {
                 showRationaleDialog(permissions, intArrayOf())
             }
         }).request()
+    }
+
+    interface AfterPermissionGranted {
+        fun permissionGranted()
     }
 
     protected open fun showRationaleDialog(permissions: Array<String>, ration: IntArray) {

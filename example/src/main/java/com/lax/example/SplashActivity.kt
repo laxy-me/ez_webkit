@@ -33,6 +33,11 @@ class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+//        Launcher.with(this, WebActivity::class.java)
+////            .putExtra(WebActivity.EX_TITLE, "")
+////            .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
+////            .putExtra(WebActivity.EX_URL, "http://dc.kjxmsbfwpt.com/index")
+////            .execute()
         init()
     }
 
@@ -83,13 +88,20 @@ class SplashActivity : BaseActivity() {
 
     private fun getAppDetailSettingIntent(): Intent {
         val localIntent = Intent()
-        localIntent.action = "android.settings.APPLICATION_DETAILS_SETTINGS"
+        localIntent.action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
         localIntent.data = Uri.fromParts("package", packageName, null)
         return localIntent
     }
 
     private fun init() {
-        requestPermission(arrayOf(Manifest.permission.READ_PHONE_STATE), intArrayOf(), request())
+        requestPermission(
+            arrayOf(Manifest.permission.READ_PHONE_STATE),
+            intArrayOf(),
+            object : AfterPermissionGranted {
+                override fun permissionGranted() {
+                    request()
+                }
+            })
     }
 
     private fun request() {
