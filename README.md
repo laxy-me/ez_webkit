@@ -10,7 +10,7 @@ allprojects {
         maven { url "https://lax.bintray.com/easyweb" }	}
 }
  
-implementation 'bintray.com.lax.easyweb:easyweb:0.0.4'
+implementation 'com.lax.ezweb:easyweb:0.0.4'
 ```
 
 ## In app gradle
