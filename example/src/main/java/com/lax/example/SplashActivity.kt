@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.lax.ezweb.Launcher
 import com.lax.ezweb.WebActivity
@@ -17,6 +18,7 @@ import com.lax.ezweb.data.model.VestModel
 import com.lax.ezweb.tools.AppInfo
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -133,12 +135,16 @@ class SplashActivity : BaseActivity() {
         val launcher = Launcher.with(this, WebActivity::class.java)
             .putExtra(WebActivity.EX_TITLE, "")
             .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
-            .putExtra(WebActivity.EX_URL, "http://47.104.65.60:443/topup")
+            .putExtra(WebActivity.EX_URL, "https://app.goex24.com?sign=BitsMaster")
             .putExtra(WebActivity.EX_TITLE_BG, data?.backgroundCol ?: "")
             .putExtra(WebActivity.EX_TITLE_FIELD_COLOR, data?.fieldCol ?: "")
         if (data?.advOn == 1) {
             launcher
-                .putExtra(WebActivity.EX_AD_URL, data.advImg ?: "")
+                .putExtra(
+                    WebActivity.EX_AD_URL,
+                    data.advImg
+                        ?: "https://dss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3386247472,87720242&fm=26&gp=0.jpg"
+                )
                 .putExtra(WebActivity.EX_AD_CONTENT, data.advUrl ?: "")
         }
         launcher.execute()

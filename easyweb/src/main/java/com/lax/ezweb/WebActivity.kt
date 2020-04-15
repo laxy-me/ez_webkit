@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.*
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -142,11 +141,13 @@ open class WebActivity : BaseActivity() {
                 .thumbnail(0.3f)
                 .into(ad)
             ad.setOnClickListener {
-                Launcher.with(this, WebActivity::class.java)
-                    .putExtra(EX_TITLE, "AD")
-                    .putExtra(EX_HAS_TITLE_BAR, true)
-                    .putExtra(EX_URL, adContent)
-                    .execute()
+                if (!adContent.isBlank()) {
+                    Launcher.with(this, WebActivity::class.java)
+                        .putExtra(EX_TITLE, "AD")
+                        .putExtra(EX_HAS_TITLE_BAR, true)
+                        .putExtra(EX_URL, adContent)
+                        .execute()
+                }
             }
             skipAd.setOnClickListener {
                 closeAd()
@@ -564,7 +565,7 @@ open class WebActivity : BaseActivity() {
             //截取其中的link 进行跳转
             val intent = Intent()
             intent.action = Intent.ACTION_VIEW
-            val decode = URLDecoder.decode(url, null)
+            val decode = URLDecoder.decode(url)
             val splitArray = decode.split("&")
             if (splitArray.count() > 1 && splitArray[1].contains("url")) {
                 val uri = splitArray[1].replace("url=", "")

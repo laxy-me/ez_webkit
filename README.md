@@ -10,7 +10,7 @@ allprojects {
         maven { url "https://lax.bintray.com/easyweb" }	}
 }
  
-implementation 'com.lax.ezweb:easyweb:0.0.4'
+implementation 'com.lax.ezweb:easyweb:0.0.6'
 ```
 
 ## In app gradle
@@ -40,6 +40,12 @@ manifestPlaceholders = [
     android:name="io.branch.sdk.TestMode"
     android:value="false" />
 <meta-data
+	android:name="UMENG_APPKEY"
+	android:value="${UMENG_APP_KEY}" />
+<meta-data
+    android:name="UMENG_CHANNEL"
+    android:value="${CHANNEL}" />
+<meta-data
     android:name="PUSH_APPID"
     android:value="${GETUI_APP_ID}" />
 <meta-data
@@ -47,8 +53,13 @@ manifestPlaceholders = [
     android:value="${GETUI_APP_KEY}" />
 <meta-data
     android:name="PUSH_APPSECRET"
-    android:value="${GETUI_APP_SECRET}" />
-
+android:value="${GETUI_APP_SECRET}" />
+<meta-data
+    android:name="ADJUST_APPTOKEN"
+    android:value="${ADJUST_CODE}" />
+<meta-data
+    android:name="ADJUST_TRACK_TOKEN"
+    android:value="${ADJUST_TRACK_TOKEN}" />
 <meta-data
     android:name="com.facebook.sdk.ApplicationId"
     android:value="${FACEBOOK_APP_ID}" />
@@ -82,7 +93,7 @@ manifestPlaceholders = [
 
 ```
 ### In launcher 
-###example
+### example
 
 ```
 <activity
@@ -144,4 +155,16 @@ object BranchListener : Branch.BranchReferralInitListener {
         }
     }
 }
+```
+
+## Channels
+```
+google  
+samsung  
+Tencent
+oppo  
+vivo  
+xiaomi  
+huawei  
+others  
 ```

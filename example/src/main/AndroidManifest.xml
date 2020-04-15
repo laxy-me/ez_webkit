@@ -50,6 +50,13 @@
             android:value="${GETUI_APP_SECRET}" />
 
         <meta-data
+            android:name="ADJUST_APPTOKEN"
+            android:value="${ADJUST_CODE}" />
+        <meta-data
+            android:name="ADJUST_TRACK_TOKEN"
+            android:value="${ADJUST_TRACK_TOKEN}" />
+
+        <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="${FACEBOOK_APP_ID}" />
 
