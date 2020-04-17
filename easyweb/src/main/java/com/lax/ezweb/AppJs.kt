@@ -16,10 +16,11 @@ import com.google.gson.Gson
 import com.lax.ezweb.data.model.ShareData
 import com.lax.ezweb.tools.AppInfo
 import com.lax.ezweb.tools.Utils
+import com.umeng.analytics.MobclickAgent
 
 
 @Keep
-class AppJs(private val mContext: Context) {
+open class AppJs(private val mContext: Context) {
 
     /**
      * 获取设备号
@@ -32,6 +33,24 @@ class AppJs(private val mContext: Context) {
         }
         Log.v(TAG, "getDeviceId:${deviceHardwareId}")
         return deviceHardwareId
+    }
+
+    /**
+     * 获取个推设备id
+     */
+    @JavascriptInterface
+    fun getAppCode(): String {
+        Log.v(TAG, "getAppCode:${Preference.get().pushId}")
+        return ""
+    }
+
+    /**
+     * 获取个推设备id
+     */
+    @JavascriptInterface
+    fun getGetuiDeviceId(): String {
+        Log.v(TAG, "getGetuiDeviceId:${Preference.get().pushId}")
+        return Preference.get().pushId
     }
 
     /**
@@ -229,6 +248,57 @@ class AppJs(private val mContext: Context) {
     @JavascriptInterface
     fun newPageWithTitleBar(url: String, title: String?) {
         newPageWithTitleBar(url, title, true)
+    }
+
+
+    /**
+     * 渠道推广首页，用于统计访客
+     */
+    @JavascriptInterface
+    open fun countGuest() {
+        if (mContext is WebActivity) {
+            MobclickAgent.onEvent(mContext, "index")
+        }
+    }
+
+    /**
+     * 注册人数
+     */
+    @JavascriptInterface
+    open fun countRegister() {
+        if (mContext is WebActivity) {
+            MobclickAgent.onEvent(mContext, "regist")
+        }
+    }
+
+    /**
+     * 点击首页产品列表
+     */
+    @JavascriptInterface
+    open fun clickIndexProd() {
+        if (mContext is WebActivity) {
+            MobclickAgent.onEvent(mContext, "clickIndexProd")
+        }
+    }
+
+    /**
+     * 点击产品详情中_申请
+     */
+    @JavascriptInterface
+    open fun clickProdDetail() {
+        if (mContext is WebActivity) {
+            MobclickAgent.onEvent(mContext, "clickProdDetail")
+        }
+    }
+
+    /**
+     * 获取app版本号
+     */
+    @JavascriptInterface
+    open fun getVersionName(): String? {
+        return if (mContext is WebActivity) {
+            AppInfo.getVersionName(mContext)
+        } else ""
     }
 
     /**

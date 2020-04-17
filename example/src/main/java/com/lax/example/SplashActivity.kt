@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.lax.ezweb.Launcher
 import com.lax.ezweb.WebActivity
@@ -18,7 +17,6 @@ import com.lax.ezweb.data.model.VestModel
 import com.lax.ezweb.tools.AppInfo
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext

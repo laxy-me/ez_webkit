@@ -1,13 +1,10 @@
 package com.lax.ezweb.base
 
-import android.Manifest
 import android.app.AlertDialog
-import android.content.ContextWrapper
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
@@ -15,14 +12,11 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import androidx.annotation.Keep
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.lax.ezweb.R
 import com.lax.ezweb.permission.GPermission
 import com.lax.ezweb.permission.PermissionCallback
 import com.lax.ezweb.tools.KeyBoardUtils
-import com.umeng.analytics.MobclickAgent
-import java.util.*
 
 /**
  *
@@ -68,7 +62,7 @@ open class BaseActivity : TranslucentActivity() {
             }
 
             override fun onPermissionReject(permissions: Array<String>) {
-                showRationaleDialog(permissions, intArrayOf())
+                showRejectDialog(permissions, intArrayOf())
             }
         }).request()
     }

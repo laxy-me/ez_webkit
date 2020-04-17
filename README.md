@@ -3,6 +3,10 @@ This repository is create for songbai
 ## Getting Started
 
 ```
+dependencies {
+    classpath 'com.google.gms:google-services:4.2.0'  // Google Services 
+}
+
 allprojects {
 	repositories {
 	    maven { url 'https://jitpack.io' }
@@ -10,22 +14,30 @@ allprojects {
         maven { url "https://lax.bintray.com/easyweb" }	}
 }
  
-implementation 'com.lax.ezweb:easyweb:0.0.6'
+implementation 'com.lax.ezweb:easyweb:0.0.7'
 ```
 
 ## In app gradle
 ```
 manifestPlaceholders = [
+	CHANNEL           : "",
 	GETUI_APP_ID      : "",
 	GETUI_APP_KEY     : "",
 	GETUI_APP_SECRET  : "",
 	UMENG_APP_KEY     : "",
-    UMENG_CHANNEL     : "origin",
-	ADJUST_CODE       : "",
+	ADJUST_APPTOKEN       : "",
 	ADJUST_TRACK_TOKEN: "",
 	FACEBOOK_APP_ID   : "",
-	CHANNEL     : "",
 ]
+```
+
+## In Strings
+```
+<string name="android_web_agent">ANDROID_AGENT_NATIVE/1.0&#8194;%1$s</string>
+
+can be:  
+ANDROID_AGENT_NATIVE/1.0
+ANDROID_AGENT_NATIVE/2.0
 ```
 
 ## In Manifest
@@ -40,10 +52,7 @@ manifestPlaceholders = [
     android:name="io.branch.sdk.TestMode"
     android:value="false" />
 <meta-data
-	android:name="UMENG_APPKEY"
-	android:value="${UMENG_APP_KEY}" />
-<meta-data
-    android:name="UMENG_CHANNEL"
+    android:name="CHANNEL"
     android:value="${CHANNEL}" />
 <meta-data
     android:name="PUSH_APPID"
@@ -53,10 +62,16 @@ manifestPlaceholders = [
     android:value="${GETUI_APP_KEY}" />
 <meta-data
     android:name="PUSH_APPSECRET"
-android:value="${GETUI_APP_SECRET}" />
+	android:value="${GETUI_APP_SECRET}" />
+<meta-data
+	android:name="UMENG_APPKEY"
+	android:value="${UMENG_APP_KEY}" />
+<meta-data
+    android:name="UMENG_CHANNEL"
+    android:value="${CHANNEL}" />
 <meta-data
     android:name="ADJUST_APPTOKEN"
-    android:value="${ADJUST_CODE}" />
+    android:value="${ADJUST_APPTOKEN}" />
 <meta-data
     android:name="ADJUST_TRACK_TOKEN"
     android:value="${ADJUST_TRACK_TOKEN}" />
@@ -92,7 +107,7 @@ android:value="${GETUI_APP_SECRET}" />
     android:exported="false" />
 
 ```
-### In launcher 
+### In launcher activity
 ### example
 
 ```
@@ -108,7 +123,7 @@ android:theme="@style/AppTheme.Splash">
 	
 	<!-- Branch URI Scheme -->
 	<intent-filter>
-	    <data android:scheme="{your scheme}" />
+	    <data android:scheme="${your scheme}" />
 	    <action android:name="android.intent.action.VIEW" />
 	
 	    <category android:name="android.intent.category.DEFAULT" />
@@ -123,11 +138,11 @@ android:theme="@style/AppTheme.Splash">
 	    <category android:name="android.intent.category.BROWSABLE" />
 	
 	    <data
-	        android:host="{Default Link Domain}"
+	        android:host="${Default Link Domain}"
 	        android:scheme="https" />
 	    <!-- example-alternate domain is required for App Links when the Journeys/Web SDK and Deepviews are used inside your website.  -->
 	    <data
-	        android:host="{Alternate Link Domaininfo_outline}"
+	        android:host="${Alternate Link Domaininfo_outline}"
 	        android:scheme="https" />
 	</intent-filter>
 </activity>

@@ -51,7 +51,7 @@
 
         <meta-data
             android:name="ADJUST_APPTOKEN"
-            android:value="${ADJUST_CODE}" />
+            android:value="${ADJUST_APPTOKEN}" />
         <meta-data
             android:name="ADJUST_TRACK_TOKEN"
             android:value="${ADJUST_TRACK_TOKEN}" />
