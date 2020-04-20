@@ -7,15 +7,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
-import com.lax.ezweb.tools.Utils
-
 
 object Network {
 
     val isNetworkAvailable: Boolean
         get() {
-            val connectivityManager = Utils.context
-                    .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val connectivityManager = EzWebInitProvider.autoContext!!
+                .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
             val networkInfo = connectivityManager.activeNetworkInfo
 
@@ -32,8 +30,8 @@ object Network {
         get() {
             var availableNetwork = NET_NONE
 
-            val connectivityManager = Utils.context
-                    .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val connectivityManager = EzWebInitProvider.autoContext!!
+                .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val networkInfo = connectivityManager.activeNetworkInfo ?: return availableNetwork
 
             if (networkInfo.type == ConnectivityManager.TYPE_WIFI) {
@@ -42,15 +40,17 @@ object Network {
                 val subType = networkInfo.subtype
 
                 if (subType == TelephonyManager.NETWORK_TYPE_CDMA
-                        || subType == TelephonyManager.NETWORK_TYPE_GPRS
-                        || subType == TelephonyManager.NETWORK_TYPE_EDGE) {
+                    || subType == TelephonyManager.NETWORK_TYPE_GPRS
+                    || subType == TelephonyManager.NETWORK_TYPE_EDGE
+                ) {
                     availableNetwork = NET_2G
 
                 } else if (subType == TelephonyManager.NETWORK_TYPE_UMTS
-                        || subType == TelephonyManager.NETWORK_TYPE_HSDPA
-                        || subType == TelephonyManager.NETWORK_TYPE_EVDO_A
-                        || subType == TelephonyManager.NETWORK_TYPE_EVDO_0
-                        || subType == TelephonyManager.NETWORK_TYPE_EVDO_B) {
+                    || subType == TelephonyManager.NETWORK_TYPE_HSDPA
+                    || subType == TelephonyManager.NETWORK_TYPE_EVDO_A
+                    || subType == TelephonyManager.NETWORK_TYPE_EVDO_0
+                    || subType == TelephonyManager.NETWORK_TYPE_EVDO_B
+                ) {
                     availableNetwork = NET_3G
                 } else if (subType == TelephonyManager.NETWORK_TYPE_LTE) {
                     availableNetwork = NET_4G

@@ -13,6 +13,7 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.lax.ezweb.EzWebInitProvider
 import java.io.File
 
 /**
@@ -104,7 +105,7 @@ object FileUtils {
                         Log.d(TAG, "ImageUtil: external picture storage is exist")
                     }
                 } else {
-                    rootFile = Utils.context.getExternalCacheDir()
+                    rootFile = EzWebInitProvider.autoContext!!.getExternalCacheDir()
                     if (rootFile == null) {
                         rootFile = Environment.getExternalStorageDirectory()
                     }
@@ -118,7 +119,7 @@ object FileUtils {
                 }
             }
         } else {
-            rootFile = Utils.context.getExternalCacheDir()
+            rootFile = EzWebInitProvider.autoContext!!.getExternalCacheDir()
         }
         return createFile(rootFile, fileName)
     }

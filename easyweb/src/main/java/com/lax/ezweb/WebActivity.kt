@@ -58,12 +58,12 @@ import java.net.*
 @Keep
 open class WebActivity : BaseActivity() {
     companion object {
-        const val TAG = "WebActivity"
         const val INFO_HTML_META =
             "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\">"
 
         const val SHARE_RESULT_CODE = 11111
         const val GOOGLE_LOGIN = 46507
+        const val PAYTM_REQUEST_CODE = 11112
 
         const val EX_TITLE_BG = "backgroundCol"
         const val EX_TITLE_FIELD_COLOR = "fieldCol"
@@ -76,8 +76,6 @@ open class WebActivity : BaseActivity() {
         const val EX_AD_URL = "ad_url"
         const val EX_AD_CONTENT = "ad_content"
         const val EX_AD_TIME = "ad_time"
-
-        const val PAYTM_REQUEST_CODE = 11112
 
         //生产环境
         const val URL_PAYTM_PRODUCTION: String =
@@ -652,8 +650,7 @@ open class WebActivity : BaseActivity() {
     private var host = ""
     private var sign = ""
     open fun googleLogin(data: String?) {
-        val googleData: LoginGoogleData =
-            Gson().fromJson<LoginGoogleData>(data, LoginGoogleData::class.java)
+        val googleData: LoginGoogleData = Gson().fromJson(data, LoginGoogleData::class.java)
         this.host = googleData.host!!
         this.sign = googleData.sign!!
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -707,9 +704,8 @@ open class WebActivity : BaseActivity() {
                             val googleToken: GoogleLoginToken? =
                                 Gson().fromJson(response, GoogleLoginResponse::class.java).data
                             val rawCookie: String = createTokenStr(
-                                "token1",
-                                googleToken?.token1!!
-                            ) + "\n" + createTokenStr("token2", googleToken.token2!!)
+                                "token1", googleToken?.token1!!
+                            ) + "\n" + createTokenStr("token2", googleToken.token2)
                             if (!TextUtils.isEmpty(rawCookie) && !TextUtils.isEmpty(host)) {
                                 val cookies = rawCookie.split("\n").toTypedArray()
                                 for (cookie in cookies) {
@@ -720,8 +716,7 @@ open class WebActivity : BaseActivity() {
                                 } else {
                                     CookieSyncManager.getInstance().sync()
                                 }
-                                mPageUrl = URLDecoder.decode(googleToken.url)
-                                loadPage()
+                                webView.loadUrl(URLDecoder.decode(googleToken.url))
                             }
                         }
                     }
@@ -821,38 +816,11 @@ open class WebActivity : BaseActivity() {
         return file
     }
 
-//    fun requestPermission() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//            if (ContextCompat.checkSelfPermission(
-//                    this,
-//                    Manifest.permission.READ_MEDIA_IMAGES
-//                )
-//                != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-//                    this,
-//                    Manifest.permission.READ_MEDIA_AUDIO
-//                )
-//                != PackageManager.PERMISSION_GRANTED
-//            ) {
-//                requestPermissions(
-//                    this,
-//                    arrayOf<String>(
-//                        Manifest.permission.READ_MEDIA_IMAGES,
-//                        Manifest.permission.READ_MEDIA_AUDIO
-//                    ),
-//                    MY_PERMISSIONS_REQUEST_READ_MEDIA_IMAGES
-//                )
-//            }
-//        } else {
-//            // request old storage permission
-//        }
-//    }
-
     fun saveImage2Gallery(file: File) {
         // 其次把文件插入到系统图库
         try {
-//            MediaStore.setIncludePending(Uri.fromFile(file))
             MediaStore.Images.Media.insertImage(
-                Utils.context.contentResolver,
+                EzWebInitProvider.autoContext!!.contentResolver,
                 file.absolutePath, file.name, null
             )
         } catch (e: FileNotFoundException) {
@@ -861,13 +829,13 @@ open class WebActivity : BaseActivity() {
         // 最后通知图库更新
         val intent = Intent(
             Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-            FileUtils.getImageContentUri(Utils.context, file)
+            FileUtils.getImageContentUri(EzWebInitProvider.autoContext!!, file)
         )
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-        Utils.context.sendBroadcast(intent)
+        EzWebInitProvider.autoContext!!.sendBroadcast(intent)
         if (file.exists()) {
             file.delete()
-            FileUtils.updateFileFromDatabase(Utils.context, file)
+            FileUtils.updateFileFromDatabase(EzWebInitProvider.autoContext!!, file)
         }
     }
 
@@ -890,7 +858,6 @@ open class WebActivity : BaseActivity() {
 
                 override fun onError(error: FacebookException?) {
                     error?.printStackTrace()
-                    Log.e("wtf", error.toString())
                 }
             })
         shareDialog?.show(linkContent)
@@ -968,7 +935,7 @@ open class WebActivity : BaseActivity() {
      */
     private fun shareCallBack(domainUrl: String, inviteCode: String, type: Int) {
         runBlocking {
-            val response = withContext<Int>(Dispatchers.IO) {
+            val response = withContext(Dispatchers.IO) {
                 val url =
                     "${domainUrl}/user/userTask/dailyFaceAndWhats.do?inviteCode=${inviteCode}&type=${type}"
                 try {
@@ -989,7 +956,7 @@ open class WebActivity : BaseActivity() {
     }
 
     fun openPayTm(data: String) {
-        val payInfo: PayTmInfo = Gson().fromJson<PayTmInfo>(data, PayTmInfo::class.java)
+        val payInfo: PayTmInfo = Gson().fromJson(data, PayTmInfo::class.java)
         try {
             val bundle = Bundle()
             bundle.putDouble("nativeSdkForMerchantAmount", payInfo.amount)
@@ -1008,19 +975,11 @@ open class WebActivity : BaseActivity() {
                 val postData = StringBuilder()
                 postData.append("MID=").append(payInfo.mid)
                     .append("&txnToken=").append(payInfo.textToken)
-                    .append("&ORDER_ID=").append(payInfo.orderId);
-                Launcher.with(this, WebActivity::class.java)
-                    .putExtra(EX_TITLE, "PAY")
-                    .putExtra(EX_REWRITE_TITLE, true)
-                    .putExtra(EX_HAS_TITLE_BAR, true)
-                    .putExtra(EX_POST_DATA, postData.toString())
-                    .putExtra(
-                        EX_URL,
-                        URL_PAYTM_PRODUCTION + "?mid=" + payInfo.mid + "&orderId=" + payInfo.orderId
-                    )
-                    .putExtra(WebActivity.EX_TITLE_BG, titleBg ?: "")
-                    .putExtra(WebActivity.EX_TITLE_FIELD_COLOR, titleFieldColor ?: "")
-                    .execute()
+                    .append("&ORDER_ID=").append(payInfo.orderId)
+                webView.postUrl(
+                    URL_PAYTM_PRODUCTION + "?mid=" + payInfo.mid + "&orderId=" + payInfo.orderId,
+                    postData.toString().toByteArray()
+                )
             }
         }
     }

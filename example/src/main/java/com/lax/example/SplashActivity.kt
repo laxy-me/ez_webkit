@@ -133,7 +133,7 @@ class SplashActivity : BaseActivity() {
         val launcher = Launcher.with(this, WebActivity::class.java)
             .putExtra(WebActivity.EX_TITLE, "")
             .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
-            .putExtra(WebActivity.EX_URL, "https://app.goex24.com?sign=BitsMaster")
+            .putExtra(WebActivity.EX_URL, "http://47.104.65.60:443/topup")
             .putExtra(WebActivity.EX_TITLE_BG, data?.backgroundCol ?: "")
             .putExtra(WebActivity.EX_TITLE_FIELD_COLOR, data?.fieldCol ?: "")
         if (data?.advOn == 1) {

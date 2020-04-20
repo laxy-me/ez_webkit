@@ -1,5 +1,6 @@
 package com.lax.ezweb
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.ContentProvider
@@ -15,7 +16,6 @@ import com.lax.ezweb.service.MyPushService
 import com.lax.ezweb.service.PushIntentService
 import com.lax.ezweb.tools.AppInfo
 import com.lax.ezweb.tools.ToastUtil
-import com.lax.ezweb.tools.Utils
 import com.umeng.analytics.MobclickAgent
 import com.umeng.commonsdk.UMConfigure
 import io.branch.referral.Branch
@@ -27,12 +27,18 @@ import io.branch.referral.Branch
  * @date 2020/3/31
  */
 class EzWebInitProvider : ContentProvider() {
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        @JvmField
+        var autoContext: Context? = null
+    }
+
     override fun onCreate(): Boolean {
+        autoContext = context
         if (context != null) {
             try {
                 val application = context!!.applicationContext
                 initAdjust(application as Application)
-                Utils.init(application)
                 Preference.init(application)
                 ToastUtil.init(application)
                 GetGpsIdTask().execute(application)
@@ -64,16 +70,12 @@ class EzWebInitProvider : ContentProvider() {
                 .registerPushIntentService(context, PushIntentService::class.java)
             PushManager.getInstance().initialize(context, MyPushService::class.java)
             PushManager.getInstance().setPrivacyPolicyStrategy(context, true)
-
             //2.14.0.0 for other markets
 //            PushManager.getInstance().initialize(context)
         }
     }
 
     private fun initBranch(application: Context) {
-        if (BuildConfig.DEBUG) {
-            Branch.enableDebugMode()
-        }
         Branch.getAutoInstance(application)
     }
 

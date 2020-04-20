@@ -15,7 +15,6 @@ import com.adjust.sdk.AdjustEvent
 import com.google.gson.Gson
 import com.lax.ezweb.data.model.ShareData
 import com.lax.ezweb.tools.AppInfo
-import com.lax.ezweb.tools.Utils
 import com.umeng.analytics.MobclickAgent
 
 
@@ -371,7 +370,7 @@ open class AppJs(private val mContext: Context) {
         get() {
             var availableNetwork = NET_NONE
 
-            val connectivityManager = Utils.context
+            val connectivityManager = EzWebInitProvider.autoContext!!
                 .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val networkInfo = connectivityManager.activeNetworkInfo
 
