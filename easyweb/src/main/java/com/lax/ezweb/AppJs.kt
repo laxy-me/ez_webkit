@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Uri
+import android.os.Bundle
 import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.View
@@ -12,10 +13,14 @@ import android.webkit.JavascriptInterface
 import androidx.annotation.Keep
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustEvent
+import com.facebook.appevents.AppEventsLogger
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.lax.ezweb.data.model.ShareData
 import com.lax.ezweb.tools.AppInfo
 import com.umeng.analytics.MobclickAgent
+import java.util.*
 
 
 @Keep
@@ -105,12 +110,100 @@ open class AppJs(private val mContext: Context) {
 
     /**
      * adjust事件统计
+     * @param eventToken 统计时间名称
      */
     @JavascriptInterface
     fun adjustTrackEvent(eventToken: String) {
         Log.v(TAG, "adjustTrackEvent:${eventToken}")
         val adjustEvent = AdjustEvent(eventToken)
         Adjust.trackEvent(adjustEvent)
+    }
+
+    /**
+     * adjust事件统计
+     * @param eventToken 统计时间名称
+     * @param valueToSum 收入
+     * @param currency 货币名
+     */
+    @JavascriptInterface
+    fun adjustTrackEvent(eventToken: String, valueToSum: Double, currency: String) {
+        Log.v(
+            TAG,
+            "adjustTrackEvent:\neventToken:${eventToken}\nvalueToSum:$valueToSum\ncurrency:$currency"
+        )
+        val adjustEvent = AdjustEvent(eventToken)
+        adjustEvent.setRevenue(valueToSum, currency)
+        Adjust.trackEvent(adjustEvent)
+    }
+
+    /**
+     * facebook事件统计
+     */
+    @JavascriptInterface
+    fun facebookEvent(eventName: String, valueToSum: Double, parameters: String) {
+        Log.v(
+            TAG,
+            "facebookEvent:\neventName:${eventName}\nvalueToSum:$valueToSum\nparameters:$parameters"
+        )
+        val logger = AppEventsLogger.newLogger(EzWebInitProvider.autoContext)
+        val obj = JsonObject().getAsJsonObject(parameters)
+        val bundle = Bundle()
+        for (entry in obj.entrySet()) {
+            val value = entry.value
+            bundle.putString(entry.key, value.asString)
+        }
+        logger.logEvent(eventName, valueToSum, bundle)
+    }
+
+    /**
+     * facebook事件统计
+     */
+    @JavascriptInterface
+    fun facebookEvent(eventName: String, parameters: String) {
+        Log.v(TAG, "facebookEvent:\neventName:${eventName}\nparameters:$parameters")
+        val logger = AppEventsLogger.newLogger(EzWebInitProvider.autoContext)
+        val obj = JsonObject().getAsJsonObject(parameters)
+        val bundle = Bundle()
+        for (entry in obj.entrySet()) {
+            val value = entry.value
+            bundle.putString(entry.key, value.asString)
+        }
+        logger.logEvent(eventName, bundle)
+    }
+
+    /**
+     * facebook事件统计
+     */
+    @JavascriptInterface
+    fun facebookEvent(eventName: String, valueToSum: Double) {
+        Log.v(TAG, "facebookEvent:\neventName:${eventName}\nvalueToSum:$valueToSum")
+        val logger = AppEventsLogger.newLogger(EzWebInitProvider.autoContext)
+        logger.logEvent(eventName, valueToSum)
+    }
+
+    /**
+     * facebook 计数事件统计
+     */
+    @JavascriptInterface
+    fun facebookEvent(eventName: String) {
+        Log.v(TAG, "facebookEvent:\neventName:${eventName}")
+        val logger = AppEventsLogger.newLogger(EzWebInitProvider.autoContext)
+        logger.logEvent(eventName)
+    }
+
+    /**
+     * google事件统计
+     */
+    @JavascriptInterface
+    fun googleEvent(category: String, parameters: String) {
+        Log.v(TAG, "googleEvent:\ncategory:${category}\nparameters:$parameters")
+        val obj = JsonObject().getAsJsonObject(parameters)
+        val bundle = Bundle()
+        for (entry in obj.entrySet()) {
+            val value = entry.value
+            bundle.putString(entry.key, value.asString)
+        }
+        FirebaseAnalytics.getInstance(mContext).logEvent(category, bundle)
     }
 
     /**

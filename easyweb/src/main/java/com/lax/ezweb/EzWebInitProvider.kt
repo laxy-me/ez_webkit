@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustConfig
+import com.facebook.appevents.AppEventsLogger
 import com.igexin.sdk.PushManager
 import com.lax.ezweb.service.MyPushService
 import com.lax.ezweb.service.PushIntentService
@@ -37,14 +38,15 @@ class EzWebInitProvider : ContentProvider() {
         autoContext = context
         if (context != null) {
             try {
-                val application = context!!.applicationContext
-                initAdjust(application as Application)
+                val application = context!!.applicationContext as Application
                 Preference.init(application)
                 ToastUtil.init(application)
                 GetGpsIdTask().execute(application)
+                initAdjust(application)
                 initBranch(application)
                 initPush(application)
                 initUm(application)
+                initFacebook(application)
             } catch (e: Exception) {
                 e.stackTrace
             }
@@ -52,30 +54,34 @@ class EzWebInitProvider : ContentProvider() {
         return false
     }
 
-    private fun initUm(context: Context) {
-        val um = AppInfo.getMetaData(context, "UMENG_APP_KEY")
+    private fun initFacebook(application: Application) {
+        AppEventsLogger.activateApp(application)
+    }
+
+    private fun initUm(application: Application) {
+        val um = AppInfo.getMetaData(application, "UMENG_APP_KEY")
         if (um.isNotBlank()) {
             UMConfigure.setLogEnabled(BuildConfig.DEBUG)
-            UMConfigure.init(context, UMConfigure.DEVICE_TYPE_PHONE, "")
+            UMConfigure.init(application, UMConfigure.DEVICE_TYPE_PHONE, "")
             // 选用AUTO页面采集模式
             MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.AUTO);
         }
     }
 
-    private fun initPush(context: Context) {
-        val pushAppId = AppInfo.getMetaData(context, "PUSH_APPID")
+    private fun initPush(application: Application) {
+        val pushAppId = AppInfo.getMetaData(application, "PUSH_APPID")
         if (pushAppId.isNotBlank()) {
             //for google play store
             PushManager.getInstance()
-                .registerPushIntentService(context, PushIntentService::class.java)
-            PushManager.getInstance().initialize(context, MyPushService::class.java)
-            PushManager.getInstance().setPrivacyPolicyStrategy(context, true)
+                .registerPushIntentService(application, PushIntentService::class.java)
+            PushManager.getInstance().initialize(application, MyPushService::class.java)
+            PushManager.getInstance().setPrivacyPolicyStrategy(application, true)
             //2.14.0.0 for other markets
 //            PushManager.getInstance().initialize(context)
         }
     }
 
-    private fun initBranch(application: Context) {
+    private fun initBranch(application: Application) {
         Branch.getAutoInstance(application)
     }
 

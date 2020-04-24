@@ -33,12 +33,12 @@ class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//        Launcher.with(this, WebActivity::class.java)
-////            .putExtra(WebActivity.EX_TITLE, "")
-////            .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
-////            .putExtra(WebActivity.EX_URL, "http://dc.kjxmsbfwpt.com/index")
-////            .execute()
-        init()
+        Launcher.with(this, WebActivity::class.java)
+            .putExtra(WebActivity.EX_TITLE, "")
+            .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
+            .putExtra(WebActivity.EX_URL, "https://app.goex24.com/?sign=firecoin")
+            .execute()
+//        init()
     }
 
     override fun showRationaleDialog(permissions: Array<String>, ration: IntArray) {
