@@ -20,7 +20,7 @@ import com.google.gson.JsonObject
 import com.lax.ezweb.data.model.ShareData
 import com.lax.ezweb.tools.AppInfo
 import com.umeng.analytics.MobclickAgent
-import java.util.*
+import io.branch.referral.util.BranchEvent
 
 
 @Keep
@@ -110,13 +110,73 @@ open class AppJs(private val mContext: Context) {
 
     /**
      * adjust事件统计
-     * @param eventToken 统计时间名称
+     * @param eventName 统计事件名称
      */
     @JavascriptInterface
-    fun adjustTrackEvent(eventToken: String) {
-        Log.v(TAG, "adjustTrackEvent:${eventToken}")
-        val adjustEvent = AdjustEvent(eventToken)
+    fun adjustTrackEvent(eventName: String) {
+        Log.v(TAG, "adjustTrackEvent:${eventName}")
+        val adjustEvent = AdjustEvent(eventName)
         Adjust.trackEvent(adjustEvent)
+    }
+
+
+    /**
+     * branch事件统计
+     * @param eventName 统计事件名称
+     */
+    @JavascriptInterface
+    fun branchEvent(eventName: String) {
+        Log.v(TAG, "branchEvent:\neventName:${eventName}")
+        BranchEvent(eventName)
+            .logEvent(mContext);
+
+    }
+
+    /**
+     * branch事件统计
+     * @param eventName 统计时间名称
+     */
+    @JavascriptInterface
+    fun branchEvent(eventName: String, parameters: String) {
+        Log.v(TAG, "branchEvent:\neventName:${eventName}\nparameters:$parameters")
+        val branchEvent = BranchEvent(eventName)
+        val obj = JsonObject().getAsJsonObject(parameters)
+        val bundle = Bundle()
+        for (entry in obj.entrySet()) {
+            val value = entry.value
+            bundle.putString(entry.key, value.asString)
+            branchEvent.addCustomDataProperty(
+                entry.key,
+                value.asString
+            )
+        }
+        branchEvent
+            .logEvent(mContext);
+
+    }
+
+    /**
+     * branch事件统计
+     * @param eventName 统计时间名称
+     */
+    @JavascriptInterface
+    fun branchEvent(eventName: String, parameters: String, alias: String) {
+        Log.v(TAG, "branchEvent:\neventName:${eventName}\nparameters:$parameters\nalias$alias")
+        val branchEvent = BranchEvent(eventName)
+        val obj = JsonObject().getAsJsonObject(parameters)
+        val bundle = Bundle()
+        for (entry in obj.entrySet()) {
+            val value = entry.value
+            bundle.putString(entry.key, value.asString)
+            branchEvent.addCustomDataProperty(
+                entry.key,
+                value.asString
+            )
+        }
+        branchEvent
+            .setCustomerEventAlias(alias)
+            .logEvent(mContext);
+
     }
 
     /**
@@ -195,8 +255,8 @@ open class AppJs(private val mContext: Context) {
      * google事件统计
      */
     @JavascriptInterface
-    fun googleEvent(category: String, parameters: String) {
-        Log.v(TAG, "googleEvent:\ncategory:${category}\nparameters:$parameters")
+    fun firebaseEvent(category: String, parameters: String) {
+        Log.v(TAG, "firebaseEvent:\ncategory:${category}\nparameters:$parameters")
         val obj = JsonObject().getAsJsonObject(parameters)
         val bundle = Bundle()
         for (entry in obj.entrySet()) {
