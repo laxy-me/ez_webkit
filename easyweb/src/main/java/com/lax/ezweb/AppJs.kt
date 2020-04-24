@@ -135,6 +135,7 @@ open class AppJs(private val mContext: Context) {
     /**
      * branch事件统计
      * @param eventName 统计时间名称
+     * @param parameters 自定义统计参数
      */
     @JavascriptInterface
     fun branchEvent(eventName: String, parameters: String) {
@@ -152,12 +153,13 @@ open class AppJs(private val mContext: Context) {
         }
         branchEvent
             .logEvent(mContext);
-
     }
 
     /**
      * branch事件统计
-     * @param eventName 统计时间名称
+     * @param eventName 统计事件名称
+     * @param parameters 自定义统计参数
+     * @param alias 事件别名
      */
     @JavascriptInterface
     fun branchEvent(eventName: String, parameters: String, alias: String) {
@@ -198,6 +200,9 @@ open class AppJs(private val mContext: Context) {
 
     /**
      * facebook事件统计
+     * @param eventName 事件名称
+     * @param valueToSum 计数数值
+     * @param parameters 自定义统计参数json{}需要全是String类型
      */
     @JavascriptInterface
     fun facebookEvent(eventName: String, valueToSum: Double, parameters: String) {
@@ -217,6 +222,8 @@ open class AppJs(private val mContext: Context) {
 
     /**
      * facebook事件统计
+     * @param eventName 事件名称
+     * @param parameters 自定义统计参数json{}需要全是String类型
      */
     @JavascriptInterface
     fun facebookEvent(eventName: String, parameters: String) {
@@ -232,7 +239,9 @@ open class AppJs(private val mContext: Context) {
     }
 
     /**
-     * facebook事件统计
+     * facebook计数统计
+     * @param eventName 事件名称
+     * @param valueToSum 计数数值
      */
     @JavascriptInterface
     fun facebookEvent(eventName: String, valueToSum: Double) {
@@ -243,6 +252,7 @@ open class AppJs(private val mContext: Context) {
 
     /**
      * facebook 计数事件统计
+     * @param eventName 事件名称
      */
     @JavascriptInterface
     fun facebookEvent(eventName: String) {
@@ -252,7 +262,7 @@ open class AppJs(private val mContext: Context) {
     }
 
     /**
-     * google事件统计
+     * firebase事件统计
      */
     @JavascriptInterface
     fun firebaseEvent(category: String, parameters: String) {

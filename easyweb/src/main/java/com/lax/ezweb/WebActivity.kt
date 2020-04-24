@@ -745,7 +745,7 @@ open class WebActivity : BaseActivity() {
     }
 
     @SuppressLint("StaticFieldLeak")
-    inner class DownloadTask : AsyncTask<String, Void, File>() {
+    inner class DownloadTask : AsyncTask<String, Void, File?>() {
 
         /**
          * 主要是完成耗时的操作
@@ -776,8 +776,11 @@ open class WebActivity : BaseActivity() {
             return null
         }
 
-        override fun onPostExecute(result: File) {
+        override fun onPostExecute(result: File?) {
             super.onPostExecute(result)
+            if (result==null) {
+                return
+            }
             saveImage2Gallery(result)
         }
     }
