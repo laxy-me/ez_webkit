@@ -88,7 +88,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation("com.squareup.okhttp3:okhttp:4.4.0")
 
-    implementation project(path: ':easyweb')
-//    implementation 'com.lax.ezweb:easyweb:0.0.6'
+//    implementation project(path: ':easyweb')
+    implementation 'com.lax.ezweb:easyweb:0.0.8'
 //    implementation 'com.just.agentweb:agentweb:4.1.3' // (必选)
 }

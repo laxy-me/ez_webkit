@@ -11,10 +11,10 @@ allprojects {
 	repositories {
 	    maven { url 'https://jitpack.io' }
         maven { url 'https://dl.bintray.com/umsdk/release' }
-        maven { url "https://lax.bintray.com/easyweb" }	}
+        maven { url 'https://dl.bintray.com/laxygd/easyweb' }
 }
  
-implementation 'com.lax.ezweb:easyweb:0.0.7'
+implementation 'com.lax.ezweb:easyweb:0.0.8'
 ```
 
 ## In app gradle
