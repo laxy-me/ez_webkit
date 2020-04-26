@@ -603,6 +603,7 @@ open class WebActivity : BaseActivity() {
                 mCallbackMethodName = callbackMethod
                 PictureSelector.create(this@WebActivity)
                     .openCamera(PictureMimeType.ofImage())
+                    .loadImageEngine(GlideEngine.createGlideEngine())
                     .forResult(PictureConfig.CHOOSE_REQUEST)
                 dialog.dismiss()
             }
@@ -612,6 +613,7 @@ open class WebActivity : BaseActivity() {
                 mCallbackMethodName = callbackMethod
                 PictureSelector.create(this@WebActivity)
                     .openGallery(PictureMimeType.ofImage())
+                    .loadImageEngine(GlideEngine.createGlideEngine())
                     .maxSelectNum(1)
                     .isGif(false)
                     .forResult(PictureConfig.CHOOSE_REQUEST)

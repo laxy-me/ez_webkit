@@ -40,11 +40,11 @@ open class AppJs(private val mContext: Context) {
     }
 
     /**
-     * 获取个推设备id
+     * getAppCode
      */
     @JavascriptInterface
     fun getAppCode(): String {
-        Log.v(TAG, "getAppCode:${Preference.get().pushId}")
+        Log.v(TAG, "getAppCode:")
         return ""
     }
 

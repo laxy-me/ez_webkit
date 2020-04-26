@@ -2,7 +2,7 @@ apply plugin: 'com.novoda.bintray-release'
 def siteUrl = 'https://github.com/talkeryang/ez_webkit'      // 项目的主页
 def gitUrl = 'https://github.com/talkeryang/ez_webkit.git'   // Git仓库的url
 group = "com.lax.ezweb"                            // Maven Group ID for the artifact，一般填你唯一的包名
-version = "0.0.8"//这里是你的版本，当你需要上传新的版本到bintry上时，只需要修改这里的版本即可
+version = "0.0.9"//这里是你的版本，当你需要上传新的版本到bintry上时，只需要修改这里的版本即可
 
 publish {
     userOrg = 'laxygd'//这个地方一定要填，一定要填 ！！（这里需要修改你申请账号是的组织id）
