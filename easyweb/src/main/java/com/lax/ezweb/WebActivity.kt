@@ -54,6 +54,8 @@ import kotlinx.android.synthetic.main.web.*
 import kotlinx.coroutines.*
 import java.io.*
 import java.net.*
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 @Keep
 open class WebActivity : BaseActivity() {
@@ -126,6 +128,10 @@ open class WebActivity : BaseActivity() {
         tryToFixPageUrl()
         setVisibleState()
         initWebView()
+    }
+
+    fun getWebView(): WebView {
+        return webView
     }
 
     private fun setVisibleState() {
@@ -573,8 +579,47 @@ open class WebActivity : BaseActivity() {
                     return true
                 }
             }
+        } else if (url.startsWith("intent://")) {
+            val newUrl: String = parseUrlString(url)
+            Log.e("wtf", newUrl)
+            intent.action = Intent.ACTION_VIEW
+            intent.data = Uri.parse(newUrl)
+//            if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+            return true
+//            }
         }
         return false
+    }
+
+    /*
+    * 利用正则表达式，提取出：https://play.google.com/store/apps/details?id%3Dcom.whizdm.moneyview.loans
+    */
+    private fun parseUrlString(url: String): String {
+        val regEx = "(link=)(.*)(#)"
+        val p: Pattern = Pattern.compile(regEx)
+        val m: Matcher = p.matcher(url)
+        var matchString = ""
+        if (m.find()) {
+            matchString = m.group()
+        }
+        matchString = matchString.substring(5, matchString.length - 1)
+        return unicodeDecode(matchString)
+    }
+
+    /**
+     * 转义成：https://play.google.com/store/apps/details?id=com.whizdm.moneyview.loans
+     */
+    private fun unicodeDecode(string: String): String {
+        var newString = string
+        val pattern = Pattern.compile("(\\\\u(\\p{XDigit}{4}))")
+        val matcher = pattern.matcher(newString)
+        var ch: Char
+        while (matcher.find()) {
+            ch = matcher.group(2).toInt(16).toChar()
+            newString = newString.replace(matcher.group(1), ch.toString() + "")
+        }
+        return newString
     }
 
     private lateinit var mCallbackMethodName: String
@@ -780,7 +825,7 @@ open class WebActivity : BaseActivity() {
 
         override fun onPostExecute(result: File?) {
             super.onPostExecute(result)
-            if (result==null) {
+            if (result == null) {
                 return
             }
             saveImage2Gallery(result)

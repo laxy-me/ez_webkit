@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "277674602070",
+    "firebase_url": "https://fore-vole.firebaseio.com",
+    "project_id": "fore-vole",
+    "storage_bucket": "fore-vole.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277674602070:android:bb3a30298a4c46e71055f7",
+        "android_client_info": {
+          "package_name": "com.lax.example"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "277674602070-ofanb1ueur6t2k7cg9g8of6g5bga56c4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-7FPRa84zg_7-ua2_8e979eLM7Ehf4Dg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "277674602070-ofanb1ueur6t2k7cg9g8of6g5bga56c4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "277674602070-rbit8o1di9ic1kh84niosismsoao2r5e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.wangxingyuan.forexvole"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277674602070:android:1b64c88135fbafc91055f7",
+        "android_client_info": {
+          "package_name": "com.wangxingyuan.forexvole"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "277674602070-ofanb1ueur6t2k7cg9g8of6g5bga56c4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-7FPRa84zg_7-ua2_8e979eLM7Ehf4Dg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "277674602070-ofanb1ueur6t2k7cg9g8of6g5bga56c4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "277674602070-rbit8o1di9ic1kh84niosismsoao2r5e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.wangxingyuan.forexvole"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

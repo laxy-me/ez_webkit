@@ -36,12 +36,9 @@ class SplashActivity : BaseActivity() {
         Launcher.with(this, WebActivity::class.java)
             .putExtra(WebActivity.EX_TITLE, "")
             .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
-//            .putExtra(WebActivity.EX_URL, "https://app.mallucky.com")
-//            .putExtra(WebActivity.EX_URL, "https://www.baidu.com")
-            .putExtra(WebActivity.EX_URL, "https://lmhd.bdo-ah.com/market/default/huiyuntao")
+            .putExtra(WebActivity.EX_URL, "http://www.baidu.com")
             .execute()
         finish()
-//        init()
     }
 
     override fun showRationaleDialog(permissions: Array<String>, ration: IntArray) {
