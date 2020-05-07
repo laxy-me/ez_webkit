@@ -9,9 +9,14 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustConfig
 import com.facebook.appevents.AppEventsLogger
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import com.igexin.sdk.PushManager
 import com.lax.ezweb.service.MyPushService
 import com.lax.ezweb.service.PushIntentService
@@ -47,11 +52,26 @@ class EzWebInitProvider : ContentProvider() {
                 initPush(application)
                 initUm(application)
                 initFacebook(application)
+                initFCM()
             } catch (e: Exception) {
                 e.stackTrace
             }
         }
         return false
+    }
+
+    private fun initFCM() {
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w("fcm", "getInstanceId failed", task.exception)
+                    return@OnCompleteListener
+                }
+                // Get new Instance ID token
+                val token = task.result?.token
+                Log.d("fcm", token)
+                Preference.get().pushId = token ?: ""
+            })
     }
 
     private fun initFacebook(application: Application) {

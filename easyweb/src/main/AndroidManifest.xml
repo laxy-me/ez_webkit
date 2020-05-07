@@ -18,19 +18,43 @@
     <uses-sdk tools:overrideLibrary="com.luck.picture.lib,com.yalantis.ucrop" />
 
     <application
+        android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true"
         tools:overrideLibrary="com.luck.picture.lib">
-        <service
-            android:name=".service.PushIntentService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <!--        <service-->
+        <!--            android:name=".service.PushIntentService"-->
+        <!--            android:permission="android.permission.BIND_JOB_SERVICE" />-->
+
+        <!--        <service-->
+        <!--            android:name=".service.MyPushService"-->
+        <!--            android:exported="true"-->
+        <!--            android:label="PushService"-->
+        <!--            android:process=":pushservice" />-->
 
         <service
-            android:name=".service.MyPushService"
-            android:exported="true"
-            android:label="PushService"
-            android:process=":pushservice" />
+            android:name=".service.MyFirebaseMessagingService"
+            android:exported="false"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
+        See README(https://goo.gl/l4GJaQ) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/push" />
+        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="default_channel_id" />
 
         <activity
             android:name=".WebActivity"
