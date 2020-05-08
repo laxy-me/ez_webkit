@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <!--敏感权限组-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -22,15 +23,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:overrideLibrary="com.luck.picture.lib">
-        <!--        <service-->
-        <!--            android:name=".service.PushIntentService"-->
-        <!--            android:permission="android.permission.BIND_JOB_SERVICE" />-->
-
-        <!--        <service-->
-        <!--            android:name=".service.MyPushService"-->
-        <!--            android:exported="true"-->
-        <!--            android:label="PushService"-->
-        <!--            android:process=":pushservice" />-->
 
         <service
             android:name=".service.MyFirebaseMessagingService"

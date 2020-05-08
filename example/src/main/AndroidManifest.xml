@@ -40,16 +40,6 @@
             android:name="CHANNEL"
             android:value="${CHANNEL}" />
         <meta-data
-            android:name="PUSH_APPID"
-            android:value="${GETUI_APP_ID}" />
-        <meta-data
-            android:name="PUSH_APPKEY"
-            android:value="${GETUI_APP_KEY}" />
-        <meta-data
-            android:name="PUSH_APPSECRET"
-            android:value="${GETUI_APP_SECRET}" />
-
-        <meta-data
             android:name="ADJUST_APPTOKEN"
             android:value="${ADJUST_APPTOKEN}" />
         <meta-data

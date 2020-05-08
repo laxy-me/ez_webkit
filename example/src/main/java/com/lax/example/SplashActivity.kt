@@ -4,9 +4,11 @@ import android.Manifest
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.google.android.gms.tasks.OnCompleteListener
@@ -37,12 +39,22 @@ class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            f()
+        }
         Launcher.with(this, WebActivity::class.java)
             .putExtra(WebActivity.EX_TITLE, "")
             .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
             .putExtra(WebActivity.EX_URL, "http://www.baidu.com")
             .execute()
         finish()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun f() {
+        if (!isIgnoringBatteryOptimizations()) {
+            requestIgnoreBatteryOptimizations()
+        }
     }
 
     override fun showRationaleDialog(permissions: Array<String>, ration: IntArray) {

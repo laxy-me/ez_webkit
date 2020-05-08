@@ -8,10 +8,8 @@ publish {
     userOrg = 'laxygd'//这个地方一定要填，一定要填 ！！（这里需要修改你申请账号是的组织id）
     repoName = "easyweb"//发布到bintray上的仓库名
     groupId = group // Maven Group ID for the artifact，一般填你唯一的包名
-    artifactId = 'easyweb'//发布到bintray上的包名
+    artifactId = 'easyweb-fcm'//发布到bintray上的包名
     publishVersion = version
     website = siteUrl
     desc = 'easy webkit library for company.'
 }
-
-//./gradlew clean generatePomFileForReleasePublication build bintrayUpload -PbintrayUser=laxygd -PbintrayKey=b15beba805902f8428f048c87c1877ff1c4e4614 -PdryRun=false

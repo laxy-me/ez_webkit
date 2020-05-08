@@ -11,24 +11,33 @@ allprojects {
 	repositories {
 	    maven { url 'https://jitpack.io' }
         maven { url 'https://dl.bintray.com/umsdk/release' }
-        maven { url 'https://dl.bintray.com/laxygd/easyweb' }
 }
  
-implementation 'com.lax.ezweb:easyweb:0.0.9'
+implementation 'com.lax.ezweb:easyweb-fcm:0.0.9'
 ```
 
 ## In app gradle
 ```
 manifestPlaceholders = [
 	CHANNEL           : "",
-	GETUI_APP_ID      : "",
-	GETUI_APP_KEY     : "",
-	GETUI_APP_SECRET  : "",
 	UMENG_APP_KEY     : "",
-	ADJUST_APPTOKEN       : "",
+	ADJUST_APPTOKEN   : "",
 	ADJUST_TRACK_TOKEN: "",
 	FACEBOOK_APP_ID   : "",
 ]
+
+ productFlavors {
+    google {}
+    ...
+ }
+ 
+ productFlavors.all { flavor ->
+    if (flavor.name != 'dev' && flavor.name != 'alpha') {
+        flavor.manifestPlaceholders = [CHANNEL: name]
+    }
+ }
+ 
+ apply plugin: 'com.google.gms.google-services'
 ```
 
 ## In Strings
@@ -54,15 +63,6 @@ ANDROID_AGENT_NATIVE/2.0
 <meta-data
     android:name="CHANNEL"
     android:value="${CHANNEL}" />
-<meta-data
-    android:name="PUSH_APPID"
-    android:value="${GETUI_APP_ID}" />
-<meta-data
-    android:name="PUSH_APPKEY"
-    android:value="${GETUI_APP_KEY}" />
-<meta-data
-    android:name="PUSH_APPSECRET"
-	android:value="${GETUI_APP_SECRET}" />
 <meta-data
 	android:name="UMENG_APPKEY"
 	android:value="${UMENG_APP_KEY}" />

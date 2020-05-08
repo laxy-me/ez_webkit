@@ -10,16 +10,11 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustConfig
 import com.facebook.appevents.AppEventsLogger
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
-import com.google.firebase.messaging.FirebaseMessaging
-import com.igexin.sdk.PushManager
-import com.lax.ezweb.service.MyPushService
-import com.lax.ezweb.service.PushIntentService
 import com.lax.ezweb.tools.AppInfo
 import com.lax.ezweb.tools.ToastUtil
 import com.umeng.analytics.MobclickAgent
@@ -49,7 +44,6 @@ class EzWebInitProvider : ContentProvider() {
                 GetGpsIdTask().execute(application)
                 initAdjust(application)
                 initBranch(application)
-                initPush(application)
                 initUm(application)
                 initFacebook(application)
                 initFCM()
@@ -85,19 +79,6 @@ class EzWebInitProvider : ContentProvider() {
             UMConfigure.init(application, UMConfigure.DEVICE_TYPE_PHONE, "")
             // 选用AUTO页面采集模式
             MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.AUTO);
-        }
-    }
-
-    private fun initPush(application: Application) {
-        val pushAppId = AppInfo.getMetaData(application, "PUSH_APPID")
-        if (pushAppId.isNotBlank()) {
-            //for google play store
-            PushManager.getInstance()
-                .registerPushIntentService(application, PushIntentService::class.java)
-            PushManager.getInstance().initialize(application, MyPushService::class.java)
-            PushManager.getInstance().setPrivacyPolicyStrategy(application, true)
-            //2.14.0.0 for other markets
-//            PushManager.getInstance().initialize(context)
         }
     }
 

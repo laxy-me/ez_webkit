@@ -1,17 +1,22 @@
 package com.lax.ezweb.base
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.os.PowerManager
+import android.provider.Settings
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import androidx.annotation.Keep
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.lax.ezweb.R
 import com.lax.ezweb.permission.GPermission
@@ -146,6 +151,28 @@ open class BaseActivity : TranslucentActivity() {
             }
         }
         return sb
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    open fun isIgnoringBatteryOptimizations(): Boolean {
+        var isIgnoring = false
+        val powerManager =
+            getSystemService(Context.POWER_SERVICE) as PowerManager
+        if (powerManager != null) {
+            isIgnoring = powerManager.isIgnoringBatteryOptimizations(packageName)
+        }
+        return isIgnoring
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    open fun requestIgnoreBatteryOptimizations() {
+        try {
+            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+            intent.data = Uri.parse("package:$packageName")
+            startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
