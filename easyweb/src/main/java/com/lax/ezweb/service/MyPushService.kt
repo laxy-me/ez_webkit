@@ -1,9 +1,8 @@
 package com.lax.ezweb.service
 
+import com.igexin.sdk.PushService
+
 /**
- *
- * @author yangguangda
- * @date 2020/5/8
+ * 个推
  */
-class MyPushService {
-}
+class MyPushService : PushService()
