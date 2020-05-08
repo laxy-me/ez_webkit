@@ -11,6 +11,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
+import androidx.annotation.Keep
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.lax.ezweb.EzWebInitProvider
@@ -20,6 +21,7 @@ import java.io.File
  * @author yangguangda
  * @date 2018/12/25
  */
+@Keep
 object FileUtils {
 
     private val TAG = "FileUtils"

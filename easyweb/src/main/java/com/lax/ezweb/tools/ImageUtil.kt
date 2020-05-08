@@ -14,6 +14,7 @@ import java.io.IOException
  */
 class ImageUtil {
     companion object {
+        @JvmStatic
         fun compressImageToBase64(urlPath: String): String? {
             return bitmapToBase64(
                 compressScale(urlPath)
@@ -26,6 +27,7 @@ class ImageUtil {
          * @param srcPath （根据路径获取图片并压缩）
          * @return
          */
+        @JvmStatic
         fun compressScale(srcPath: String): Bitmap {
 
             val newOpts = BitmapFactory.Options()
@@ -63,6 +65,7 @@ class ImageUtil {
          * @param bitmap 需要旋转的图片
          * @param path   图片的路径
          */
+        @JvmStatic
         fun reviewPicRotate(bitmap: Bitmap, path: String): Bitmap {
             var b = bitmap
             val degree =
@@ -83,6 +86,7 @@ class ImageUtil {
          * @param path 图片绝对路径
          * @return 图片旋转的角度
          */
+        @JvmStatic
         fun getPicRotate(path: String): Int {
             var degree = 0
             try {
@@ -106,6 +110,7 @@ class ImageUtil {
          * @param bitmap
          * @return
          */
+        @JvmStatic
         fun bitmapToBase64(bitmap: Bitmap?): String? {
             var result: String? = null
             var baos: ByteArrayOutputStream? = null

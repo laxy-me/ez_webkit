@@ -5,7 +5,6 @@ apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
     lintOptions {
         checkReleaseBuilds false
         abortOnError false
@@ -31,7 +30,17 @@ android {
         buildConfigField("String", "VEST_CODE", '\"W37WTLSF\"')
     }
 
+    dexOptions {
+        javaMaxHeapSize "4g"
+        preDexLibraries = false
+        additionalParameters += '--multi-dex'
+        additionalParameters += '--set-max-idx-number=35000'
+        //每个包内方法数上限（根据实际项目配置这个数，来适配4.0-4.4一些低端机型，因为拆分的dex太大，这些低端机型加载不了dex）
+        additionalParameters += '--minimal-main-dex'
+    }
+
     flavorDimensions("app")
+
     signingConfigs {
         release {
             Properties properties = new Properties()
@@ -43,6 +52,7 @@ android {
             keyPassword properties.get('keystore_keyPassword')
         }
     }
+
     buildTypes {
         debug {
             minifyEnabled true
@@ -94,6 +104,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.5.0'
     kapt 'com.github.bumptech.glide:compiler:4.5.0'
 //    implementation 'com.lax.ezweb:easyweb:0.0.9'
+//    implementation 'com.lax.ezweb:easyweb-fcm:0.0.9'
 }
 
 apply plugin: 'com.google.gms.google-services'

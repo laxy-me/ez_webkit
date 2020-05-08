@@ -56,7 +56,6 @@ import java.io.*
 import java.net.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-
 @Keep
 open class WebActivity : BaseActivity() {
     companion object {
@@ -153,7 +152,7 @@ open class WebActivity : BaseActivity() {
                         .execute()
                 }
             }
-            skipAd.setOnClickListener {
+            skipCountDown.setOnClickListener {
                 closeAd()
             }
             GlobalScope.launch(Dispatchers.Main) {

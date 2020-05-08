@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import androidx.annotation.Keep
 import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
 
@@ -14,6 +15,7 @@ import androidx.annotation.RequiresApi
  * @author yangguangda
  * @date 2018/11/19
  */
+@Keep
 class PermissionActivity : Activity() {
     companion object {
         const val KEY_PERMISSIONS = "permissions"

@@ -2,8 +2,9 @@ package com.lax.ezweb
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.annotation.Keep
 
-
+@Keep
 class Preference private constructor(context: Context) {
 
     var Gaid: String
@@ -13,6 +14,7 @@ class Preference private constructor(context: Context) {
         get() = mPrefs.getString(Key.PUSH_ID, "")!!
         set(pushId) = apply(Key.PUSH_ID, pushId)
 
+    @Keep
     internal interface Key {
         companion object {
             const val GAID = "gaid"
@@ -57,11 +59,13 @@ class Preference private constructor(context: Context) {
         editor.putFloat(key, value).apply()
     }
 
+    @Keep
     companion object {
         private const val SHARED_PREFERENCES_NAME = BuildConfig.FLAVOR + "_prefs"
 
         private var sInstance: Preference? = null
 
+        @JvmStatic
         fun get(): Preference {
             if (sInstance != null) {
                 return sInstance as Preference
@@ -70,6 +74,7 @@ class Preference private constructor(context: Context) {
             }
         }
 
+        @JvmStatic
         fun init(context: Context) {
             if (sInstance == null) {
                 synchronized(Preference::class.java) {

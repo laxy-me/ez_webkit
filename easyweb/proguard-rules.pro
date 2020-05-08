@@ -19,10 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep class com.lax.ezweb.** { *; }
--keep class **.$Companion{
-    *;
-}
 #############################################
 #
 # Android开发中一些需要保留的公共部分
@@ -122,7 +118,7 @@
 -keep class javax.annotation.** { *; }
 -keep interface androidx.** { *; }
 
--keep class **.$Companion{
+-keep class **$Companion{
     *;
 }
 ## ------------------------------------------------------------------------------------------------

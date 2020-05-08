@@ -8,12 +8,14 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.annotation.Keep
 import androidx.appcompat.app.AlertDialog
 import java.util.*
 
 /**
  * 统一普通弹框
  */
+@Keep
 class SmartDialog private constructor(private val mActivity: Activity?) {
 
     private var mBuilder: AlertDialog.Builder? = null
@@ -300,10 +302,12 @@ class SmartDialog private constructor(private val mActivity: Activity?) {
         }
     }
 
+    @Keep
     companion object {
 
         private val mListMap = HashMap<String, List<SmartDialog>>()
 
+        @JvmStatic
         @JvmOverloads
         fun solo(activity: Activity, msg: String? = null): SmartDialog {
             val key = getKey(activity)
@@ -319,10 +323,12 @@ class SmartDialog private constructor(private val mActivity: Activity?) {
             return dialog
         }
 
+        @JvmStatic
         fun solo(activity: Activity, msgRes: Int): SmartDialog {
             return solo(activity, activity.getText(msgRes).toString())
         }
 
+        @JvmStatic
         @JvmOverloads
         fun with(activity: Activity, msg: String? = null): SmartDialog {
             val dialog = SmartDialog(activity)
@@ -331,14 +337,17 @@ class SmartDialog private constructor(private val mActivity: Activity?) {
             return dialog
         }
 
+        @JvmStatic
         fun with(activity: Activity, msgRes: Int): SmartDialog {
             return with(activity, activity.getText(msgRes).toString())
         }
 
+        @JvmStatic
         private fun getKey(activity: Activity): String {
             return activity.hashCode().toString()
         }
 
+        @JvmStatic
         private fun addMap(activity: Activity, dialog: SmartDialog) {
             val key = getKey(activity)
             var dialogList: LinkedList<SmartDialog>? = mListMap[key] as LinkedList<SmartDialog>?
@@ -349,6 +358,7 @@ class SmartDialog private constructor(private val mActivity: Activity?) {
             mListMap[key] = dialogList
         }
 
+        @JvmStatic
         fun dismiss(activity: Activity) {
             val key = getKey(activity)
             val dialogList = mListMap[key]

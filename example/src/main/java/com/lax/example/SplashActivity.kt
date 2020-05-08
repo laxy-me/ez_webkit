@@ -7,15 +7,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.iid.FirebaseInstanceId
-import com.google.firebase.messaging.FirebaseMessaging
+import com.facebook.FacebookSdk
 import com.google.gson.Gson
 import com.lax.ezweb.Launcher
+import com.lax.ezweb.Preference
 import com.lax.ezweb.WebActivity
 import com.lax.ezweb.base.BaseActivity
 import com.lax.ezweb.data.model.VestConfig
@@ -42,12 +40,15 @@ class SplashActivity : BaseActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             f()
         }
+        FacebookSdk.sdkInitialize(applicationContext)
+        Log.e("wtf",Preference.get().pushId)
         Launcher.with(this, WebActivity::class.java)
             .putExtra(WebActivity.EX_TITLE, "")
             .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
-            .putExtra(WebActivity.EX_URL, "http://www.baidu.com")
+            .putExtra(WebActivity.EX_URL, "https://app.goex24.com?sign=AiCoin")
             .execute()
         finish()
+//        init()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)

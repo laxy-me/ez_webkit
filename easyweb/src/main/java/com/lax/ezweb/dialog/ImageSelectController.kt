@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.Keep
 import com.lax.ezweb.R
 
 /**
  * @author yangguangda
  * @date 2018/6/9
  */
+@Keep
 class ImageSelectController(private val mContext: Context) :
     SmartDialog.BaseCustomViewController() {
     private var onGetPhotoClickListener: OnGetPhotoClickListener? = null
@@ -18,6 +20,7 @@ class ImageSelectController(private val mContext: Context) :
         onGetPhotoClickListener = l
     }
 
+    @Keep
     interface OnGetPhotoClickListener {
         fun takePhoto(dialog: SmartDialog)
         fun takeFromGallery(dialog: SmartDialog)

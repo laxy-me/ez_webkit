@@ -93,19 +93,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="2s sikp" />
-
-        <TextView
-            android:id="@+id/skipAd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="40dp"
-            android:layout_marginBottom="40dp"
-            android:background="@drawable/skip_bg"
-            android:gravity="center"
-            android:text="skip"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

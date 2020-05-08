@@ -6,8 +6,8 @@ uploadArchives {
             repository(url: uri('/Users/WorkSpace/localRepository'))
             pom {
                 groupId = 'com.lax.ezweb'
-                artifactId = 'easyweb'
-                version = '0.0.7'
+                artifactId = 'easyweb-fcm'
+                version = '0.0.9'
                 packaging = 'aar'
             }
         }

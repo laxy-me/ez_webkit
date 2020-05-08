@@ -18,7 +18,7 @@ class ToastUtil private constructor() {
     companion object {
         private var toast: Toast? = null
         private var sContext: Context? = null
-
+        @JvmStatic
         fun init(context: Context) {
             if (toast == null) {
                 synchronized(ToastUtil::class.java) {
@@ -29,7 +29,7 @@ class ToastUtil private constructor() {
                 }
             }
         }
-
+        @JvmStatic
         fun showToast(text: String) {
             if (!TextUtils.isEmpty(text)) {
                 toast!!.setText(text)

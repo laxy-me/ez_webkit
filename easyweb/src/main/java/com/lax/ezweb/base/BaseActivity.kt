@@ -72,6 +72,7 @@ open class BaseActivity : TranslucentActivity() {
         }).request()
     }
 
+    @Keep
     interface AfterPermissionGranted {
         fun permissionGranted()
     }

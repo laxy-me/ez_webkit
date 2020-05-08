@@ -11,6 +11,7 @@ allprojects {
 	repositories {
 	    maven { url 'https://jitpack.io' }
         maven { url 'https://dl.bintray.com/umsdk/release' }
+        maven { url "https://dl.bintray.com/laxygd/easyweb" }
 }
  
 implementation 'com.lax.ezweb:easyweb-fcm:0.0.9'
@@ -43,6 +44,7 @@ manifestPlaceholders = [
 ## In Strings
 ```
 <string name="android_web_agent">ANDROID_AGENT_NATIVE/1.0&#8194;%1$s</string>
+<string name="facebook_app_id">Facebook App ID</string>
 
 can be:  
 ANDROID_AGENT_NATIVE/1.0
@@ -75,9 +77,9 @@ ANDROID_AGENT_NATIVE/2.0
 <meta-data
     android:name="ADJUST_TRACK_TOKEN"
     android:value="${ADJUST_TRACK_TOKEN}" />
-<meta-data
+  <meta-data
     android:name="com.facebook.sdk.ApplicationId"
-    android:value="${FACEBOOK_APP_ID}" />
+    android:value="@string/facebook_app_id" />
 
 <provider
     android:name="com.facebook.FacebookContentProvider"

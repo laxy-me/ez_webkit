@@ -4,11 +4,13 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.Keep
 
 /**
  * @author yangguangda
  * @date 2018/11/19
  */
+@Keep
 class GPermission(private val context: Context) {
     private var callback: PermissionCallback? = null
     private var permissions: Array<String>? = null
@@ -34,6 +36,7 @@ class GPermission(private val context: Context) {
         )
     }
 
+    @Keep
     companion object {
         @JvmStatic
         fun hasSelfPermissions(activity: Activity, permissions: Array<String>): Boolean {

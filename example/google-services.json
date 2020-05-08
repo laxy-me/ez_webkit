@@ -1,43 +1,42 @@
 {
   "project_info": {
-    "project_number": "352288149499",
-    "firebase_url": "https://myfirebase-9867a.firebaseio.com",
-    "project_id": "myfirebase-9867a",
-    "storage_bucket": "myfirebase-9867a.appspot.com"
+    "project_number": "277674602070",
+    "firebase_url": "https://fore-vole.firebaseio.com",
+    "project_id": "fore-vole",
+    "storage_bucket": "fore-vole.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:352288149499:android:59957c8bda650f7c09455e",
+        "mobilesdk_app_id": "1:277674602070:android:bb3a30298a4c46e71055f7",
         "android_client_info": {
           "package_name": "com.lax.example"
         }
       },
       "oauth_client": [
         {
-          "client_id": "352288149499-hidhpj8ooi4m3bts7atlqu2vbdb6b5v5.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.lax.example",
-            "certificate_hash": "9d62a4eeb731fe0311fb412a452ad11a7b09cb5b"
-          }
-        },
-        {
-          "client_id": "352288149499-nt7c80iaen5b09gpnvocbjpjbfiqdrt0.apps.googleusercontent.com",
+          "client_id": "277674602070-ofanb1ueur6t2k7cg9g8of6g5bga56c4.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBeMlbBE1MlIceXWG5EzeRDfXgE7CFHv6I"
+          "current_key": "AIzaSyD-7FPRa84zg_7-ua2_8e979eLM7Ehf4Dg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "352288149499-nt7c80iaen5b09gpnvocbjpjbfiqdrt0.apps.googleusercontent.com",
+              "client_id": "277674602070-ofanb1ueur6t2k7cg9g8of6g5bga56c4.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "277674602070-rbit8o1di9ic1kh84niosismsoao2r5e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.wangxingyuan.forexvole"
+              }
             }
           ]
         }
@@ -45,73 +44,35 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:352288149499:android:f6afd7b67eae3860",
+        "mobilesdk_app_id": "1:277674602070:android:1b64c88135fbafc91055f7",
         "android_client_info": {
-          "package_name": "org.telegram.messenger"
+          "package_name": "com.wangxingyuan.forexvole"
         }
       },
       "oauth_client": [
         {
-          "client_id": "352288149499-oauaqe40r2rrdeo3utijvuhs0mvfac9q.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "org.telegram.messenger",
-            "certificate_hash": "48828685f27c83a4a0e84de7e4be09391d3c3311"
-          }
-        },
-        {
-          "client_id": "352288149499-nt7c80iaen5b09gpnvocbjpjbfiqdrt0.apps.googleusercontent.com",
+          "client_id": "277674602070-ofanb1ueur6t2k7cg9g8of6g5bga56c4.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBeMlbBE1MlIceXWG5EzeRDfXgE7CFHv6I"
+          "current_key": "AIzaSyD-7FPRa84zg_7-ua2_8e979eLM7Ehf4Dg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "352288149499-nt7c80iaen5b09gpnvocbjpjbfiqdrt0.apps.googleusercontent.com",
+              "client_id": "277674602070-ofanb1ueur6t2k7cg9g8of6g5bga56c4.apps.googleusercontent.com",
               "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:352288149499:android:dc022572c167a16c",
-        "android_client_info": {
-          "package_name": "org.telegram.messenger.beta"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "352288149499-smpvv9rldm2h06mj445i16hp315fm04d.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "org.telegram.messenger.beta",
-            "certificate_hash": "48828685f27c83a4a0e84de7e4be09391d3c3311"
-          }
-        },
-        {
-          "client_id": "352288149499-nt7c80iaen5b09gpnvocbjpjbfiqdrt0.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBeMlbBE1MlIceXWG5EzeRDfXgE7CFHv6I"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
+            },
             {
-              "client_id": "352288149499-nt7c80iaen5b09gpnvocbjpjbfiqdrt0.apps.googleusercontent.com",
-              "client_type": 3
+              "client_id": "277674602070-rbit8o1di9ic1kh84niosismsoao2r5e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.wangxingyuan.forexvole"
+              }
             }
           ]
         }

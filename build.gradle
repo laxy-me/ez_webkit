@@ -27,6 +27,7 @@ allprojects {
         maven { url 'https://jitpack.io' }
         maven { url "http://mvn.gt.igexin.com/nexus/content/repositories/releases/" }
         maven { url 'https://dl.bintray.com/umsdk/release' }
+        maven { url "https://dl.bintray.com/laxygd/easyweb" }
 //        maven { url 'file:///Users/WorkSpace/localRepository' }
     }
 

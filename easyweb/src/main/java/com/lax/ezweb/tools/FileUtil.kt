@@ -16,13 +16,15 @@ import java.util.*
 class FileUtil {
     companion object {
         private const val folder = "picture"
+
         @JvmStatic
         fun saveBitmap(context: Context, bitmap: Bitmap): String {
-            val savePath: String = if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
-                Environment.getExternalStorageDirectory().absolutePath
-            } else {
-                context.applicationContext.externalCacheDir!!.absolutePath
-            }
+            val savePath: String =
+                if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
+                    Environment.getExternalStorageDirectory().absolutePath
+                } else {
+                    context.applicationContext.externalCacheDir!!.absolutePath
+                }
             val filePic: File
             return try {
                 filePic = File("$savePath/$folder/${generateFileName()}.jpg")
