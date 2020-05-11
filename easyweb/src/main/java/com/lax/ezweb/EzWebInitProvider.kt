@@ -15,6 +15,9 @@ import com.adjust.sdk.AdjustConfig
 import com.facebook.appevents.AppEventsLogger
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
+import com.igexin.sdk.PushManager
+import com.lax.ezweb.service.MyPushService
+import com.lax.ezweb.service.PushIntentService
 import com.lax.ezweb.tools.AppInfo
 import com.lax.ezweb.tools.ToastUtil
 import com.umeng.analytics.MobclickAgent
@@ -46,6 +49,7 @@ class EzWebInitProvider : ContentProvider() {
                 initBranch(application)
                 initUm(application)
                 initFacebook(application)
+                initPush(application)
                 initFCM()
             } catch (e: Exception) {
                 e.stackTrace
@@ -64,7 +68,7 @@ class EzWebInitProvider : ContentProvider() {
                 // Get new Instance ID token
                 val token = task.result?.token
                 Log.d("fcm", token)
-                Preference.get().pushId = token ?: ""
+                Preference.get().fcmToken = token ?: ""
             })
     }
 
@@ -79,6 +83,20 @@ class EzWebInitProvider : ContentProvider() {
             UMConfigure.init(application, UMConfigure.DEVICE_TYPE_PHONE, "")
             // 选用AUTO页面采集模式
             MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.AUTO);
+        }
+    }
+
+    private fun initPush(context: Context) {
+        val pushAppId = AppInfo.getMetaData(context, "PUSH_APPID")
+        if (pushAppId.isNotBlank()) {
+            //for google play store
+            PushManager.getInstance()
+                .registerPushIntentService(context, PushIntentService::class.java)
+            PushManager.getInstance().initialize(context, MyPushService::class.java)
+            PushManager.getInstance().setPrivacyPolicyStrategy(context, true)
+
+            //2.14.0.0 for other markets
+//            PushManager.getInstance().initialize(context)
         }
     }
 

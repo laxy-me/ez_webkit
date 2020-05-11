@@ -67,6 +67,15 @@ open class AppJs(private val mContext: Context) {
     }
 
     /**
+     * 获取fcm 令牌
+     */
+    @JavascriptInterface
+    fun takeFCMPushId(): String {
+        Log.v(TAG, "takeFCMPushId:${Preference.get().fcmToken}")
+        return Preference.get().fcmToken
+    }
+
+    /**
      * 获取渠道
      */
     @JavascriptInterface

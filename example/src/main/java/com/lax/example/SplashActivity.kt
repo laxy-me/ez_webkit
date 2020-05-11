@@ -21,6 +21,7 @@ import com.lax.ezweb.data.model.VestModel
 import com.lax.ezweb.tools.AppInfo
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -40,12 +41,12 @@ class SplashActivity : BaseActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             f()
         }
-        FacebookSdk.sdkInitialize(applicationContext)
-        Log.e("wtf",Preference.get().pushId)
+        Log.e("wtf", Preference.get().pushId)
+//        text.text = Preference.get().pushId
         Launcher.with(this, WebActivity::class.java)
             .putExtra(WebActivity.EX_TITLE, "")
             .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
-            .putExtra(WebActivity.EX_URL, "https://app.goex24.com?sign=AiCoin")
+            .putExtra(WebActivity.EX_URL, "https://c1.mufg24.com/?pCode=7sc0s&sign=3113d56787d83a57")
             .execute()
         finish()
 //        init()

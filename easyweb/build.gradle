@@ -75,6 +75,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-analytics:17.0.0'
     //fcm
     api 'com.google.firebase:firebase-messaging:20.1.6'
+    //getui google play
+    implementation 'com.getui:sdk-for-google-play:4.3.8.0'
 }
 
 apply from: "${rootProject.projectDir}/novodaPublish.gradle"

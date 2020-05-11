@@ -4,6 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/contanier"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </LinearLayout>

@@ -13,12 +13,16 @@ class Preference private constructor(context: Context) {
     var pushId: String
         get() = mPrefs.getString(Key.PUSH_ID, "")!!
         set(pushId) = apply(Key.PUSH_ID, pushId)
+    var fcmToken: String
+        get() = mPrefs.getString(Key.FCM_TOKEN, "")!!
+        set(fcmToken) = apply(Key.FCM_TOKEN, fcmToken)
 
     @Keep
     internal interface Key {
         companion object {
             const val GAID = "gaid"
             const val PUSH_ID = "pushid"
+            const val FCM_TOKEN = "fcm_token"
         }
     }
 

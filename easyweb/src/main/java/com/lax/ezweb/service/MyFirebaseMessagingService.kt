@@ -30,12 +30,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onNewToken(s: String) {
         super.onNewToken(s)
         Log.i(TAG, "onNewToken===$s")
-        Preference.get().pushId = s
+        Preference.get().fcmToken = s
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-        // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: ${remoteMessage.from}")
 

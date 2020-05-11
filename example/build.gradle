@@ -21,6 +21,9 @@ android {
 
         manifestPlaceholders = [
                 CHANNEL           : "origin",
+                GETUI_APP_ID      : "",
+                GETUI_APP_KEY     : "",
+                GETUI_APP_SECRET  : "",
                 UMENG_APP_KEY     : "",
                 ADJUST_APPTOKEN   : "",
                 ADJUST_TRACK_TOKEN: "",

@@ -94,16 +94,16 @@
 }
 
 
-# Remove log code
--assumenosideeffects class android.util.Log {
-   public static *** v(...);
-   public static *** i(...);
-   public static *** d(...);
-   public static *** w(...);
-   public static *** e(...);
-   public static *** wtf(...);
-   public static *** println(...);
-}
+## Remove log code
+#-assumenosideeffects class android.util.Log {
+#   public static *** v(...);
+#   public static *** i(...);
+#   public static *** d(...);
+#   public static *** w(...);
+#   public static *** e(...);
+#   public static *** wtf(...);
+#   public static *** println(...);
+#}
 
 #不混淆使用了 annotation的类
 -keepattributes *Annotation*
