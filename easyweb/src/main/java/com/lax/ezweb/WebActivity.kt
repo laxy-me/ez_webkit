@@ -56,6 +56,7 @@ import java.io.*
 import java.net.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+
 @Keep
 open class WebActivity : BaseActivity() {
     companion object {
@@ -579,14 +580,15 @@ open class WebActivity : BaseActivity() {
                 }
             }
         } else if (url.startsWith("intent://")) {
-            val newUrl: String = parseUrlString(url)
-            Log.e("wtf", newUrl)
-            intent.action = Intent.ACTION_VIEW
-            intent.data = Uri.parse(newUrl)
-//            if (intent.resolveActivity(packageManager) != null) {
-            startActivity(intent)
-            return true
-//            }
+            try {
+                val newUrl: String = parseUrlString(url)
+                Log.e("wtf", newUrl)
+                intent.action = Intent.ACTION_VIEW
+                intent.data = Uri.parse(newUrl)
+                startActivity(intent)
+                return true
+            } catch (e: Exception) {
+            }
         }
         return false
     }

@@ -10,6 +10,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.Keep
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustConfig
 import com.facebook.appevents.AppEventsLogger
@@ -30,6 +31,7 @@ import io.branch.referral.Branch
  * @author yangguangda
  * @date 2020/3/31
  */
+@Keep
 class EzWebInitProvider : ContentProvider() {
     companion object {
         @SuppressLint("StaticFieldLeak")

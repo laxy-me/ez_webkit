@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.facebook.FacebookSdk
 import com.google.gson.Gson
+import com.lax.ezweb.EzWebInitProvider
 import com.lax.ezweb.Launcher
 import com.lax.ezweb.Preference
 import com.lax.ezweb.WebActivity
@@ -38,15 +39,12 @@ class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            f()
-        }
-        Log.e("wtf", Preference.get().pushId)
-//        text.text = Preference.get().pushId
+        adid.text = Preference.get().Gaid
+        androidId.text = AppInfo.getAndroidId(applicationContext)
         Launcher.with(this, WebActivity::class.java)
             .putExtra(WebActivity.EX_TITLE, "")
             .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
-            .putExtra(WebActivity.EX_URL, "https://c1.mufg24.com/?pCode=7sc0s&sign=3113d56787d83a57")
+            .putExtra(WebActivity.EX_URL, "http://turnpageinc.com/users")
             .execute()
         finish()
 //        init()

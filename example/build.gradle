@@ -103,11 +103,11 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation("com.squareup.okhttp3:okhttp:4.4.0")
 
-    implementation project(path: ':easyweb')
+//    implementation project(path: ':easyweb')
     implementation 'com.github.bumptech.glide:glide:4.5.0'
     kapt 'com.github.bumptech.glide:compiler:4.5.0'
 //    implementation 'com.lax.ezweb:easyweb:0.0.9'
-//    implementation 'com.lax.ezweb:easyweb-fcm:0.0.9'
+    implementation 'com.lax.ezweb:easyweb-fcm:0.1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

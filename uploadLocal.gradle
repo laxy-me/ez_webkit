@@ -7,7 +7,7 @@ uploadArchives {
             pom {
                 groupId = 'com.lax.ezweb'
                 artifactId = 'easyweb-fcm'
-                version = '0.0.9'
+                version = '0.1.0'
                 packaging = 'aar'
             }
         }

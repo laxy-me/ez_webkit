@@ -118,9 +118,7 @@
 -keep class javax.annotation.** { *; }
 -keep interface androidx.** { *; }
 
--keep class **$Companion{
-    *;
-}
+-keep class **$Companion{ *; }
 ## ------------------------------------------------------------------------------------------------
 ## 友盟
 -keep class com.umeng.** {*;}

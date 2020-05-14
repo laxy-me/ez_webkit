@@ -5,9 +5,25 @@
     android:id="@+id/contanier"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="vertical">
+
     <TextView
-        android:id="@+id/text"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:text="广告id" />
+
+    <TextView
+        android:id="@+id/adid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="AndroidId" />
+
+    <TextView
+        android:id="@+id/androidId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>
