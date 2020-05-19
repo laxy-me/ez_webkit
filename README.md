@@ -68,6 +68,15 @@ ANDROID_AGENT_NATIVE/2.0(default)
 <meta-data
     android:name="CHANNEL"
     android:value="${CHANNEL}" />
+ <meta-data
+    android:name="PUSH_APPID"
+    android:value="${GETUI_APP_ID}" />
+<meta-data
+    android:name="PUSH_APPKEY"
+    android:value="${GETUI_APP_KEY}" />
+<meta-data
+    android:name="PUSH_APPSECRET"
+    android:value="${GETUI_APP_SECRET}" />
 <meta-data
 	android:name="UMENG_APPKEY"
 	android:value="${UMENG_APP_KEY}" />
