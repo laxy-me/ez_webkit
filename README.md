@@ -14,17 +14,20 @@ allprojects {
         maven { url "https://dl.bintray.com/laxygd/easyweb" }
 }
  
-implementation 'com.lax.ezweb:easyweb-fcm:0.0.9'
+implementation 'com.lax.ezweb:easyweb-fcm:0.1.1'
 ```
 
 ## In app gradle
 ```
 manifestPlaceholders = [
-	CHANNEL           : "",
-	UMENG_APP_KEY     : "",
-	ADJUST_APPTOKEN   : "",
-	ADJUST_TRACK_TOKEN: "",
-	FACEBOOK_APP_ID   : "",
+        CHANNEL           : "origin",
+        GETUI_APP_ID      : "",
+        GETUI_APP_KEY     : "",
+        GETUI_APP_SECRET  : "",
+        UMENG_APP_KEY     : "",
+        ADJUST_APPTOKEN   : "",
+        ADJUST_TRACK_TOKEN: "",
+        FACEBOOK_APP_ID   : "",
 ]
 
  productFlavors {
@@ -43,12 +46,12 @@ manifestPlaceholders = [
 
 ## In Strings
 ```
-<string name="android_web_agent">ANDROID_AGENT_NATIVE/1.0&#8194;%1$s</string>
+<string name="android_web_agent">ANDROID_AGENT_NATIVE/2.0&#8194;%1$s</string>
 <string name="facebook_app_id">Facebook App ID</string>
 
 can be:  
 ANDROID_AGENT_NATIVE/1.0
-ANDROID_AGENT_NATIVE/2.0
+ANDROID_AGENT_NATIVE/2.0(default)
 ```
 
 ## In Manifest

@@ -39,12 +39,14 @@ class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        adid.text = Preference.get().Gaid
-        androidId.text = AppInfo.getAndroidId(applicationContext)
+//        adid.text = Preference.get().Gaid
+//        androidId.text = AppInfo.getAndroidId(applicationContext)
         Launcher.with(this, WebActivity::class.java)
             .putExtra(WebActivity.EX_TITLE, "")
             .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
-            .putExtra(WebActivity.EX_URL, "http://turnpageinc.com/users")
+//            .putExtra(WebActivity.EX_URL, "https://app.goex24.com?sign=AiCoin")
+            .putExtra(WebActivity.EX_URL, "https://app.mallucky.com")
+//            .putExtra(WebActivity.EX_URL, "https://manage.mufg24.com/admin/app_bridge.html")
             .execute()
         finish()
 //        init()
@@ -149,7 +151,7 @@ class SplashActivity : BaseActivity() {
         val launcher = Launcher.with(this, WebActivity::class.java)
             .putExtra(WebActivity.EX_TITLE, "")
             .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
-            .putExtra(WebActivity.EX_URL, "http://47.104.65.60:443/topup")
+            .putExtra(WebActivity.EX_URL, data?.h5Url ?: "")
             .putExtra(WebActivity.EX_TITLE_BG, data?.backgroundCol ?: "")
             .putExtra(WebActivity.EX_TITLE_FIELD_COLOR, data?.fieldCol ?: "")
         if (data?.advOn == 1) {
@@ -157,7 +159,7 @@ class SplashActivity : BaseActivity() {
                 .putExtra(
                     WebActivity.EX_AD_URL,
                     data.advImg
-                        ?: "https://dss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3386247472,87720242&fm=26&gp=0.jpg"
+                        ?: ""
                 )
                 .putExtra(WebActivity.EX_AD_CONTENT, data.advUrl ?: "")
         }

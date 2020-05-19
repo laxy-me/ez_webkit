@@ -6,7 +6,7 @@
     <string name="ok">Confirm</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
-    <string name="android_web_agent">ANDROID_AGENT_NATIVE/1.0&#8194;%1$s</string>
+    <string name="android_web_agent">ANDROID_AGENT_NATIVE/2.0&#8194;%1$s</string>
 
     <string name="take_phone_from_camera">Camera</string>
     <string name="take_phone_from_phone">Gallery</string>

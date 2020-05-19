@@ -18,6 +18,10 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.lax.ezweb.data.model.ShareData
+import com.lax.ezweb.plugin.FacebookPlugin
+import com.lax.ezweb.plugin.GoogleLoginPlugin
+import com.lax.ezweb.plugin.PayTmPlugin
+import com.lax.ezweb.plugin.SharePlugin
 import com.lax.ezweb.tools.AppInfo
 import com.umeng.analytics.MobclickAgent
 import io.branch.referral.util.BranchEvent
@@ -113,7 +117,18 @@ open class AppJs(private val mContext: Context) {
     fun openGoogle(data: String) {
         if (mContext is WebActivity) {
             Log.v(TAG, "openGoogle:${data}")
-            mContext.googleLogin(data)
+            GoogleLoginPlugin.getInstance().googleLogin(mContext, data)
+        }
+    }
+
+    /**
+     * 调取facebook登录方法
+     */
+    @JavascriptInterface
+    fun loginFacebook(data: String) {
+        if (mContext is WebActivity) {
+            Log.v(TAG, "loginFacebook:${data}")
+            FacebookPlugin.getInstance().facebookLogin(mContext, data)
         }
     }
 
@@ -138,7 +153,6 @@ open class AppJs(private val mContext: Context) {
         Log.v(TAG, "branchEvent:\neventName:${eventName}")
         BranchEvent(eventName)
             .logEvent(mContext);
-
     }
 
     /**
@@ -292,7 +306,7 @@ open class AppJs(private val mContext: Context) {
     fun openPayTm(data: String) {
         Log.v(TAG, "openPayTm:${data}")
         if (mContext is WebActivity) {
-            mContext.openPayTm(data)
+            PayTmPlugin.openPayTm(data, mContext)
         }
     }
 
@@ -361,10 +375,10 @@ open class AppJs(private val mContext: Context) {
         if (mContext is WebActivity) {
             when (type) {
                 "facebook" -> {
-                    mContext.shareToFacebook(shareData)
+                    FacebookPlugin.getInstance().shareToFacebook(mContext, shareData)
                 }
                 "whatsapp" -> {
-                    mContext.shareToWhatsApp(shareData)
+                    SharePlugin.getInstance().shareToWhatsApp(mContext, shareData)
                 }
                 else -> {
                 }
@@ -487,23 +501,6 @@ open class AppJs(private val mContext: Context) {
                 launcher.putExtra(WebActivity.EX_TITLE, title)
             }
             when {
-//                url.contains("app.appsflyer.com") -> {
-//                    val replaceUrl = url
-//                        .replace("{android_id}", AppInfo.getAndroidId(mContext))
-//                        .replace("{advertising_id}", Preference.get().Gaid)
-//                        .replace("{imei}", AppInfo.getImei(mContext))
-//                    launcher.putExtra(WebActivity.EX_URL, replaceUrl)
-//                        .putExtra(WebActivity.EX_HAS_TITLE_BAR, hasTitleBar).execute()
-//                }
-//                url.contains("app.adjust.com") -> {
-//                    Log.e(TAG, url)
-//                    val replaceUrl = url
-//                        .replace("{network_androidId_macro}", AppInfo.getAndroidId(mContext))
-//                        .replace("{network_gaid_macro}", Preference.get().Gaid)
-//                    Log.e(TAG, replaceUrl)
-//                    launcher.putExtra(WebActivity.EX_URL, replaceUrl)
-//                        .putExtra(WebActivity.EX_HAS_TITLE_BAR, hasTitleBar).execute()
-//                }
                 else -> launcher.putExtra(WebActivity.EX_URL, url)
                     .putExtra(WebActivity.EX_HAS_TITLE_BAR, hasTitleBar)
                     .execute()

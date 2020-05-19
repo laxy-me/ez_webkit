@@ -21,16 +21,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.webkit.*
-import android.webkit.CookieManager
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
+import com.facebook.*
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 import com.facebook.share.Sharer
 import com.facebook.share.model.ShareLinkContent
 import com.facebook.share.widget.ShareDialog
@@ -39,21 +38,31 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
 import com.google.gson.Gson
 import com.lax.ezweb.base.BaseActivity
 import com.lax.ezweb.data.CookieManger
 import com.lax.ezweb.data.model.*
 import com.lax.ezweb.dialog.ImageSelectController
 import com.lax.ezweb.dialog.SmartDialog
-import com.lax.ezweb.tools.*
+import com.lax.ezweb.dowload.ImageDownloadTask
+import com.lax.ezweb.plugin.FacebookPlugin
+import com.lax.ezweb.plugin.GoogleLoginPlugin
+import com.lax.ezweb.plugin.PayTmPlugin
+import com.lax.ezweb.plugin.SharePlugin
+import com.lax.ezweb.tools.AppInfo
+import com.lax.ezweb.tools.FileUtils
+import com.lax.ezweb.tools.ImageUtil
+import com.lax.ezweb.tools.ToastUtil
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import kotlinx.android.synthetic.main.web.*
 import kotlinx.coroutines.*
 import java.io.*
-import java.net.*
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
+import java.net.URL
+import java.net.URLDecoder
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -62,10 +71,6 @@ open class WebActivity : BaseActivity() {
     companion object {
         const val INFO_HTML_META =
             "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\">"
-
-        const val SHARE_RESULT_CODE = 11111
-        const val GOOGLE_LOGIN = 46507
-        const val PAYTM_REQUEST_CODE = 11112
 
         const val EX_TITLE_BG = "backgroundCol"
         const val EX_TITLE_FIELD_COLOR = "fieldCol"
@@ -78,14 +83,6 @@ open class WebActivity : BaseActivity() {
         const val EX_AD_URL = "ad_url"
         const val EX_AD_CONTENT = "ad_content"
         const val EX_AD_TIME = "ad_time"
-
-        //生产环境
-        const val URL_PAYTM_PRODUCTION: String =
-            "https://securegw.paytm.in/theia/api/v1/showPaymentPage"
-
-        //测试环境
-        const val URL_PAYTM_TEST: String =
-            "https://securegw-stage.paytm.in/theia/api/v1/showPaymentPage"
     }
 
     private var mLoadSuccess: Boolean = false
@@ -104,10 +101,6 @@ open class WebActivity : BaseActivity() {
     private var mWebViewClient: MyWebViewClient? = null
 
     private var mPostData: String? = null
-
-    private var callbackManager: CallbackManager? = null
-    private var shareDialog: ShareDialog? = null
-    private var shareData: ShareData? = null
 
     private val isNeedViewTitle: Boolean
         get() = true
@@ -407,7 +400,7 @@ open class WebActivity : BaseActivity() {
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ), intArrayOf(), object : AfterPermissionGranted {
                 override fun permissionGranted() {
-                    DownloadTask().execute(url)
+                    ImageDownloadTask().execute(url)
                 }
             }
         )
@@ -593,9 +586,9 @@ open class WebActivity : BaseActivity() {
         return false
     }
 
-    /*
-    * 利用正则表达式，提取出：https://play.google.com/store/apps/details?id%3Dcom.whizdm.moneyview.loans
-    */
+    /**
+     * 利用正则表达式，提取出：https://play.google.com/store/apps/details?id%3Dcom.whizdm.moneyview.loans
+     */
     private fun parseUrlString(url: String): String {
         val regEx = "(link=)(.*)(#)"
         val p: Pattern = Pattern.compile(regEx)
@@ -693,95 +686,6 @@ open class WebActivity : BaseActivity() {
         }
     }
 
-    private lateinit var gso: GoogleSignInOptions
-    private lateinit var googleSignInClient: GoogleSignInClient
-    private var host = ""
-    private var sign = ""
-    open fun googleLogin(data: String?) {
-        val googleData: LoginGoogleData = Gson().fromJson(data, LoginGoogleData::class.java)
-        this.host = googleData.host!!
-        this.sign = googleData.sign!!
-        gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .requestId()
-            .requestProfile()
-            .build()
-        googleSignInClient = GoogleSignIn.getClient(this, gso)
-        val intent = googleSignInClient.signInIntent
-        startActivityForResult(intent, GOOGLE_LOGIN)
-    }
-
-    private fun handleResult(googleData: Task<GoogleSignInAccount>) {
-        try {
-            val signInAccount = googleData.getResult(ApiException::class.java)
-            val acct = GoogleSignIn.getLastSignedInAccount(this)
-            if (signInAccount != null) {
-                val id = signInAccount.id
-                val name = signInAccount.displayName
-                runBlocking {
-                    launch() {
-                        val response = withContext(Dispatchers.IO) {
-                            val url = "${host}/user/google/doLogin2.do" +
-                                    "?id=${id}&name=${name}&sign=${sign}"
-                            try {
-                                val conn = URL(url).openConnection()
-                                conn.connectTimeout = 5000
-                                conn.connect()
-                                if ((conn as HttpURLConnection).responseCode in 200..299) {
-                                    val inputStream = conn.getInputStream()
-                                    val bufferSize = 1024
-                                    val buffer = CharArray(bufferSize)
-                                    val out = java.lang.StringBuilder()
-                                    val `in`: Reader =
-                                        InputStreamReader(inputStream, "UTF-8")
-                                    while (true) {
-                                        val rsz = `in`.read(buffer, 0, buffer.size)
-                                        if (rsz < 0) break
-                                        out.append(buffer, 0, rsz)
-                                    }
-                                    out.toString()
-                                } else {
-                                    ""
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                ""
-                            }
-                        }
-                        if (response.isNotBlank()) {
-                            val googleToken: GoogleLoginToken? =
-                                Gson().fromJson(response, GoogleLoginResponse::class.java).data
-                            val rawCookie: String = createTokenStr(
-                                "token1", googleToken?.token1!!
-                            ) + "\n" + createTokenStr("token2", googleToken.token2)
-                            if (!TextUtils.isEmpty(rawCookie) && !TextUtils.isEmpty(host)) {
-                                val cookies = rawCookie.split("\n").toTypedArray()
-                                for (cookie in cookies) {
-                                    CookieManager.getInstance().setCookie(host, cookie)
-                                }
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    CookieManager.getInstance().flush()
-                                } else {
-                                    CookieSyncManager.getInstance().sync()
-                                }
-                                webView.loadUrl(URLDecoder.decode(googleToken.url))
-                            }
-                        }
-                    }
-                }
-            } else {
-                Log.e("account", "si为空:" + "\n")
-            }
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-            Log.e("account", "si异常:\n$e")
-        }
-    }
-
-    private fun createTokenStr(name: String, value: String): String {
-        return "$name=\"$value\";expires=1; path=/"
-    }
-
     private inner class NetworkReceiver : Network.NetworkChangeReceiver() {
         override fun onNetworkChanged(availableNetworkType: Int) {
             if (availableNetworkType > Network.NET_NONE && !mLoadSuccess) {
@@ -792,161 +696,11 @@ open class WebActivity : BaseActivity() {
         }
     }
 
-    @SuppressLint("StaticFieldLeak")
-    inner class DownloadTask : AsyncTask<String, Void, File?>() {
-
-        /**
-         * 主要是完成耗时的操作
-         */
-        override fun doInBackground(vararg url: String): File? {
-            val imgUrl: URL?
-            val bitmap: Bitmap?
-            try {
-                imgUrl = URL(url[0])
-                val conn = imgUrl.openConnection()
-                val http = conn as HttpURLConnection
-                val length = http.contentLength
-                conn.connect()
-                //获得图像的字符流
-                val `is` = conn.getInputStream()
-                val bis = BufferedInputStream(`is`, length)
-                bitmap = BitmapFactory.decodeStream(bis)
-                bis.close()
-                `is`.close()
-                return save2Album(bitmap, "${System.currentTimeMillis()}.jpg")
-            } catch (e: MalformedURLException) {
-                println("[getNetWorkBitmap->]MalformedURLException")
-                e.printStackTrace()
-            } catch (e: IOException) {
-                println("[getNetWorkBitmap->]IOException")
-                e.printStackTrace()
-            }
-            return null
-        }
-
-        override fun onPostExecute(result: File?) {
-            super.onPostExecute(result)
-            if (result == null) {
-                return
-            }
-            saveImage2Gallery(result)
-        }
-    }
-
-    private fun save2Album(bitmap: Bitmap, fileName: String): File {
-        val file = FileUtils.createFile(fileName, Environment.DIRECTORY_PICTURES)
-        var fos: FileOutputStream? = null
-        try {
-            fos = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-            fos.flush()
-            fos.close()
-            runOnUiThread {
-                Toast.makeText(
-                    this@WebActivity,
-                    getString(R.string.save_success),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        } catch (e: Exception) {
-            runOnUiThread {
-                Toast.makeText(
-                    this@WebActivity,
-                    getString(R.string.save_fail),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            e.printStackTrace()
-        } finally {
-            try {
-                fos!!.close()
-            } catch (ignored: Exception) {
-                ignored.printStackTrace()
-            }
-        }
-        return file
-    }
-
-    fun saveImage2Gallery(file: File) {
-        // 其次把文件插入到系统图库
-        try {
-            MediaStore.Images.Media.insertImage(
-                EzWebInitProvider.autoContext!!.contentResolver,
-                file.absolutePath, file.name, null
-            )
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        }
-        // 最后通知图库更新
-        val intent = Intent(
-            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-            FileUtils.getImageContentUri(EzWebInitProvider.autoContext!!, file)
-        )
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-        EzWebInitProvider.autoContext!!.sendBroadcast(intent)
-        if (file.exists()) {
-            file.delete()
-            FileUtils.updateFileFromDatabase(EzWebInitProvider.autoContext!!, file)
-        }
-    }
-
-    fun shareToFacebook(shareData: ShareData) {
-        callbackManager = CallbackManager.Factory.create()
-        shareDialog = ShareDialog(this)
-        val linkContent = ShareLinkContent.Builder()
-            .setContentUrl(Uri.parse(shareData.url))
-            .setQuote(shareData.content)
-            .build()
-        shareDialog?.registerCallback(
-            callbackManager,
-            object : FacebookCallback<Sharer.Result> {
-                override fun onSuccess(result: Sharer.Result?) {
-                    shareCallBack(shareData.domainUrl, shareData.inviteCode, 1)
-                }
-
-                override fun onCancel() {
-                }
-
-                override fun onError(error: FacebookException?) {
-                    error?.printStackTrace()
-                }
-            })
-        shareDialog?.show(linkContent)
-    }
-
-    fun shareToWhatsApp(data: ShareData) {
-        this.shareData = data
-        shareWithPackageName("com.whatsapp", "", data.content)
-    }
-
-    private fun shareWithPackageName(
-        packageName: String,
-        className: String,
-        content: String
-    ) {
-        if (AppInfo.isAPPInstalled(this, packageName)) {
-            try {
-                val vIt = Intent(Intent.ACTION_SEND)
-                vIt.type = "text/plain"
-                vIt.setPackage(packageName)
-                if (!TextUtils.isEmpty(className)) {
-                    vIt.setClassName(packageName, className)
-                }
-                vIt.putExtra(Intent.EXTRA_TEXT, content)
-                vIt.addFlags(
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
-                startActivityForResult(vIt, SHARE_RESULT_CODE)
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-            }
-        } else {
-            ToastUtil.showToast(R.string.app_not_installed)
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        PayTmPlugin.onActivityResult(requestCode, resultCode, data)
+        FacebookPlugin.onActivityResult(requestCode, resultCode, data)
+        GoogleLoginPlugin.onActivityResult(requestCode, resultCode, data)
+        SharePlugin.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
             when (requestCode) {
@@ -963,74 +717,6 @@ open class WebActivity : BaseActivity() {
                         callback2Web(ImageUtil.compressImageToBase64(path)!!)
                     }
                 }
-
-            }
-        }
-        if (requestCode == GOOGLE_LOGIN) {
-            val signedInAccountFromIntent = GoogleSignIn.getSignedInAccountFromIntent(data)
-            handleResult(signedInAccountFromIntent)
-        }
-        if (requestCode == SHARE_RESULT_CODE) {
-            shareCallBack(shareData?.domainUrl ?: "", shareData?.inviteCode ?: "", 2)
-        }
-        if (requestCode == PAYTM_REQUEST_CODE && data != null) {
-            Log.i(TAG, "PayTmCallback:" + data.getStringExtra("response"))
-        }
-    }
-
-    /**
-     * 需要app 配合 调用接口 分享链接之后 调用接口
-     * /user/userTask/dailyFaceAndWhats.do
-     * inviteCode 邀请码
-     * type  1:facebook  2 whatsApp
-     */
-    private fun shareCallBack(domainUrl: String, inviteCode: String, type: Int) {
-        runBlocking {
-            val response = withContext(Dispatchers.IO) {
-                val url =
-                    "${domainUrl}/user/userTask/dailyFaceAndWhats.do?inviteCode=${inviteCode}&type=${type}"
-                try {
-                    val conn = URL(url).openConnection()
-                    conn.connectTimeout = 5000
-                    conn.connect()
-                    (conn as HttpURLConnection).responseCode
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    500
-                }
-            }
-            if (response in 200..299) {
-                Log.e(TAG, "share success")
-                webView.reload()
-            }
-        }
-    }
-
-    fun openPayTm(data: String) {
-        val payInfo: PayTmInfo = Gson().fromJson(data, PayTmInfo::class.java)
-        try {
-            val bundle = Bundle()
-            bundle.putDouble("nativeSdkForMerchantAmount", payInfo.amount)
-            bundle.putString("orderid", payInfo.orderId)
-            bundle.putString("txnToken", payInfo.textToken)
-            bundle.putString("mid", payInfo.mid)
-            val paytmIntent = Intent()
-            paytmIntent.component =
-                ComponentName("net.one97.paytm", "net.one97.paytm.AJRJarvisSplash")
-            // You must have to pass hard coded 2 here, Else your transaction would not proceed.
-            paytmIntent.putExtra("paymentmode", 2)
-            paytmIntent.putExtra("bill", bundle)
-            startActivityForResult(paytmIntent, PAYTM_REQUEST_CODE)
-        } catch (e: ActivityNotFoundException) {
-            runOnUiThread {
-                val postData = StringBuilder()
-                postData.append("MID=").append(payInfo.mid)
-                    .append("&txnToken=").append(payInfo.textToken)
-                    .append("&ORDER_ID=").append(payInfo.orderId)
-                webView.postUrl(
-                    URL_PAYTM_PRODUCTION + "?mid=" + payInfo.mid + "&orderId=" + payInfo.orderId,
-                    postData.toString().toByteArray()
-                )
             }
         }
     }
