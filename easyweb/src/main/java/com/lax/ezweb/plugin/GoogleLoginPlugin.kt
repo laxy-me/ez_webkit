@@ -56,10 +56,15 @@ class GoogleLoginPlugin {
 
         @JvmStatic
         fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-            if (requestCode == GOOGLE_LOGIN) {
+            if (requestCode == GOOGLE_LOGIN && data != null) {
                 val signedInAccountFromIntent = GoogleSignIn.getSignedInAccountFromIntent(data)
-                val signInAccount = signedInAccountFromIntent.getResult(ApiException::class.java)
-                ins?.processGoogleLogin(signInAccount)
+                try {
+                    val signInAccount =
+                        signedInAccountFromIntent.getResult(ApiException::class.java)
+                    ins?.processGoogleLogin(signInAccount)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
             return requestCode == GOOGLE_LOGIN
         }

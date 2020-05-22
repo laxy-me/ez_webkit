@@ -14,7 +14,7 @@ allprojects {
         maven { url "https://dl.bintray.com/laxygd/easyweb" }
 }
  
-implementation 'com.lax.ezweb:easyweb-fcm:0.1.1'
+implementation 'com.lax.ezweb:easyweb-fcm:0.1.2'
 ```
 
 ## In app gradle
