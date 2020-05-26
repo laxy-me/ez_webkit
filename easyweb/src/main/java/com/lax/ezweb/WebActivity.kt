@@ -75,6 +75,19 @@ open class WebActivity : BaseActivity() {
 
     private var mNetworkChangeReceiver: BroadcastReceiver? = null
     private var mWebViewClient: MyWebViewClient? = null
+    var webChromeClient = object : MyWebChromeClient() {
+        override fun onProgressChanged(view: WebView, newProgress: Int) {
+            super.onProgressChanged(view, newProgress)
+            if (newProgress >= 99) {
+                progressbar.visibility = View.GONE
+            } else {
+                if (progressbar.visibility == View.GONE) {
+                    progressbar.visibility = View.VISIBLE
+                }
+                progressbar.progress = newProgress
+            }
+        }
+    }
 
     private var mPostData: String? = null
 
@@ -282,19 +295,8 @@ open class WebActivity : BaseActivity() {
         }
         mWebViewClient = MyWebViewClient()
         webView.webViewClient = mWebViewClient
-        webView.webChromeClient = object : WebChromeClient() {
-            override fun onProgressChanged(view: WebView, newProgress: Int) {
-                super.onProgressChanged(view, newProgress)
-                if (newProgress >= 99) {
-                    progressbar.visibility = View.GONE
-                } else {
-                    if (progressbar.visibility == View.GONE) {
-                        progressbar.visibility = View.VISIBLE
-                    }
-                    progressbar.progress = newProgress
-                }
-            }
-        }
+        webChromeClient.setActivity(this)
+        webView.webChromeClient = webChromeClient
         webView.setOnLongClickListener {
             val result = webView.hitTestResult
             if (result != null) {
@@ -677,6 +679,7 @@ open class WebActivity : BaseActivity() {
         FacebookPlugin.onActivityResult(requestCode, resultCode, data)
         GoogleLoginPlugin.onActivityResult(requestCode, resultCode, data)
         SharePlugin.onActivityResult(requestCode, resultCode, data)
+        webChromeClient.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
             when (requestCode) {

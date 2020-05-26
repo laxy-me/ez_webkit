@@ -160,20 +160,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         return notificationChannel
     }
 
-    private fun setPendingIntent(context: Context, data: PushMessage): PendingIntent {
-        var intent = Intent(context, WebActivity::class.java)
+    private fun setPendingIntent(context: Context, data: PushMessage): PendingIntent? {
+        var intent: Intent?
         val url: String? = data.url
         if (TextUtils.isEmpty(url)) {
             val packageManager = context.packageManager
-            intent = packageManager.getLaunchIntentForPackage(context.packageName) ?: Intent(
-                context,
-                WebActivity::class.java
-            )
+            intent = packageManager.getLaunchIntentForPackage(context.packageName)
         } else {
+            intent = Intent(context, WebActivity::class.java)
             intent.putExtra(WebActivity.EX_URL, url)
             intent.putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
-        }
-        if (intent != null) {
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
         return PendingIntent.getActivity(

@@ -119,6 +119,9 @@
 -keep interface androidx.** { *; }
 
 -keep class **$Companion{ *; }
+-keepclassmembers class * extends android.webkit.WebChromeClient {
+    public void openFileChooser(...);
+}
 ## ------------------------------------------------------------------------------------------------
 ## 友盟
 -keep class com.umeng.** {*;}

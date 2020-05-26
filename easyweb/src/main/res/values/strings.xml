@@ -20,6 +20,11 @@
     <string name="app_not_installed">Application not installed</string>
     <string name="count_down_text">%1$ds</string>
 
+    <string name="agentweb_loading">Loading ...</string>
+    <string name="agentweb_camera">Camera</string>
+    <string name="agentweb_file_chooser">Files</string>
+    <string name="agentweb_max_file_length_limit">The selected file can not be larger than %s MB</string>
+
     <string name="bind_alias">绑定别名</string>
     <string name="bind_alias_unknown_exception">绑定别名失败，未知异常</string>
     <string name="bind_alias_success">绑定别名成功</string>
