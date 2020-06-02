@@ -12,10 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
-import android.view.Gravity
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.webkit.*
 import android.widget.LinearLayout
 import androidx.annotation.Keep
@@ -75,7 +72,7 @@ open class WebActivity : BaseActivity() {
 
     private var mNetworkChangeReceiver: BroadcastReceiver? = null
     private var mWebViewClient: MyWebViewClient? = null
-    var webChromeClient = object : MyWebChromeClient() {
+    private var webChromeClient = object : MyWebChromeClient() {
         override fun onProgressChanged(view: WebView, newProgress: Int) {
             super.onProgressChanged(view, newProgress)
             if (newProgress >= 99) {
@@ -174,7 +171,7 @@ open class WebActivity : BaseActivity() {
 
     override fun onPostResume() {
         super.onPostResume()
-        Network.registerNetworkChangeReceiver(this, mNetworkChangeReceiver!!)
+        mNetworkChangeReceiver?.let { Network.registerNetworkChangeReceiver(this, it) }
     }
 
     private var mForbid: Int = 0
@@ -259,7 +256,6 @@ open class WebActivity : BaseActivity() {
 
         // init cookies
         syncCookies(mPageUrl)
-
         // init webSettings
         val webSettings = webView.settings
         webSettings.javaScriptEnabled = true
@@ -357,7 +353,6 @@ open class WebActivity : BaseActivity() {
             .setMessage(getString(R.string.save_image_to_local))
             .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 val url = result.extra
-                //保存图片到相册]
                 saveImage(url)
                 dialog.dismiss()
             }
@@ -368,9 +363,12 @@ open class WebActivity : BaseActivity() {
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
             .setTextColor(ContextCompat.getColor(this, R.color.colorPrimary))
         alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE)
-            .setTextColor(ContextCompat.getColor(this, R.color.sixtyPercentWhite))
+            .setTextColor(ContextCompat.getColor(this, R.color.textColorPrimary))
     }
 
+    /**
+     * 保存图片到相册
+     */
     private fun saveImage(url: String?) {
         requestPermission(
             arrayOf(
@@ -553,7 +551,6 @@ open class WebActivity : BaseActivity() {
         } else if (url.startsWith("intent://")) {
             try {
                 val newUrl: String = parseUrlString(url)
-                Log.e("wtf", newUrl)
                 intent.action = Intent.ACTION_VIEW
                 intent.data = Uri.parse(newUrl)
                 startActivity(intent)
@@ -644,8 +641,8 @@ open class WebActivity : BaseActivity() {
             .show()
     }
 
-    private fun callback2Web(str: String) {
-        Log.d(TAG, "callback2Web: " + str.length)
+    private fun callback2Web(str: String?) {
+        Log.d(TAG, "callback2Web: " + str?.length)
         if (!TextUtils.isEmpty(mCallbackMethodName)) {
             val builder = StringBuilder(mCallbackMethodName).append("(")
             if (mIsBase64) {
@@ -691,9 +688,27 @@ open class WebActivity : BaseActivity() {
                     }, 200)
                 PictureConfig.CHOOSE_REQUEST -> {
                     val selectList = PictureSelector.obtainMultipleResult(data)
-                    val path = selectList[0].path
-                    if (!TextUtils.isEmpty(path)) {
-                        callback2Web(ImageUtil.compressImageToBase64(path)!!)
+                    if (selectList.isNotEmpty()) {
+                        val localMedia = selectList[0]
+                        var path = ""
+                        path = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            localMedia.androidQToPath
+                        } else {
+                            when {
+                                localMedia.isCompressed -> {
+                                    localMedia.compressPath
+                                }
+                                localMedia.isCut -> {
+                                    localMedia.cutPath
+                                }
+                                else -> {
+                                    localMedia.path
+                                }
+                            }
+                        }
+                        if (path.isNotBlank()) {
+                            callback2Web(ImageUtil.compressImageToBase64(path))
+                        }
                     }
                 }
             }
@@ -702,7 +717,7 @@ open class WebActivity : BaseActivity() {
 
     override fun onPause() {
         super.onPause()
-        Network.unregisterNetworkChangeReceiver(this, mNetworkChangeReceiver!!)
+        mNetworkChangeReceiver?.let { Network.unregisterNetworkChangeReceiver(this, it) }
         webView.onPause()
     }
 
@@ -715,10 +730,12 @@ open class WebActivity : BaseActivity() {
      * destroy WebView
      * @param webView the WebView that needs to destroy
      */
-    open fun destroy(webView: WebView) {
-        webView.stopLoading()
-        (webView.parent as ViewGroup).removeView(webView)
-        webView.removeAllViews()
-        webView.destroy()
+    open fun destroy(webView: WebView?) {
+        webView?.let { web ->
+            web.stopLoading()
+            web.parent?.let { (it as ViewGroup).removeView(webView) }
+            web.removeAllViews()
+            web.destroy()
+        }
     }
 }

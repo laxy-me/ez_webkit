@@ -3,22 +3,16 @@ package com.lax.ezweb.tools
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.media.ExifInterface
 import android.util.Base64
+import androidx.exifinterface.media.ExifInterface
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
-/**
- * @author yangguangda
- * @date 2018/12/6
- */
 class ImageUtil {
     companion object {
         @JvmStatic
         fun compressImageToBase64(urlPath: String): String? {
-            return bitmapToBase64(
-                compressScale(urlPath)
-            )
+            return bitmapToBase64(compressScale(urlPath))
         }
 
         /**
@@ -28,7 +22,7 @@ class ImageUtil {
          * @return
          */
         @JvmStatic
-        fun compressScale(srcPath: String): Bitmap {
+        fun compressScale(srcPath: String): Bitmap? {
 
             val newOpts = BitmapFactory.Options()
             // 开始读入图片，此时把options.inJustDecodeBounds 设回true了
@@ -66,16 +60,17 @@ class ImageUtil {
          * @param path   图片的路径
          */
         @JvmStatic
-        fun reviewPicRotate(bitmap: Bitmap, path: String): Bitmap {
+        fun reviewPicRotate(bitmap: Bitmap?, path: String): Bitmap? {
             var b = bitmap
-            val degree =
-                getPicRotate(path)
-            if (degree != 0) {
-                val m = Matrix()
-                val width = bitmap.width
-                val height = bitmap.height
-                m.setRotate(degree.toFloat()) // 旋转angle度
-                b = Bitmap.createBitmap(bitmap, 0, 0, width, height, m, true)// 从新生成图片
+            bitmap?.let {
+                val degree =
+                    getPicRotate(path)
+                if (degree != 0) {
+                    val m = Matrix()
+                    m.setRotate(degree.toFloat()) // 旋转angle度
+                    b = Bitmap.createBitmap(it, 0, 0, it.width, it.height, m, true)// 从新生成图片
+                }
+                return b
             }
             return b
         }
@@ -91,7 +86,10 @@ class ImageUtil {
             var degree = 0
             try {
                 val exifInterface = ExifInterface(path)
-                val orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+                val orientation = exifInterface.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL
+                )
                 when (orientation) {
                     ExifInterface.ORIENTATION_ROTATE_90 -> degree = 90
                     ExifInterface.ORIENTATION_ROTATE_180 -> degree = 180
@@ -100,7 +98,6 @@ class ImageUtil {
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-
             return degree
         }
 
@@ -136,9 +133,8 @@ class ImageUtil {
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
-
+                return result
             }
-            return result
         }
     }
 }

@@ -24,7 +24,7 @@ import java.io.File
 @Keep
 object FileUtils {
 
-    private val TAG = "FileUtils"
+    private const val TAG = "FileUtils"
 
     private var sFile: File? = null
 
@@ -82,11 +82,17 @@ object FileUtils {
     }
 
     fun isStoragePermissionGranted(activity: Activity, requestCode: Int): Boolean {
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             return true
         } else {
-            ActivityCompat.requestPermissions(activity,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), requestCode)
+            ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), requestCode
+            )
             return false
         }
     }
@@ -107,7 +113,7 @@ object FileUtils {
                         Log.d(TAG, "ImageUtil: external picture storage is exist")
                     }
                 } else {
-                    rootFile = EzWebInitProvider.autoContext!!.getExternalCacheDir()
+                    rootFile = EzWebInitProvider.autoContext!!.externalCacheDir
                     if (rootFile == null) {
                         rootFile = Environment.getExternalStorageDirectory()
                     }
@@ -121,7 +127,7 @@ object FileUtils {
                 }
             }
         } else {
-            rootFile = EzWebInitProvider.autoContext!!.getExternalCacheDir()
+            rootFile = EzWebInitProvider.autoContext!!.externalCacheDir
         }
         return createFile(rootFile, fileName)
     }
@@ -151,16 +157,16 @@ object FileUtils {
     }
 
     fun deleteFile(): Boolean {
-        return if (sFile != null) {
-            sFile!!.delete()
-        } else false
+        return sFile?.delete() ?: false
     }
 
     fun getImageContentUri(context: Context, imageFile: File): Uri? {
         val filePath = imageFile.absolutePath
-        val cursor = context.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                arrayOf(MediaStore.Images.Media._ID), MediaStore.Images.Media.DATA + "=? ",
-                arrayOf(filePath), null)
+        val cursor = context.contentResolver.query(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            arrayOf(MediaStore.Images.Media._ID), MediaStore.Images.Media.DATA + "=? ",
+            arrayOf(filePath), null
+        )
         return if (cursor != null && cursor.moveToFirst()) {
             val id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
             val baseUri = Uri.parse("content://media/external/images/media")
@@ -179,13 +185,24 @@ object FileUtils {
     fun updateFileFromDatabase(context: Context, file: File) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             val paths = arrayOf<String>(Environment.getExternalStorageDirectory().toString())
-            MediaScannerConnection.scanFile(context, paths,
-                    null, null)
-            MediaScannerConnection.scanFile(context, arrayOf(file.getAbsolutePath()), null, object : MediaScannerConnection.OnScanCompletedListener {
-                override fun onScanCompleted(path: String, uri: Uri) {}
-            })
+            MediaScannerConnection.scanFile(
+                context, paths,
+                null, null
+            )
+            MediaScannerConnection.scanFile(
+                context,
+                arrayOf(file.absolutePath),
+                null,
+                object : MediaScannerConnection.OnScanCompletedListener {
+                    override fun onScanCompleted(path: String, uri: Uri) {}
+                })
         } else {
-            context.sendBroadcast(Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())))
+            context.sendBroadcast(
+                Intent(
+                    Intent.ACTION_MEDIA_MOUNTED,
+                    Uri.parse("file://" + Environment.getExternalStorageDirectory())
+                )
+            )
         }
     }
 }

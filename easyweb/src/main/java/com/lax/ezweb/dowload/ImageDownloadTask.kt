@@ -82,7 +82,7 @@ class ImageDownloadTask : AsyncTask<String, Void, File?>() {
         return file
     }
 
-    fun saveImage2Gallery(file: File) {
+    private fun saveImage2Gallery(file: File) {
         // 其次把文件插入到系统图库
         try {
             MediaStore.Images.Media.insertImage(
