@@ -3,7 +3,11 @@ package com.lax.ezweb
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.*
+import android.content.ActivityNotFoundException
+import android.content.BroadcastReceiver
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
@@ -12,7 +16,10 @@ import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
-import android.view.*
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.webkit.*
 import android.widget.LinearLayout
 import androidx.annotation.Keep
@@ -34,7 +41,11 @@ import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import kotlinx.android.synthetic.main.web.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.net.URISyntaxException
 import java.net.URLDecoder
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -501,7 +512,74 @@ open class WebActivity : BaseActivity() {
         }
     }
 
+    val SCHEME_SMS = "sms:"
+    val INTENT_SCHEME = "intent://"
+
+
+    private fun handleCommonLink(url: String): Boolean {
+        if (url.startsWith(WebView.SCHEME_TEL)
+            || url.startsWith(SCHEME_SMS)
+            || url.startsWith(WebView.SCHEME_MAILTO)
+            || url.startsWith(WebView.SCHEME_GEO)
+        ) {
+            try {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = Uri.parse(url)
+                startActivity(intent)
+            } catch (ignored: ActivityNotFoundException) {
+                ignored.printStackTrace()
+            }
+            return true
+        }
+        return false
+    }
+
+    private fun handleIntentUrl(intentUrl: String) {
+        try {
+            val intent: Intent? = null
+            if (TextUtils.isEmpty(intentUrl) || !intentUrl.startsWith(INTENT_SCHEME)) {
+                return
+            }
+            if (lookup(intentUrl)) {
+                return
+            }
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun lookup(url: String): Boolean {
+        try {
+            val intent: Intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
+            val info =
+                packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            // 跳到该应用
+            if (info != null) {
+                startActivity(intent)
+                return true
+            }
+        } catch (ignore: Throwable) {
+            ignore.printStackTrace()
+        }
+        return false
+    }
+
+    private fun queryActiviesNumber(url: String): Int {
+        return try {
+            val intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
+            val mResolveInfos =
+                packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            mResolveInfos?.size ?: 0
+        } catch (ignore: URISyntaxException) {
+            ignore.printStackTrace()
+            0
+        }
+    }
+
     protected fun onShouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+        if (handleCommonLink(url)) {
+            return true
+        }
         if (url.startsWith("weixin://wap/pay?") || url.startsWith("weixin")
             || url.startsWith("wechat") || url.startsWith("mqq")
             || url.startsWith("mqqapi://") || url.startsWith("mqqwpa")
@@ -514,6 +592,8 @@ open class WebActivity : BaseActivity() {
             if (intent.resolveActivity(packageManager) != null) {
                 startActivity(intent)
             }
+            return true
+        } else if (queryActiviesNumber(url) > 0 && lookup(url)) {
             return true
         } else if (url.startsWith("market://")) {
             val intent = Intent()
@@ -548,6 +628,9 @@ open class WebActivity : BaseActivity() {
                     return true
                 }
             }
+        } else if (url.startsWith(INTENT_SCHEME)) {
+            handleIntentUrl(url)
+            return true
         } else if (url.startsWith("intent://")) {
             try {
                 val newUrl: String = parseUrlString(url)
