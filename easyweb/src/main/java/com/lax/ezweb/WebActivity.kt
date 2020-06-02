@@ -67,6 +67,9 @@ open class WebActivity : BaseActivity() {
         const val EX_AD_URL = "ad_url"
         const val EX_AD_CONTENT = "ad_content"
         const val EX_AD_TIME = "ad_time"
+
+        const val SCHEME_SMS = "sms:"
+        const val INTENT_SCHEME = "intent://"
     }
 
     private var mLoadSuccess: Boolean = false
@@ -511,10 +514,6 @@ open class WebActivity : BaseActivity() {
             } else super.shouldOverrideUrlLoading(view, request)
         }
     }
-
-    val SCHEME_SMS = "sms:"
-    val INTENT_SCHEME = "intent://"
-
 
     private fun handleCommonLink(url: String): Boolean {
         if (url.startsWith(WebView.SCHEME_TEL)
