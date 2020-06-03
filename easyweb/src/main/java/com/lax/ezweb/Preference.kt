@@ -65,7 +65,7 @@ class Preference private constructor(context: Context) {
 
     @Keep
     companion object {
-        private const val SHARED_PREFERENCES_NAME = BuildConfig.FLAVOR + "_prefs"
+        private const val SHARED_PREFERENCES_NAME = BuildConfig.LIBRARY_PACKAGE_NAME + "_prefs"
 
         private var sInstance: Preference? = null
 

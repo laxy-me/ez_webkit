@@ -46,7 +46,7 @@ class PayTmPlugin {
             return null
         }
 
-        fun versionCompare(str1: String, str2: String): Int {
+        private fun versionCompare(str1: String, str2: String): Int {
             if (TextUtils.isEmpty(str1) || TextUtils.isEmpty(str2)) {
                 return 1
             }

@@ -17,8 +17,6 @@ import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.FileReader
 import java.io.IOException
-import java.lang.StringBuilder
-import java.util.*
 
 
 @Keep
@@ -44,6 +42,37 @@ object AppInfo {
             e.printStackTrace()
         }
         return versionName
+    }
+
+    /**
+     * 对比两个版本的前后顺
+     * @param current 当前版本
+     * @param target 比较的版本
+     * @return < 0 current落后target
+     */
+    @JvmStatic
+    fun versionCompare(current: String, target: String): Int {
+        if (TextUtils.isEmpty(current) || TextUtils.isEmpty(current)) {
+            return 1
+        }
+        val vals1 = current.split("\\.".toRegex()).toTypedArray()
+        val vals2 = current.split("\\.".toRegex()).toTypedArray()
+        var i = 0
+        //set index to first non-equal ordinal or length of shortest version string
+        while (i < vals1.size && i < vals2.size && vals1[i]
+                .equals(vals2[i], ignoreCase = true)
+        ) {
+            i++
+        }
+        //compare first non-equal ordinal number
+        if (i < vals1.size && i < vals2.size) {
+            val diff = Integer.valueOf(vals1[i])
+                .compareTo(Integer.valueOf(vals2[i]))
+            return Integer.signum(diff)
+        }
+        //the strings are equal or one string is a substring of the other
+        //e.g. "1.2.3" = "1.2.3" or "1.2.3" < "1.2.3.4"
+        return Integer.signum(vals1.size - vals2.size)
     }
 
     /**

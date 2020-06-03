@@ -3,8 +3,8 @@ package com.lax.ezweb.tools
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.media.ExifInterface
 import android.util.Base64
-import androidx.exifinterface.media.ExifInterface
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
