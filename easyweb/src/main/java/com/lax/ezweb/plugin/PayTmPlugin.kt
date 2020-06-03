@@ -137,7 +137,7 @@ class PayTmPlugin {
                     "PayTmCallback:$response${data?.getStringExtra("nativeSdkForMerchantMessage")}"
                 )
                 try {
-                    val jsonObject = JSONObject(response ?: "")
+                    val jsonObject = JSONObject(response ?: "{}")
                     val status = jsonObject.optString("STATUS", "")
                     if (status.isNotBlank()) {
                         ToastUtil.showToast(status.replace("TXN_", ""))
