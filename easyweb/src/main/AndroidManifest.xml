@@ -21,8 +21,7 @@
     <application
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        tools:overrideLibrary="com.luck.picture.lib">
+        android:theme="@style/AppTheme">
 
         <service
             android:name=".service.PushIntentService"

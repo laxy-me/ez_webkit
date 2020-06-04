@@ -57,7 +57,7 @@
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="${FACEBOOK_APP_ID}" />
+            android:value="@string/facebook_app_id" />
 
         <provider
             android:name="com.facebook.FacebookContentProvider"
@@ -76,7 +76,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="@string/fb_login_protocol_scheme" />
+                <data android:scheme="fb${FACEBOOK_APP_ID}" />
             </intent-filter>
         </activity>
 

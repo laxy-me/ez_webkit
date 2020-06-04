@@ -37,7 +37,6 @@
 -keep public class * extends android.view.View
 -keep public class com.android.vending.licensing.ILicensingService
 
-
 # 保留support下的所有类及其内部类
 -keep class android.support.** {*;}
 
@@ -111,6 +110,8 @@
 -keepattributes JavascriptInterface
 #不混淆 使用反射机制的类
 -keepattributes Signature
+#忽略内部类的一些属性
+-keepattributes EnclosingMethod
 
 #-dontwarn androidx.**
 -keep class androidx.** { *; }
@@ -119,7 +120,7 @@
 -keep interface androidx.** { *; }
 
 -keep class **$Companion{ *; }
--keepclassmembers class * extends android.webkit.WebChromeClient {
+-keepclassmembers class * extends android.webkit.WebChromeClient{
     public void openFileChooser(...);
 }
 ## ------------------------------------------------------------------------------------------------
@@ -188,11 +189,16 @@
 -keep class com.igexin.** { *; }
 -keep class org.json.** { *; }
 
-#PictureSelector
+#PictureSelector 2.0
 -keep class com.luck.picture.lib.** { *; }
+
+#Ucrop
 -dontwarn com.yalantis.ucrop**
 -keep class com.yalantis.ucrop** { *; }
 -keep interface com.yalantis.ucrop** { *; }
+
+#Okio
+-dontwarn org.codehaus.mojo.animal_sniffer.*
 
 -keep class com.google.android.gms.** { *; }
 -dontwarn com.google.android.gms.**

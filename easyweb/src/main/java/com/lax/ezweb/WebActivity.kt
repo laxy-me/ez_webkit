@@ -14,6 +14,8 @@ import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
+import android.provider.DocumentsContract
+import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import android.view.Gravity
@@ -70,6 +72,7 @@ open class WebActivity : BaseActivity() {
 
         const val SCHEME_SMS = "sms:"
         const val INTENT_SCHEME = "intent://"
+        const val OPEN_SYS_CONTENT: Int = 11113
     }
 
     private var mLoadSuccess: Boolean = false
@@ -273,6 +276,9 @@ open class WebActivity : BaseActivity() {
         // init webSettings
         val webSettings = webView.settings
         webSettings.javaScriptEnabled = true
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSettings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+        }
         webSettings.javaScriptCanOpenWindowsAutomatically = true
         webSettings.cacheMode = WebSettings.LOAD_NO_CACHE
         var userAgentString = webSettings.userAgentString
@@ -435,6 +441,16 @@ open class WebActivity : BaseActivity() {
             return super.shouldInterceptRequest(view, request)
         }
 
+        override fun onReceivedError(
+            view: WebView?,
+            errorCode: Int,
+            description: String?,
+            failingUrl: String?
+        ) {
+            super.onReceivedError(view, errorCode, description, failingUrl)
+            Log.w(TAG, "onReceivedError$errorCode,$description,$failingUrl")
+        }
+
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             resetForbid()
@@ -576,9 +592,6 @@ open class WebActivity : BaseActivity() {
     }
 
     protected fun onShouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-        if (handleCommonLink(url)) {
-            return true
-        }
         if (url.startsWith("weixin://wap/pay?") || url.startsWith("weixin")
             || url.startsWith("wechat") || url.startsWith("mqq")
             || url.startsWith("mqqapi://") || url.startsWith("mqqwpa")
@@ -592,7 +605,7 @@ open class WebActivity : BaseActivity() {
                 startActivity(intent)
             }
             return true
-        } else if (queryActiviesNumber(url) > 0 && lookup(url)) {
+        } else if (handleCommonLink(url)) {
             return true
         } else if (url.startsWith("market://")) {
             val intent = Intent()
@@ -795,6 +808,28 @@ open class WebActivity : BaseActivity() {
                 }
             }
         }
+        if (resultCode == OPEN_SYS_CONTENT) {
+            val uri = data?.data
+            val path = getImagePath(uri, "")
+            if (path.isNotBlank()) {
+                callback2Web(ImageUtil.compressImageToBase64(path))
+            }
+        }
+    }
+
+    fun getImagePath(uri: Uri?, selection: String?): String {
+        var path: String = ""
+        if (uri == null) {
+            return ""
+        }
+        val cursor = contentResolver.query(uri, null, selection, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            }
+            cursor.close()
+        }
+        return path
     }
 
     override fun onPause() {

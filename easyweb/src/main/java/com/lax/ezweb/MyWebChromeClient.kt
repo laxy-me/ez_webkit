@@ -8,17 +8,20 @@ import android.util.Log
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
 import java.lang.ref.WeakReference
 import java.util.*
-
 
 /**
  *
  * @author yangguangda
  * @date 2020/5/26
  */
+@Keep
 open class MyWebChromeClient : WebChromeClient() {
+    var TAG = "MyWebChromeClient"
+
     //定义接受返回值
     private var uploadFile: ValueCallback<Uri>? = null
     private var uploadFiles: ValueCallback<Array<Uri>>? = null
@@ -29,70 +32,47 @@ open class MyWebChromeClient : WebChromeClient() {
     }
 
     /**
-     * Android < 3.0
-     *
-     * @param valueCallback
-     */
-    open fun openFileChooser(valueCallback: ValueCallback<Uri?>) {
-        commonRefect(
-            this, "openFileChooser", arrayOf(valueCallback),
-            ValueCallback::class.java
-        )
-    }
-
-    /**
-     * Android  >= 3.0
-     *
-     * @param valueCallback
-     * @param acceptType
-     */
-    open fun openFileChooser(
-        valueCallback: ValueCallback<*>,
-        acceptType: String
-    ) {
-        commonRefect(
-            this, "openFileChooser", arrayOf(valueCallback, acceptType),
-            ValueCallback::class.java,
-            String::class.java
-        )
-    }
-
-    /**
      * Android  >= 4.1
      *
-     * @param uploadFile
+     * @param uploadFile ValueCallback ,  File URI callback
      * @param acceptType
      * @param capture
      */
     open fun openFileChooser(
-        uploadFile: ValueCallback<Uri?>,
-        acceptType: String,
-        capture: String
+        uploadFile: ValueCallback<Uri>?,
+        acceptType: String?,
+        capture: String?
     ) {
-        commonRefect(
-            this, "openFileChooser", arrayOf(uploadFile, acceptType, capture),
-            ValueCallback::class.java,
-            String::class.java,
-            String::class.java
-        )
+        /*believe me , i never want to do this */
+        Log.i(TAG, "openFileChooser>=4.1")
+        createAndOpenCommonFileChooser(uploadFile, acceptType)
     }
 
-    open fun commonRefect(
-        o: WebChromeClient?,
-        mothed: String,
-        os: Array<Any>,
-        vararg clazzs: Class<*>
+    //  Android < 3.0
+    open fun openFileChooser(valueCallback: ValueCallback<Uri>?) {
+        Log.i(TAG, "openFileChooser<3.0")
+        createAndOpenCommonFileChooser(valueCallback, "*/*")
+    }
+
+    //  Android  >= 3.0
+    open fun openFileChooser(
+        valueCallback: ValueCallback<Uri>?,
+        acceptType: String?
     ) {
-        try {
-            if (o == null) {
-                return
-            }
-            val clazz: Class<*> = o.javaClass
-            val mMethod = clazz.getMethod(mothed, *clazzs)
-            mMethod.invoke(o, *os)
-        } catch (ignore: Exception) {
-            ignore.printStackTrace()
-        }
+        Log.i(TAG, "openFileChooser>3.0")
+        createAndOpenCommonFileChooser(valueCallback, acceptType)
+    }
+
+    private fun createAndOpenCommonFileChooser(
+        valueCallback: ValueCallback<Uri>?,
+        mimeType: String?
+    ) {
+        this.uploadFile = valueCallback
+        val i = Intent(Intent.ACTION_GET_CONTENT)
+        i.addCategory(Intent.CATEGORY_OPENABLE)
+        i.type = mimeType
+        val activity = mActivity?.get()
+        activity?.startActivityForResult(Intent.createChooser(i, "Choose"), CHOOSE_REQUEST_CODE)
     }
 
     // For Android  >= 5.0
@@ -106,7 +86,6 @@ open class MyWebChromeClient : WebChromeClient() {
         openFileChooseProcess(webView, filePathCallback, fileChooserParams)
         return true
     }
-
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     open fun openFileChooseProcess(

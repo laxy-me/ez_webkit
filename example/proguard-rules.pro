@@ -111,6 +111,7 @@
 -keepattributes JavascriptInterface
 #不混淆 使用反射机制的类
 -keepattributes Signature
+-keepattributes EnclosingMethod
 
 #-dontwarn androidx.**
 -keep class androidx.** { *; }
