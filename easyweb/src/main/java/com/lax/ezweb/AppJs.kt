@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -23,8 +24,10 @@ import com.lax.ezweb.plugin.GoogleLoginPlugin
 import com.lax.ezweb.plugin.PayTmPlugin
 import com.lax.ezweb.plugin.SharePlugin
 import com.lax.ezweb.tools.AppInfo
+import com.lax.ezweb.tools.MethodUtil
 import com.umeng.analytics.MobclickAgent
 import io.branch.referral.util.BranchEvent
+import kotlinx.android.synthetic.main.web.*
 
 
 @Keep
@@ -320,6 +323,39 @@ open class AppJs(private val mContext: Context) {
         Log.v(TAG, "takePortraitPicture:${callbackMethod}")
         if (mContext is WebActivity) {
             mContext.takePortraitPicture(callbackMethod)
+        }
+    }
+
+    /**
+     * 是否存在交互方法
+     *
+     * @param name 方法名
+     */
+    @JavascriptInterface
+    fun isContainsName(callbackMethod: String, name: String) {
+        var has = false
+        Log.v(TAG, "isContainsName:${callbackMethod};${name}")
+        val classMethods = MethodUtil.getClassMethods(AppJs::class.java);
+        classMethods?.let {
+            for (method in it) {
+                if (method != null) {
+                    has = method.name == name
+                    if (has) {
+                        return@let
+                    }
+                }
+            }
+        }
+        if (mContext is WebActivity) {
+            mContext.runOnUiThread {
+                val webView = mContext.getWebView()
+                val javaScript = "javascript:$callbackMethod('${has.toString()}')"
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    webView.evaluateJavascript(javaScript, null)
+                } else {
+                    webView.loadUrl(javaScript)
+                }
+            }
         }
     }
 

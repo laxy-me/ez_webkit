@@ -20,7 +20,7 @@ implementation 'com.lax.ezweb:easyweb-fcm:0.1.4'
 ## In app gradle
 ```
 manifestPlaceholders = [
-        CHANNEL           : "origin",
+        CHANNEL           : "google",
         GETUI_APP_ID      : "",
         GETUI_APP_KEY     : "",
         GETUI_APP_SECRET  : "",
