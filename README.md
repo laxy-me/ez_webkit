@@ -14,7 +14,7 @@ allprojects {
         maven { url "https://dl.bintray.com/laxygd/easyweb" }
 }
  
-implementation 'com.lax.ezweb:easyweb-fcm:0.1.4'
+implementation 'com.lax.ezweb:easyweb-fcm:0.1.5'
 ```
 
 ## In app gradle
@@ -53,6 +53,47 @@ can be:
 ANDROID_AGENT_NATIVE/1.0
 ANDROID_AGENT_NATIVE/2.0(default)
 ```
+### 个推推送图标
+```
+Project/
+    |- app/
+    |    |- src/
+    |       |- main/
+    |         |- res/
+    |             |- drawable-hdpi/
+    |                 |- push.png
+    |                 |- push_small.png
+    |             |- drawable-ldpi/
+    |                 |- push.png
+    |                 |- push_small.png
+    |             |- drawable-mdpi
+    |                 |- push.png
+    |                 |- push_small.png
+    |             |- drawable-xhdpi
+    |                 |- push.png
+    |                 |- push_small.png
+    |             |- drawable-xxhdpi
+    |                 |- push.png
+    |                 |- push_small.png
+    | ......
+```
+
+### FCM
+```
+Project/
+    |- app/
+    |    |- src/
+    |       |- main/
+    |         |- res/
+    |             |- drawable-xhdpi
+    |                 |- push.png
+    |             |- drawable-xxhdpi
+    |                 |- push.png
+    |	          |- drawable-xxxhdpi
+    |                 |- push.png
+    | ......
+
+```
 
 ## In Manifest
 ```
@@ -67,8 +108,8 @@ ANDROID_AGENT_NATIVE/2.0(default)
     android:value="false" />
 <meta-data
     android:name="CHANNEL"
-    android:value="${CHANNEL}" />
- <meta-data
+    android:value="${CHANNEL}" /> 
+<meta-data
     android:name="PUSH_APPID"
     android:value="${GETUI_APP_ID}" />
 <meta-data
@@ -154,7 +195,6 @@ android:theme="@style/AppTheme.Splash">
 	    <data
 	        android:host="${Default Link Domain}"
 	        android:scheme="https" />
-	    <!-- example-alternate domain is required for App Links when the Journeys/Web SDK and Deepviews are used inside your website.  -->
 	    <data
 	        android:host="${Alternate Link Domaininfo_outline}"
 	        android:scheme="https" />
