@@ -28,17 +28,74 @@
 # 保留我们使用的四大组件，自定义的Application等等这些类不被混淆
 # 因为这些子类都有可能被外部调用
 -keep public class * extends android.app.Activity
--keep public class * extends android.app.Appliction
+-keep public class * extends android.app.Application
 -keep public class * extends android.app.Service
 -keep public class * extends android.content.BroadcastReceiver
 -keep public class * extends android.content.ContentProvider
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
 -keep public class * extends android.view.View
+
+#不混淆使用了 annotation的类
+-keepattributes *Annotation*
+#不混淆javascript
+-keepattributes JavascriptInterface
+#不混淆 使用反射机制的类
+-keepattributes Signature
+#忽略内部类的一些属性
+-keepattributes EnclosingMethod
+
+-keep public class com.google.vending.licensing.ILicensingService
 -keep public class com.android.vending.licensing.ILicensingService
+-keep public class com.google.android.vending.licensing.ILicensingService
+-dontnote com.android.vending.licensing.ILicensingService
+-dontnote com.google.vending.licensing.ILicensingService
+-dontnote com.google.android.vending.licensing.ILicensingService
 
 # 保留support下的所有类及其内部类
 -keep class android.support.** {*;}
+
+# The support libraries contains references to newer platform versions.
+# Don't warn about those in case this app is linking against an older
+# platform version. We know about them, and they are safe.
+-dontnote android.support.**
+-dontnote androidx.**
+-dontwarn android.support.**
+-dontwarn androidx.**
+
+# This class is deprecated, but remains for backward compatibility.
+-dontwarn android.util.FloatMath
+
+# Understand the @Keep support annotation.
+-keep class android.support.annotation.Keep
+-keep class androidx.annotation.Keep
+
+-keep @android.support.annotation.Keep class * {*;}
+-keep @androidx.annotation.Keep class * {*;}
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <methods>;
+}
+
+-keepclasseswithmembers class * {
+    @androidx.annotation.Keep <methods>;
+}
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <fields>;
+}
+
+-keepclasseswithmembers class * {
+    @androidx.annotation.Keep <fields>;
+}
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <init>(...);
+}
+
+-keepclasseswithmembers class * {
+    @androidx.annotation.Keep <init>(...);
+}
 
 # 保留继承的
 -keep public class * extends android.support.v4.**
@@ -47,6 +104,10 @@
 
 # 保留R下面的资源
 -keep class **.R$* {*;}
+# Preserve annotated Javascript interface methods.
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
 
 # 保留本地native方法不被混淆
 -keepclasseswithmembernames class * {
@@ -103,15 +164,6 @@
 #   public static *** wtf(...);
 #   public static *** println(...);
 #}
-
-#不混淆使用了 annotation的类
--keepattributes *Annotation*
-#不混淆javascript
--keepattributes JavascriptInterface
-#不混淆 使用反射机制的类
--keepattributes Signature
-#忽略内部类的一些属性
--keepattributes EnclosingMethod
 
 #-dontwarn androidx.**
 -keep class androidx.** { *; }
@@ -203,7 +255,7 @@
 -keep class com.google.android.gms.** { *; }
 -dontwarn com.google.android.gms.**
 -keep class * extends java.util.ListResourceBundle {
-    protected Object[][] getContents();
+    protected java.lang.Object[][] getContents();
 }
 
 -keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {

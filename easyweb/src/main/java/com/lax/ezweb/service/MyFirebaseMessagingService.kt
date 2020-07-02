@@ -161,7 +161,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun setPendingIntent(context: Context, data: PushMessage): PendingIntent? {
-        var intent: Intent?
+        val intent: Intent?
         val url: String? = data.url
         if (TextUtils.isEmpty(url)) {
             val packageManager = context.packageManager

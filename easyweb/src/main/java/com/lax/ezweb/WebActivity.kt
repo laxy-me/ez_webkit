@@ -14,7 +14,6 @@ import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
-import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
@@ -607,6 +606,9 @@ open class WebActivity : BaseActivity() {
             return true
         } else if (handleCommonLink(url)) {
             return true
+        } else if (url.startsWith(INTENT_SCHEME)) {
+            handleIntentUrl(url)
+            return true
         } else if (url.startsWith("market://")) {
             val intent = Intent()
             intent.action = Intent.ACTION_VIEW
@@ -640,9 +642,6 @@ open class WebActivity : BaseActivity() {
                     return true
                 }
             }
-        } else if (url.startsWith(INTENT_SCHEME)) {
-            handleIntentUrl(url)
-            return true
         } else if (url.startsWith("intent://")) {
             try {
                 val newUrl: String = parseUrlString(url)

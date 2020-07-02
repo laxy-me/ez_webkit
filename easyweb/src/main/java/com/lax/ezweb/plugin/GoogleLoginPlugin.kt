@@ -30,7 +30,6 @@ import java.net.URL
 import java.net.URLDecoder
 
 class GoogleLoginPlugin {
-
     private lateinit var gso: GoogleSignInOptions
     private lateinit var googleSignInClient: GoogleSignInClient
     private var host = ""
@@ -70,7 +69,6 @@ class GoogleLoginPlugin {
         }
     }
 
-
     fun googleLogin(activity: Activity, data: String?) {
         ins!!.activity = WeakReference(activity)
         val googleData: LoginGoogleData = Gson().fromJson(data, LoginGoogleData::class.java)
@@ -91,12 +89,12 @@ class GoogleLoginPlugin {
         }
     }
 
-
     private fun processGoogleLogin(signInAccount: GoogleSignInAccount?) {
         if (signInAccount != null) {
             val id = signInAccount.id
             val name = signInAccount.displayName
-            handleResult(id ?: "", name ?: "", 1)
+            val email = signInAccount.email
+            handleResult(id ?: "", name ?: "", email ?: "", 1)
         } else {
             Log.e("account", "si为空:" + "\n")
         }
@@ -105,13 +103,13 @@ class GoogleLoginPlugin {
     /**
      *@param type 0:Facebook,1:google
      */
-    private fun handleResult(id: String, name: String, type: Int) {
+    private fun handleResult(id: String, name: String, email: String, type: Int) {
         try {
             runBlocking {
                 launch {
                     val response = withContext(Dispatchers.IO) {
-                        val url = "${host}/user/google/doLogin2.do" +
-                                "?id=${id}&name=${name}&sign=${sign}&type=${type}"
+                        val url =
+                            "${host}/user/google/doLogin2.do?id=${id}&name=${name}&email=${email}&sign=${sign}&type=${type}"
                         try {
                             val conn = URL(url).openConnection()
                             conn.connectTimeout = 5000
@@ -171,5 +169,12 @@ class GoogleLoginPlugin {
 
     private fun createTokenStr(name: String, value: String): String {
         return "$name=\"$value\";expires=1; path=/"
+    }
+
+    /**
+     * 退出登陆
+     */
+    fun signOut() {
+        ins?.googleSignInClient?.signOut()
     }
 }

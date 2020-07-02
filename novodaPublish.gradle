@@ -7,7 +7,7 @@ publish {
     repoName = "easyweb"//发布到bintray上的仓库名
     groupId = 'com.lax.ezweb' // Maven Group ID for the artifact，一般填你唯一的包名
     artifactId = 'easyweb-fcm'//发布到bintray上的包名
-    publishVersion = '0.1.4'//这里是你的版本，当你需要上传新的版本到bintry上时，只需要修改这里的版本即可
+    publishVersion = '0.1.5'//这里是你的版本，当你需要上传新的版本到bintry上时，只需要修改这里的版本即可
     website = siteUrl
     desc = 'easy webkit library for company.'
 }
