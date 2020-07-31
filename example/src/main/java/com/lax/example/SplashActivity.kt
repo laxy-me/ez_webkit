@@ -50,6 +50,7 @@ class SplashActivity : BaseActivity() {
 //            .execute()
 //        finish()
         init()
+        AppInfo.getAndroidId(this)
     }
 
     @RequiresApi(Build.VERSION_CODES.M)

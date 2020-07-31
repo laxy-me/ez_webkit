@@ -92,6 +92,9 @@ open class WebActivity : BaseActivity() {
         override fun onProgressChanged(view: WebView, newProgress: Int) {
             super.onProgressChanged(view, newProgress)
             if (newProgress >= 99) {
+                if (loadingView.visibility == View.VISIBLE) {
+                    loadingView.visibility = View.GONE
+                }
                 progressbar.visibility = View.GONE
             } else {
                 if (progressbar.visibility == View.GONE) {
@@ -160,6 +163,15 @@ open class WebActivity : BaseActivity() {
                     skipCountDown.text = getString(R.string.count_down_text, time)
                     if (i == 0) {
                         closeAd()
+                    }
+                }
+            }
+            GlobalScope.launch(Dispatchers.Main) {
+                for (i in 10 downTo 0) { // 从 adTime 到 1 的倒计时
+                    if (i == 0) {
+                        if (loadingView.visibility == View.VISIBLE) {
+                            loadingView.visibility = View.GONE
+                        }
                     }
                 }
             }

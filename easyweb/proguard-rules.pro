@@ -153,7 +153,6 @@
     java.lang.Object readResolve();
 }
 
-
 ## Remove log code
 #-assumenosideeffects class android.util.Log {
 #   public static *** v(...);
@@ -284,3 +283,13 @@
     boolean isLimitAdTrackingEnabled();
 }
 -keep public class com.android.installreferrer.** { *; }
+
+#Branch
+-keep class com.google.android.gms.** { *; }
+
+-keep class com.facebook.applinks.** { *; }
+-keepclassmembers class com.facebook.applinks.** { *; }
+-keep class com.facebook.FacebookSdk { *; }
+
+-keep class com.huawei.hms.ads.** { *; }
+-keep interface com.huawei.hms.ads.** { *; }

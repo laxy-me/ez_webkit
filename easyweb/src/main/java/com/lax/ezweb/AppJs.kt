@@ -96,12 +96,9 @@ open class AppJs(private val mContext: Context) {
      */
     @JavascriptInterface
     fun getGoogleId(): String {
-        var deviceHardwareId = AppInfo.getDeviceHardwareId(mContext)
-        if (deviceHardwareId.isEmpty()) {
-            deviceHardwareId = Preference.get().Gaid
-        }
-        Log.v(TAG, "getGoogleId:${deviceHardwareId}")
-        return deviceHardwareId
+        val androidId = AppInfo.getAndroidId(mContext)
+        Log.v(TAG, "getGoogleId:$androidId")
+        return androidId
     }
 
     /**
