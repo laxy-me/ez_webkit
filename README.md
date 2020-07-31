@@ -14,7 +14,7 @@ allprojects {
         maven { url "https://dl.bintray.com/laxygd/easyweb" }
 }
  
-implementation 'com.lax.ezweb:easyweb-fcm:0.1.5'
+implementation 'com.lax.ezweb:easyweb-fcm:0.1.6'
 ```
 
 ## In app gradle
@@ -224,6 +224,18 @@ object BranchListener : Branch.BranchReferralInitListener {
         }
     }
 }
+```
+
+## Branch Proguard Settings
+```
+-keep class com.google.android.gms.** { *; }
+
+-keep class com.facebook.applinks.** { *; }
+-keepclassmembers class com.facebook.applinks.** { *; }
+-keep class com.facebook.FacebookSdk { *; }
+
+-keep class com.huawei.hms.ads.** { *; }
+-keep interface com.huawei.hms.ads.** { *; }
 ```
 
 ## Channels
