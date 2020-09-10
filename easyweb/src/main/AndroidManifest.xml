@@ -25,16 +25,6 @@
         android:theme="@style/AppTheme">
 
         <service
-            android:name=".service.PushIntentService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <service
-            android:name=".service.MyPushService"
-            android:exported="true"
-            android:label="PushService"
-            android:process=":pushservice" />
-
-        <service
             android:name=".service.MyFirebaseMessagingService"
             android:exported="false"
             android:stopWithTask="false">

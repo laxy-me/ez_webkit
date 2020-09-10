@@ -21,10 +21,6 @@ implementation 'com.lax.ezweb:easyweb-fcm:0.1.7'
 ```
 manifestPlaceholders = [
         CHANNEL           : "google",
-        GETUI_APP_ID      : "",
-        GETUI_APP_KEY     : "",
-        GETUI_APP_SECRET  : "",
-        UMENG_APP_KEY     : "",
         FACEBOOK_APP_ID   : "",
 ]
 
@@ -50,30 +46,6 @@ manifestPlaceholders = [
 can be:  
 ANDROID_AGENT_NATIVE/1.0
 ANDROID_AGENT_NATIVE/2.0(default)
-```
-### 个推推送图标
-```
-Project/
-    |- app/
-    |    |- src/
-    |       |- main/
-    |         |- res/
-    |             |- drawable-hdpi/
-    |                 |- push.png
-    |                 |- push_small.png
-    |             |- drawable-ldpi/
-    |                 |- push.png
-    |                 |- push_small.png
-    |             |- drawable-mdpi
-    |                 |- push.png
-    |                 |- push_small.png
-    |             |- drawable-xhdpi
-    |                 |- push.png
-    |                 |- push_small.png
-    |             |- drawable-xxhdpi
-    |                 |- push.png
-    |                 |- push_small.png
-    | ......
 ```
 
 ### FCM
@@ -108,27 +80,6 @@ Project/
     android:name="CHANNEL"
     android:value="${CHANNEL}" /> 
 <meta-data
-    android:name="PUSH_APPID"
-    android:value="${GETUI_APP_ID}" />
-<meta-data
-    android:name="PUSH_APPKEY"
-    android:value="${GETUI_APP_KEY}" />
-<meta-data
-    android:name="PUSH_APPSECRET"
-    android:value="${GETUI_APP_SECRET}" />
-<meta-data
-	android:name="UMENG_APPKEY"
-	android:value="${UMENG_APP_KEY}" />
-<meta-data
-    android:name="UMENG_CHANNEL"
-    android:value="${CHANNEL}" />
-<meta-data
-    android:name="ADJUST_APPTOKEN"
-    android:value="${ADJUST_APPTOKEN}" />
-<meta-data
-    android:name="ADJUST_TRACK_TOKEN"
-    android:value="${ADJUST_TRACK_TOKEN}" />
-  <meta-data
     android:name="com.facebook.sdk.ApplicationId"
     android:value="@string/facebook_app_id" />
 

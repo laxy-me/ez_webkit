@@ -29,10 +29,6 @@ android {
 
         manifestPlaceholders = [
                 CHANNEL           : "origin",
-                GETUI_APP_ID      : "",
-                GETUI_APP_KEY     : "",
-                GETUI_APP_SECRET  : "",
-                UMENG_APP_KEY     : "",
                 FACEBOOK_APP_ID   : "190001148735996",
         ]
         buildConfigField("String", "HOST", '\"https://d2d0drb98uxrz0.cloudfront.net\"')
@@ -109,10 +105,10 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation("com.squareup.okhttp3:okhttp:4.4.0")
 
-//    implementation project(path: ':easyweb')
+    implementation project(path: ':easyweb')
     implementation 'com.github.bumptech.glide:glide:4.5.0'
     kapt 'com.github.bumptech.glide:compiler:4.5.0'
-    implementation 'com.lax.ezweb:easyweb-fcm:0.1.7'
+//    implementation 'com.lax.ezweb:easyweb-fcm:0.1.7'
 }
 
 apply plugin: 'com.google.gms.google-services'
