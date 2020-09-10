@@ -14,7 +14,7 @@ allprojects {
         maven { url "https://dl.bintray.com/laxygd/easyweb" }
 }
  
-implementation 'com.lax.ezweb:easyweb-fcm:0.1.6'
+implementation 'com.lax.ezweb:easyweb-fcm:0.1.7'
 ```
 
 ## In app gradle
@@ -25,8 +25,6 @@ manifestPlaceholders = [
         GETUI_APP_KEY     : "",
         GETUI_APP_SECRET  : "",
         UMENG_APP_KEY     : "",
-        ADJUST_APPTOKEN   : "",
-        ADJUST_TRACK_TOKEN: "",
         FACEBOOK_APP_ID   : "",
 ]
 

@@ -304,6 +304,8 @@ open class WebActivity : BaseActivity() {
         webSettings.setEnableSmoothTransition(true)
         webSettings.domStorageEnabled = true
         webSettings.useWideViewPort = true
+        webSettings.setSupportZoom(true)
+        webSettings.builtInZoomControls = true
         webSettings.loadWithOverviewMode = true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webSettings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
@@ -633,9 +635,11 @@ open class WebActivity : BaseActivity() {
                 finish()
             } else if (url.contains("id=")) {
                 intent.data = Uri.parse(
-                    "https://play.google.com/store/apps/details${url.subSequence(
-                        url.indexOf("?"), url.length
-                    )}"
+                    "https://play.google.com/store/apps/details${
+                        url.subSequence(
+                            url.indexOf("?"), url.length
+                        )
+                    }"
                 )
                 startActivity(intent)
             }

@@ -22,7 +22,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 29
         versionCode 14
-        versionName "0.1.6"
+        versionName "0.1.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -58,9 +58,6 @@ dependencies {
     implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.5.8'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     kapt 'com.github.bumptech.glide:compiler:4.11.0'
-    //友盟
-    implementation 'com.umeng.umsdk:analytics:8.0.0'
-    implementation 'com.umeng.umsdk:common:2.0.0'
     //--facebook share--
     api 'com.facebook.android:facebook-android-sdk:[5,6)'
     //--facebook login--
@@ -74,11 +71,6 @@ dependencies {
     // required if your app is in the Google Play Store (tip: avoid using bundled play services libs)
     implementation 'com.google.firebase:firebase-appindexing:19.1.0' // App indexing
     implementation 'com.google.android.gms:play-services-ads:16+' // GAID matching
-    //--adjust--
-    implementation 'com.adjust.sdk:adjust-android:4.19.1'
-    implementation 'com.adjust.sdk:adjust-android-webbridge:4.19.1'
-    implementation 'com.android.installreferrer:installreferrer:1.1.2'
-    implementation 'com.google.android.gms:play-services-analytics:17.0.0'
     //fcm
     api 'com.google.firebase:firebase-messaging:20.1.6'
     //getui google play

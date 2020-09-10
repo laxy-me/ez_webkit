@@ -4,12 +4,15 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Message
 import android.util.Log
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import android.webkit.WebView.WebViewTransport
 import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
+import com.lax.ezweb.tools.AppInfo
 import java.lang.ref.WeakReference
 import java.util.*
 
@@ -30,6 +33,21 @@ open class MyWebChromeClient : WebChromeClient() {
     fun setActivity(mActivity: Activity) {
         this.mActivity = WeakReference(mActivity)
     }
+//TODO 
+
+//    override fun onCreateWindow(
+//        view: WebView?,
+//        isDialog: Boolean,
+//        isUserGesture: Boolean,
+//        resultMsg: Message?
+//    ): Boolean {
+//        Log.e("wtf","jiuzheyangba")
+//        val newWebView = WebView(mActivity?.get())
+//        val transport = resultMsg!!.obj as WebViewTransport
+//        transport.webView = newWebView
+//        resultMsg!!.sendToTarget()
+//        return true
+//    }
 
     /**
      * Android  >= 4.1

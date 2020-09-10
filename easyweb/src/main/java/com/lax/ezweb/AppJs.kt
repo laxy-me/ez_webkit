@@ -12,8 +12,6 @@ import android.util.Log
 import android.view.View
 import android.webkit.JavascriptInterface
 import androidx.annotation.Keep
-import com.adjust.sdk.Adjust
-import com.adjust.sdk.AdjustEvent
 import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
@@ -25,9 +23,8 @@ import com.lax.ezweb.plugin.PayTmPlugin
 import com.lax.ezweb.plugin.SharePlugin
 import com.lax.ezweb.tools.AppInfo
 import com.lax.ezweb.tools.MethodUtil
-import com.umeng.analytics.MobclickAgent
 import io.branch.referral.util.BranchEvent
-import kotlinx.android.synthetic.main.web.*
+import org.json.JSONObject
 
 
 @Keep
@@ -133,18 +130,6 @@ open class AppJs(private val mContext: Context) {
     }
 
     /**
-     * adjust事件统计
-     * @param eventName 统计事件名称
-     */
-    @JavascriptInterface
-    fun adjustTrackEvent(eventName: String) {
-        Log.v(TAG, "adjustTrackEvent:${eventName}")
-        val adjustEvent = AdjustEvent(eventName)
-        Adjust.trackEvent(adjustEvent)
-    }
-
-
-    /**
      * branch事件统计
      * @param eventName 统计事件名称
      */
@@ -202,23 +187,6 @@ open class AppJs(private val mContext: Context) {
             .setCustomerEventAlias(alias)
             .logEvent(mContext);
 
-    }
-
-    /**
-     * adjust事件统计
-     * @param eventToken 统计时间名称
-     * @param valueToSum 收入
-     * @param currency 货币名
-     */
-    @JavascriptInterface
-    fun adjustTrackEvent(eventToken: String, valueToSum: Double, currency: String) {
-        Log.v(
-            TAG,
-            "adjustTrackEvent:\neventToken:${eventToken}\nvalueToSum:$valueToSum\ncurrency:$currency"
-        )
-        val adjustEvent = AdjustEvent(eventToken)
-        adjustEvent.setRevenue(valueToSum, currency)
-        Adjust.trackEvent(adjustEvent)
     }
 
     /**
@@ -390,6 +358,7 @@ open class AppJs(private val mContext: Context) {
      */
     @JavascriptInterface
     fun openBrowser(url: String) {
+        Log.e(TAG, "openBrowser url$url")
         if (mContext is WebActivity) {
             val uri = Uri.parse(url)
             val intent = Intent()
@@ -398,6 +367,48 @@ open class AppJs(private val mContext: Context) {
             if (intent.resolveActivity(mContext.packageManager) != null) {
                 mContext.startActivity(intent)
             }
+        }
+    }
+
+    /**
+     * 打开一个基本配置的web url
+     *
+     * @param json 打开web传参 选填
+     * {"title":"", 打开时显示的标题
+     *  "url":"", 加载的地址
+     *  "hasTitleBar":"false", 是否显示标题栏
+     *  "rewriteTitle":"true", 是否通过加载的Web重写标题
+     *  "stateBarTextColor":"black", 状态栏字体颜色 black|white
+     *  "titleTextColor":"#FFFFFF", 标题字体颜色
+     *  "titleColor":"#FFFFFF", 标题背景色
+     *  "postData":"", webView post方法时需要传参
+     *  "html":"", 加载htmlCode,
+     *  "webBack":"true", true:web回退|false 直接关闭页面
+     * }
+     */
+    @JavascriptInterface
+    fun openPureBrowser(json: String) {
+        Log.v(TAG, "openPureBrowser json:$json")
+        if (mContext is WebActivity) {
+            val jsonObject = JSONObject(json)
+            Launcher.with(mContext, PureWebActivity::class.java)
+                .putExtra(PureWebActivity.EX_STATE_BAR_BG, jsonObject.optString("titleColor"))
+                .putExtra(
+                    PureWebActivity.EX_STATE_BAR_FIELD_COLOR,
+                    jsonObject.optString("stateBarTextColor")
+                )
+                .putExtra(
+                    PureWebActivity.EX_TITLE_TEXT_COLOR,
+                    jsonObject.optString("titleTextColor")
+                )
+                .putExtra(PureWebActivity.EX_TITLE, jsonObject.optString("title"))
+                .putExtra(PureWebActivity.EX_HAS_TITLE_BAR, jsonObject.optString("hasTitleBar"))
+                .putExtra(PureWebActivity.EX_REWRITE_TITLE, jsonObject.optString("rewriteTitle"))
+                .putExtra(PureWebActivity.EX_URL, jsonObject.optString("url"))
+                .putExtra(PureWebActivity.EX_POST_DATA, jsonObject.optString("postData"))
+                .putExtra(PureWebActivity.EX_HTML, jsonObject.optString("html"))
+                .putExtra(PureWebActivity.EX_WEB_BACK, jsonObject.optString("webBack"))
+                .execute()
         }
     }
 
@@ -442,8 +453,10 @@ open class AppJs(private val mContext: Context) {
     @JavascriptInterface
     fun showTitleBar(visible: Boolean) {
         if (mContext is WebActivity) {
-            val v = if (visible) View.VISIBLE else View.GONE
-            mContext.getTitleBar().visibility = v
+            mContext.runOnUiThread {
+                val v = if (visible) View.VISIBLE else View.GONE
+                mContext.getTitleBar().visibility = v
+            }
         }
     }
 
@@ -466,47 +479,6 @@ open class AppJs(private val mContext: Context) {
     @JavascriptInterface
     fun newPageWithTitleBar(url: String, title: String?) {
         newPageWithTitleBar(url, title, true)
-    }
-
-
-    /**
-     * 渠道推广首页，用于统计访客
-     */
-    @JavascriptInterface
-    open fun countGuest() {
-        if (mContext is WebActivity) {
-            MobclickAgent.onEvent(mContext, "index")
-        }
-    }
-
-    /**
-     * 注册人数
-     */
-    @JavascriptInterface
-    open fun countRegister() {
-        if (mContext is WebActivity) {
-            MobclickAgent.onEvent(mContext, "regist")
-        }
-    }
-
-    /**
-     * 点击首页产品列表
-     */
-    @JavascriptInterface
-    open fun clickIndexProd() {
-        if (mContext is WebActivity) {
-            MobclickAgent.onEvent(mContext, "clickIndexProd")
-        }
-    }
-
-    /**
-     * 点击产品详情中_申请
-     */
-    @JavascriptInterface
-    open fun clickProdDetail() {
-        if (mContext is WebActivity) {
-            MobclickAgent.onEvent(mContext, "clickProdDetail")
-        }
     }
 
     /**
