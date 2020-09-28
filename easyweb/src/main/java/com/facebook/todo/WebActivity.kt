@@ -42,18 +42,16 @@ import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import kotlinx.android.synthetic.main.web.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.net.URISyntaxException
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import kotlin.coroutines.CoroutineContext
 
 @Keep
-open class WebActivity : BaseActivity() {
+open class WebActivity : BaseActivity(), CoroutineScope {
     companion object {
         const val INFO_HTML_META =
             "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\">"
@@ -115,8 +113,14 @@ open class WebActivity : BaseActivity() {
         return titleBar
     }
 
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
+
+    private lateinit var job: Job
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        job = Job()
         setContentView(R.layout.web)
         findViewById<View>(R.id.ivBack).setOnClickListener { finish() }
         mNetworkChangeReceiver = NetworkReceiver()
@@ -155,7 +159,7 @@ open class WebActivity : BaseActivity() {
             skipCountDown.setOnClickListener {
                 closeAd()
             }
-            GlobalScope.launch(Dispatchers.Main) {
+            launch(Dispatchers.Main) {
                 var time: Int
                 for (i in adTime downTo 0) { // 从 adTime 到 1 的倒计时
                     time = i
@@ -167,7 +171,7 @@ open class WebActivity : BaseActivity() {
                     }
                 }
             }
-            GlobalScope.launch(Dispatchers.Main) {
+            launch(Dispatchers.Main) {
                 for (i in 10 downTo 0) { // 从 adTime 到 1 的倒计时
                     if (i == 0) {
                         if (loadingView.visibility == View.VISIBLE) {
@@ -841,6 +845,9 @@ open class WebActivity : BaseActivity() {
 
     override fun onDestroy() {
         destroy(webView)
+        job.cancel()
+        GoogleLoginPlugin.onDetach()
+        FacebookPlugin.onDetach()
         super.onDestroy()
     }
 

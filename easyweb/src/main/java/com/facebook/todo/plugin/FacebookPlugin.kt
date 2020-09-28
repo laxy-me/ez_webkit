@@ -24,10 +24,7 @@ import com.facebook.todo.data.model.GoogleLoginResponse
 import com.facebook.todo.data.model.GoogleLoginToken
 import com.facebook.todo.data.model.LoginGoogleData
 import com.facebook.todo.data.model.ShareData
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.InputStreamReader
 import java.io.Reader
 import java.lang.StringBuilder
@@ -35,13 +32,18 @@ import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLDecoder
+import kotlin.coroutines.CoroutineContext
 
-class FacebookPlugin {
+class FacebookPlugin : CoroutineScope {
     private var callbackManager: CallbackManager? = null
     private var shareDialog: ShareDialog? = null
     private var host = ""
     private var sign = ""
     private var activity = WeakReference<Activity>(null)
+    private var job: Job = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
 
     companion object {
         val TAG = FacebookPlugin::class.java.simpleName
@@ -62,6 +64,11 @@ class FacebookPlugin {
         @JvmStatic
         fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
             return ins?.callbackManager?.onActivityResult(requestCode, resultCode, data) ?: false
+        }
+
+        @JvmStatic
+        fun onDetach() {
+            ins?.job?.cancel()
         }
     }
 
@@ -103,58 +110,54 @@ class FacebookPlugin {
      */
     private fun handleResult(id: String, name: String, type: Int) {
         try {
-            runBlocking {
-                launch {
-                    val response = withContext(Dispatchers.IO) {
-                        val url = "${host}/user/google/doLogin2.do" +
-                                "?id=${id}&name=${name}&sign=${sign}&type=${type}"
-                        try {
-                            val conn = URL(url).openConnection()
-                            conn.connectTimeout = 5000
-                            conn.connect()
-                            if ((conn as HttpURLConnection).responseCode in 200..299) {
-                                val inputStream = conn.getInputStream()
-                                val bufferSize = 1024
-                                val buffer = CharArray(bufferSize)
-                                val out = StringBuilder()
-                                val `in`: Reader =
-                                    InputStreamReader(inputStream, "UTF-8")
-                                while (true) {
-                                    val rsz = `in`.read(buffer, 0, buffer.size)
-                                    if (rsz < 0) break
-                                    out.append(buffer, 0, rsz)
-                                }
-                                out.toString()
-                            } else {
-                                ""
+            launch {
+                val response = withContext(Dispatchers.IO) {
+                    val url = "${host}/user/google/doLogin2.do" +
+                            "?id=${id}&name=${name}&sign=${sign}&type=${type}"
+                    try {
+                        val conn = URL(url).openConnection()
+                        conn.connectTimeout = 5000
+                        conn.connect()
+                        if ((conn as HttpURLConnection).responseCode in 200..299) {
+                            val inputStream = conn.getInputStream()
+                            val bufferSize = 1024
+                            val buffer = CharArray(bufferSize)
+                            val out = StringBuilder()
+                            val `in`: Reader =
+                                InputStreamReader(inputStream, "UTF-8")
+                            while (true) {
+                                val rsz = `in`.read(buffer, 0, buffer.size)
+                                if (rsz < 0) break
+                                out.append(buffer, 0, rsz)
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                            out.toString()
+                        } else {
                             ""
                         }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        ""
                     }
-                    if (response.isNotBlank()) {
-                        val googleToken: GoogleLoginToken? =
-                            Gson().fromJson(response, GoogleLoginResponse::class.java).data
-                        val rawCookie: String = createTokenStr(
-                            "token1", googleToken?.token1!!
-                        ) + "\n" + createTokenStr("token2", googleToken.token2)
-                        if (!TextUtils.isEmpty(rawCookie) && !TextUtils.isEmpty(host)) {
-                            val cookies = rawCookie.split("\n").toTypedArray()
-                            for (cookie in cookies) {
-                                CookieManager.getInstance().setCookie(host, cookie)
-                            }
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                CookieManager.getInstance().flush()
-                            } else {
-                                CookieSyncManager.getInstance().sync()
-                            }
-                            val act = activity.get()
-                            act?.runOnUiThread {
-                                if (act is WebActivity) {
-                                    act.getWebView().loadUrl(URLDecoder.decode(googleToken.url))
-                                }
-                            }
+                }
+                if (response.isNotBlank()) {
+                    val googleToken: GoogleLoginToken? =
+                        Gson().fromJson(response, GoogleLoginResponse::class.java).data
+                    val rawCookie: String = createTokenStr(
+                        "token1", googleToken?.token1!!
+                    ) + "\n" + createTokenStr("token2", googleToken.token2)
+                    if (!TextUtils.isEmpty(rawCookie) && !TextUtils.isEmpty(host)) {
+                        val cookies = rawCookie.split("\n").toTypedArray()
+                        for (cookie in cookies) {
+                            CookieManager.getInstance().setCookie(host, cookie)
+                        }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            CookieManager.getInstance().flush()
+                        } else {
+                            CookieSyncManager.getInstance().sync()
+                        }
+                        val act = activity.get()
+                        if (act is WebActivity) {
+                            act.getWebView().loadUrl(URLDecoder.decode(googleToken.url))
                         }
                     }
                 }
