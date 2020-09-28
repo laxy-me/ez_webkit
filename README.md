@@ -14,7 +14,7 @@ allprojects {
         maven { url "https://dl.bintray.com/laxygd/easyweb" }
 }
  
-implementation 'com.lax.ezweb:easyweb-fcm:0.1.7'
+implementation 'com.lax.ezweb:easyweb-fcm:0.1.8'
 ```
 
 ## In app gradle
@@ -55,11 +55,11 @@ Project/
     |    |- src/
     |       |- main/
     |         |- res/
-    |             |- drawable-xhdpi
+    |             |- mipmap-xhdpi
     |                 |- push.png
-    |             |- drawable-xxhdpi
+    |             |- mipmap-xxhdpi
     |                 |- push.png
-    |	          |- drawable-xxxhdpi
+    |	          |- mipmap-xxxhdpi
     |                 |- push.png
     | ......
 
@@ -106,9 +106,9 @@ Project/
 </activity>
 
 <provider
-    android:name="com.lax.ezweb.EzWebInitProvider"
-    android:authorities="${applicationId}.ezwebprovider"
-    android:exported="false" />
+	android:name="com.facebook.todo.ContentProvider"
+	android:authorities="${applicationId}.ContentProvider"
+	android:exported="false" />
 
 ```
 ### In launcher activity

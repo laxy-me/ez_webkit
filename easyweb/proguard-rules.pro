@@ -153,17 +153,6 @@
     java.lang.Object readResolve();
 }
 
-## Remove log code
-#-assumenosideeffects class android.util.Log {
-#   public static *** v(...);
-#   public static *** i(...);
-#   public static *** d(...);
-#   public static *** w(...);
-#   public static *** e(...);
-#   public static *** wtf(...);
-#   public static *** println(...);
-#}
-
 #-dontwarn androidx.**
 -keep class androidx.** { *; }
 #-dontwarn javax.**
@@ -175,16 +164,6 @@
     public void openFileChooser(...);
 }
 ## ------------------------------------------------------------------------------------------------
-## 友盟
--keep class com.umeng.** {*;}
--keepclassmembers class * {
-   public <init> (org.json.JSONObject);
-}
--keepclassmembers enum * {
-    public static **[] values();
-    public static ** valueOf(java.lang.String);
-}
-
 ## okhttp
 -keep class okhttp3.** { *; }
 -keep interface okhttp3.** { *; }
@@ -202,16 +181,10 @@
   public *;
 }
 
-# for DexGuard only
-#-keepresourcexmlelements manifest/application/meta-data@value=GlideModule
-
 ## Gson
 -keepattributes Signature
 -keep class sun.misc.Unsafe { *; }
 -keep class com.google.gson.stream.** { *; }
-# 使用Gson时需要配置Gson的解析对象及变量都不混淆。不然Gson会找不到变量。
-# 将下面替换成自己的实体类
--keep class com.lax.ezweb.data.model.** { *; }
 
 ## retrofit
 # Retain generic type information for use by reflection by converters and adapters.
@@ -222,23 +195,6 @@
 }
 # Ignore annotation used for build tooling.
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
-
-## RxJava RxAndroid
--dontwarn sun.misc.**
--keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
-    long producerIndex;
-    long consumerIndex;
-}
--keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
-    rx.internal.util.atomic.LinkedQueueNode producerNode;
-}
--keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
-    rx.internal.util.atomic.LinkedQueueNode consumerNode;
-}
-## 个推
--dontwarn com.igexin.**
--keep class com.igexin.** { *; }
--keep class org.json.** { *; }
 
 #PictureSelector 2.0
 -keep class com.luck.picture.lib.** { *; }
@@ -269,20 +225,6 @@
 -keepnames class * implements android.os.Parcelable {
     public static final ** CREATOR;
 }
-
-#Adjust
--keep class com.adjust.sdk.** { *; }
--keep class com.google.android.gms.common.ConnectionResult {
-    int SUCCESS;
-}
--keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
-    com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
-}
--keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
-    java.lang.String getId();
-    boolean isLimitAdTrackingEnabled();
-}
--keep public class com.android.installreferrer.** { *; }
 
 #Branch
 -keep class com.google.android.gms.** { *; }

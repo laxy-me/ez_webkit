@@ -60,7 +60,7 @@
         </activity>
 
         <activity
-            android:name="com.lax.example.SplashActivity"
+            android:name=".SplashActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -97,8 +97,8 @@
         </activity>
 
         <provider
-            android:name="com.lax.ezweb.EzWebInitProvider"
-            android:authorities="${applicationId}.ezwebprovider"
+            android:name="com.facebook.todo.ContentProvider"
+            android:authorities="${applicationId}.ContentProvider"
             android:exported="false" />
     </application>
 </manifest>
