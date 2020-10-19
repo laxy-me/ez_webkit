@@ -4,15 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.webkit.CookieManager
 import android.webkit.CookieSyncManager
 import androidx.fragment.app.Fragment
-import com.facebook.AccessToken
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
+import com.facebook.*
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.facebook.share.Sharer
@@ -25,6 +23,8 @@ import com.facebook.todo.data.model.GoogleLoginToken
 import com.facebook.todo.data.model.LoginGoogleData
 import com.facebook.todo.data.model.ShareData
 import kotlinx.coroutines.*
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.InputStreamReader
 import java.io.Reader
 import java.lang.StringBuilder
@@ -83,7 +83,9 @@ class FacebookPlugin : CoroutineScope {
         LoginManager.getInstance().registerCallback(callbackManager,
             object : FacebookCallback<LoginResult?> {
                 override fun onSuccess(loginResult: LoginResult?) {
-                    processFacebookLogin(loginResult?.accessToken)
+                    loginResult?.accessToken?.let {
+                        setFacebookData(loginResult.accessToken)
+                    }
                 }
 
                 override fun onCancel() {
@@ -94,15 +96,39 @@ class FacebookPlugin : CoroutineScope {
             })
         val accessToken: AccessToken? = AccessToken.getCurrentAccessToken()
         if (accessToken != null && !accessToken.isExpired) {
-            processFacebookLogin(accessToken)
+            setFacebookData(accessToken)
         } else {
             LoginManager.getInstance().logIn(activity, listOf("public_profile"))
         }
     }
 
-    private fun processFacebookLogin(accessToken: AccessToken?) {
-        Log.v(TAG, accessToken?.token + "======" + accessToken?.userId)
-        handleResult(accessToken?.token ?: "", accessToken?.userId ?: "", 0)
+    private fun setFacebookData(accessToken: AccessToken) {
+        val request = GraphRequest.newMeRequest(
+            accessToken, object : GraphRequest.GraphJSONObjectCallback {
+                override fun onCompleted(json: JSONObject?, response: GraphResponse?) {
+                    if (response != null) {
+                        try {
+                            Log.i("Response", response.toString())
+                            val profile = Profile.getCurrentProfile()
+                            var profilePictureUri = ""
+                            if (Profile.getCurrentProfile() != null) {
+                                profilePictureUri =
+                                    Profile.getCurrentProfile().getProfilePictureUri(200, 200)
+                                        .toString()
+                                Log.i("Login", "ProfilePic$profilePictureUri")
+                            }
+
+                            handleResult(accessToken.userId ?: "", profile.name ?: "", 0)
+                        } catch (e: JSONException) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            })
+        val parameters = Bundle()
+        parameters.putString("fields", "id,email,first_name,last_name,gender")
+        request.parameters = parameters
+        request.executeAsync()
     }
 
     /**

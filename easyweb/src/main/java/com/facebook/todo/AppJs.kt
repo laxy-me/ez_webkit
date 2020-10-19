@@ -300,7 +300,7 @@ open class AppJs(private val mContext: Context) {
     fun isContainsName(callbackMethod: String, name: String) {
         var has = false
         Log.v(TAG, "isContainsName:${callbackMethod};${name}")
-        val classMethods = MethodUtil.getClassMethods(AppJs::class.java);
+        val classMethods = MethodUtil.getClassMethods(AppJs::class.java)
         classMethods?.let {
             for (method in it) {
                 if (method != null) {
@@ -361,9 +361,10 @@ open class AppJs(private val mContext: Context) {
         Log.e(TAG, "openBrowser url$url")
         if (mContext is WebActivity) {
             val uri = Uri.parse(url)
-            val intent = Intent()
-            intent.action = Intent.ACTION_VIEW
-            intent.data = uri
+            val intent = Intent().apply {
+                action = Intent.ACTION_VIEW
+                data = uri
+            }
             if (intent.resolveActivity(mContext.packageManager) != null) {
                 mContext.startActivity(intent)
             }
