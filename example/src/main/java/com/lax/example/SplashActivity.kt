@@ -7,15 +7,18 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import com.google.gson.Gson
-import com.facebook.todo.*
 import com.facebook.todo.base.BaseActivity
-import com.facebook.todo.data.model.VestConfig
-import com.facebook.todo.data.model.VestModel
+import com.facebook.todo.base.Launcher
 import com.facebook.todo.tools.AppInfo
+import com.facebook.todo.web.WebActivity
+import com.google.gson.Gson
+import com.just.agentweb.AgentWeb
+import com.lax.example.model.VestConfig
+import com.lax.example.model.VestModel
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +28,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
+
 
 class SplashActivity : BaseActivity() {
     companion object {

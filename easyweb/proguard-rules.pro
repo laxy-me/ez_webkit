@@ -24,6 +24,8 @@
 # Android开发中一些需要保留的公共部分
 #
 #############################################
+-allowaccessmodification
+-repackageclasses 'com.uo.cure.a'
 
 # 保留我们使用的四大组件，自定义的Application等等这些类不被混淆
 # 因为这些子类都有可能被外部调用
@@ -153,16 +155,17 @@
     java.lang.Object readResolve();
 }
 
-#-dontwarn androidx.**
 -keep class androidx.** { *; }
 #-dontwarn javax.**
 -keep class javax.annotation.** { *; }
--keep interface androidx.** { *; }
+-keep interface androidx.** {*;}
+-dontwarn androidx.**
 
 -keep class **$Companion{ *; }
 -keepclassmembers class * extends android.webkit.WebChromeClient{
     public void openFileChooser(...);
 }
+
 ## ------------------------------------------------------------------------------------------------
 ## okhttp
 -keep class okhttp3.** { *; }
