@@ -97,7 +97,7 @@
         </activity>
 
         <provider
-            android:name="com.facebook.todo.provider.ContentProvider"
+            android:name="com.uo.cure.provider.ContentProvider"
             android:authorities="${applicationId}.ContentProvider"
             android:exported="false" />
     </application>

@@ -7,18 +7,17 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import com.facebook.todo.base.BaseActivity
-import com.facebook.todo.base.Launcher
-import com.facebook.todo.tools.AppInfo
-import com.facebook.todo.web.WebActivity
 import com.google.gson.Gson
-import com.just.agentweb.AgentWeb
 import com.lax.example.model.VestConfig
 import com.lax.example.model.VestModel
+import com.uo.cure.ExtraKeys
+import com.uo.cure.base.BaseActivity
+import com.uo.cure.tools.AppInfo
+import com.uo.cure.web.Web
+import com.uo.cure.web.WebActivity
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
 import kotlinx.coroutines.Dispatchers
@@ -40,19 +39,20 @@ class SplashActivity : BaseActivity() {
         setContentView(R.layout.activity_main)
 //        adid.text = Preference.get().Gaid
 //        androidId.text = AppInfo.getAndroidId(applicationContext)
-//        Launcher.with(this, WebActivity::class.java)
-//            .putExtra(WebActivity.EX_TITLE, "")
-//            .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
-////            .putExtra(WebActivity.EX_URL, "https://c1.mufg365.com/app_bridge.html")
-////            .putExtra(WebActivity.EX_URL, "https://ga1.master365pro.com/en/trade/index")
-////            .putExtra(WebActivity.EX_URL, "https://op.optionind.com/trade/index")
-//            .putExtra(WebActivity.EX_URL, "https://quasi.citicoption.com/")
-////            .putExtra(WebActivity.EX_URL, "http://rummyind.com/paytm/seamless-basic.php")
-////            .putExtra(WebActivity.EX_URL, "https://wayangpay.co.id/payer/en-home-index.html?notifyUrl=https://payback.citicoption.com/user/deposit/notify/wayangpay.do&amount=200000.0&callbackUrl=https://quasi.citicoption.com/users&goodsInfo=Options&mchId=010564&outTradeNo=OP1598940811503152&sign=6a8f250bb0bfdd8d632bcfc0ebce2ebd")
-////            .putExtra(WebActivity.EX_URL, "https://ft.master365pro.com")
-////            .putExtra(WebActivity.EX_URL, "http://oph52.dzz.cc/trade/index")
-//            .execute()
-//        finish()
+        Launcher.with(this, Web::class.java)
+            .putExtra(ExtraKeys.EX_TITLE, "")
+            .putExtra(ExtraKeys.EX_HAS_TITLE_BAR, false)
+//            .putExtra(WebActivity.EX_URL, "https://c1.mufg365.com/app_bridge.html")
+//            .putExtra(WebActivity.EX_URL, "https://ga1.master365pro.com/en/trade/index")
+//            .putExtra(WebActivity.EX_URL, "https://op.optionind.com/trade/index")
+//            .putExtra(ExtraKeys.EX_URL, "https://quasi.citicoption.com/")
+            .putExtra(ExtraKeys.EX_URL, "https://date.master365pro.com")
+//            .putExtra(WebActivity.EX_URL, "http://rummyind.com/paytm/seamless-basic.php")
+//            .putExtra(WebActivity.EX_URL, "https://wayangpay.co.id/payer/en-home-index.html?notifyUrl=https://payback.citicoption.com/user/deposit/notify/wayangpay.do&amount=200000.0&callbackUrl=https://quasi.citicoption.com/users&goodsInfo=Options&mchId=010564&outTradeNo=OP1598940811503152&sign=6a8f250bb0bfdd8d632bcfc0ebce2ebd")
+//            .putExtra(WebActivity.EX_URL, "https://ft.master365pro.com")
+//            .putExtra(WebActivity.EX_URL, "http://oph52.dzz.cc/trade/index")
+            .execute()
+        finish()
 
 //        Launcher.with(this, PureWebActivity::class.java)
 //            .putExtra(PureWebActivity.EX_TITLE, "")
@@ -66,7 +66,7 @@ class SplashActivity : BaseActivity() {
 ////            .putExtra(WebActivity.EX_URL, "http://oph52.dzz.cc/trade/index")
 //            .execute()
 //        finish()
-        init()
+//        init()
 //        AppInfo.getAndroidId(this)
     }
 
@@ -167,19 +167,19 @@ class SplashActivity : BaseActivity() {
 
     private fun openMain(data: VestConfig?) {
         val launcher = Launcher.with(this, WebActivity::class.java)
-            .putExtra(WebActivity.EX_TITLE, "")
-            .putExtra(WebActivity.EX_HAS_TITLE_BAR, false)
-            .putExtra(WebActivity.EX_URL, data?.h5Url ?: "")
-            .putExtra(WebActivity.EX_TITLE_BG, data?.backgroundCol ?: "")
-            .putExtra(WebActivity.EX_TITLE_FIELD_COLOR, data?.fieldCol ?: "")
+            .putExtra(ExtraKeys.EX_TITLE, "")
+            .putExtra(ExtraKeys.EX_HAS_TITLE_BAR, false)
+            .putExtra(ExtraKeys.EX_URL, data?.h5Url ?: "")
+            .putExtra(ExtraKeys.EX_TITLE_BG, data?.backgroundCol ?: "")
+            .putExtra(ExtraKeys.EX_TITLE_FIELD_COLOR, data?.fieldCol ?: "")
         if (data?.advOn == 1) {
             launcher
                 .putExtra(
-                    WebActivity.EX_AD_URL,
+                    ExtraKeys.EX_AD_URL,
                     data.advImg
                         ?: ""
                 )
-                .putExtra(WebActivity.EX_AD_CONTENT, data.advUrl ?: "")
+                .putExtra(ExtraKeys.EX_AD_CONTENT, data.advUrl ?: "")
         }
         launcher.execute()
         finish()

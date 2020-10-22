@@ -9,14 +9,12 @@ android {
         checkReleaseBuilds false
         abortOnError false
     }
-//    buildFeatures {
-////        dataBinding = true
-////        for view binding :
+    buildFeatures {
+        dataBinding = true
+//        for view binding :
 //        viewBinding = true
-//    }
-    dataBinding {
-        enabled = true
     }
+
     defaultConfig {
         applicationId "com.lax.example"
         minSdkVersion 21
@@ -60,7 +58,7 @@ android {
 
     buildTypes {
         debug {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
@@ -105,7 +103,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
 
-//    implementation project(path: ':easyweb')
+//    implementation project(path: ':library')
     implementation 'com.github.bumptech.glide:glide:4.5.0'
     kapt 'com.github.bumptech.glide:compiler:4.5.0'
     implementation 'com.lax.ezweb:easyweb-fcm:0.1.8'
