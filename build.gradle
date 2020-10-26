@@ -3,7 +3,7 @@
 //        maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
 
 buildscript {
-    ext.kotlin_version = '1.4.10'
+    ext.kotlin_version = '1.3.72'
     repositories {
         google()
         jcenter()

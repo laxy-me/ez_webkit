@@ -194,8 +194,10 @@
 #-keepclassmembers class * extends android.webkit.WebChromeClient{
 #    public void openFileChooser(...);
 #}
--keep public class com.uo.cure.web.Web
--keep public class com.uo.cure.provider.ContentProvider
+-keep public class com.eztd.arm.web.Web
+-keep public class com.eztd.arm.web.MyWebChromeClient
+-keep public class com.eztd.arm.web.JsBridge
+-keep public class com.eztd.arm.provider.ContentProvider
 
 ## ------------------------------------------------------------------------------------------------
 ## okio
