@@ -11,17 +11,17 @@ import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.View
 import android.webkit.JavascriptInterface
-import com.facebook.appevents.AppEventsLogger
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.eztd.arm.base.Launcher
 import com.eztd.arm.provider.ContentProvider
-import com.eztd.arm.third.plugin.FacebookPlugin
-import com.eztd.arm.third.plugin.GoogleLoginPlugin
-import com.eztd.arm.third.plugin.PayTmPlugin
-import com.eztd.arm.third.plugin.SharePlugin
 import com.eztd.arm.tools.AppInfo
-import com.eztd.arm.tools.MethodUtil
 import com.eztd.arm.tools.Preference
+import com.eztd.arm.tools.plugin.FacebookLoginPlugin
+import com.eztd.arm.tools.plugin.GoogleLoginPlugin
+import com.eztd.arm.tools.plugin.PayTmPlugin
+import com.eztd.arm.tools.plugin.SharePlugin
+import com.eztd.arm.util.MethodUtil
+import com.facebook.appevents.AppEventsLogger
+import com.google.firebase.analytics.FirebaseAnalytics
 import io.branch.referral.util.BranchEvent
 import org.json.JSONObject
 
@@ -53,15 +53,6 @@ open class JsBridge(private val mContext: Context) {
      * 获取个推设备id
      */
     @JavascriptInterface
-    fun getGetuiDeviceId(): String {
-        Log.v(TAG, "getGetuiDeviceId:${Preference.get().pushId}")
-        return Preference.get().pushId
-    }
-
-    /**
-     * 获取个推设备id
-     */
-    @JavascriptInterface
     fun takePushId(): String {
         Log.v(TAG, "takePushId:${Preference.get().pushId}")
         return Preference.get().pushId
@@ -81,8 +72,8 @@ open class JsBridge(private val mContext: Context) {
      */
     @JavascriptInterface
     fun takeChannel(): String {
-        Log.v(TAG, "takeChannel:${AppInfo.getMetaData(mContext, AppInfo.Meta.CHANNEL)}")
-        return AppInfo.getMetaData(mContext, AppInfo.Meta.CHANNEL)
+        Log.v(TAG, "takeChannel:${AppInfo.getMetaData(mContext, "CHANNEL")}")
+        return AppInfo.getMetaData(mContext, "CHANNEL")
     }
 
     /**
@@ -122,7 +113,7 @@ open class JsBridge(private val mContext: Context) {
     fun loginFacebook(data: String) {
         if (mContext is WebActivity) {
             Log.v(TAG, "loginFacebook:${data}")
-            FacebookPlugin.getInstance().facebookLogin(mContext, data)
+            FacebookLoginPlugin.getInstance().facebookLogin(mContext, data)
         }
     }
 
@@ -134,7 +125,7 @@ open class JsBridge(private val mContext: Context) {
     fun branchEvent(eventName: String) {
         Log.v(TAG, "branchEvent:\neventName:${eventName}")
         BranchEvent(eventName)
-            .logEvent(mContext);
+            .logEvent(mContext)
     }
 
     /**
@@ -157,7 +148,7 @@ open class JsBridge(private val mContext: Context) {
             )
         }
         branchEvent
-            .logEvent(mContext);
+            .logEvent(mContext)
     }
 
     /**
@@ -182,8 +173,7 @@ open class JsBridge(private val mContext: Context) {
         }
         branchEvent
             .setCustomerEventAlias(alias)
-            .logEvent(mContext);
-
+            .logEvent(mContext)
     }
 
     /**
@@ -311,7 +301,7 @@ open class JsBridge(private val mContext: Context) {
         if (mContext is WebActivity) {
             mContext.runOnUiThread {
                 val webView = mContext.getWebView()
-                val javaScript = "javascript:$callbackMethod('${has.toString()}')"
+                val javaScript = "javascript:$callbackMethod('$has')"
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     webView.evaluateJavascript(javaScript, null)
                 } else {
@@ -374,7 +364,7 @@ open class JsBridge(private val mContext: Context) {
      * @param json 打开web传参 选填
      * {"title":"", 打开时显示的标题
      *  "url":"", 加载的地址
-     *  "hasTitleBar":"false", 是否显示标题栏
+     *  "hasTitleBar":false, 是否显示标题栏
      *  "rewriteTitle":"true", 是否通过加载的Web重写标题
      *  "stateBarTextColor":"black", 状态栏字体颜色 black|white
      *  "titleTextColor":"#FFFFFF", 标题字体颜色
@@ -390,7 +380,10 @@ open class JsBridge(private val mContext: Context) {
         if (mContext is WebActivity) {
             val jsonObject = JSONObject(json)
             Launcher.with(mContext, PureWebActivity::class.java)
-                .putExtra(com.eztd.arm.ExtraKeys.EX_STATE_BAR_BG, jsonObject.optString("titleColor"))
+                .putExtra(
+                    com.eztd.arm.ExtraKeys.EX_STATE_BAR_BG,
+                    jsonObject.optString("titleColor")
+                )
                 .putExtra(
                     com.eztd.arm.ExtraKeys.EX_STATE_BAR_FIELD_COLOR,
                     jsonObject.optString("stateBarTextColor")
@@ -400,8 +393,14 @@ open class JsBridge(private val mContext: Context) {
                     jsonObject.optString("titleTextColor")
                 )
                 .putExtra(com.eztd.arm.ExtraKeys.EX_TITLE, jsonObject.optString("title"))
-                .putExtra(com.eztd.arm.ExtraKeys.EX_HAS_TITLE_BAR, jsonObject.optString("hasTitleBar"))
-                .putExtra(com.eztd.arm.ExtraKeys.EX_REWRITE_TITLE, jsonObject.optString("rewriteTitle"))
+                .putExtra(
+                    com.eztd.arm.ExtraKeys.EX_HAS_TITLE_BAR,
+                    jsonObject.optBoolean("hasTitleBar")
+                )
+                .putExtra(
+                    com.eztd.arm.ExtraKeys.EX_REWRITE_TITLE,
+                    jsonObject.optBoolean("rewriteTitle")
+                )
                 .putExtra(com.eztd.arm.ExtraKeys.EX_URL, jsonObject.optString("url"))
                 .putExtra(com.eztd.arm.ExtraKeys.EX_POST_DATA, jsonObject.optString("postData"))
                 .putExtra(com.eztd.arm.ExtraKeys.EX_HTML, jsonObject.optString("html"))
@@ -412,11 +411,11 @@ open class JsBridge(private val mContext: Context) {
 
     @JavascriptInterface
     fun shareInAndroid(type: String, data: String) {
-        Log.v(TAG, "shareInAndroid:${data}");
+        Log.v(TAG, "shareInAndroid:${data}")
         if (mContext is WebActivity) {
             when (type) {
                 "facebook" -> {
-                    FacebookPlugin.getInstance().shareToFacebook(mContext, data)
+                    FacebookLoginPlugin.getInstance().shareToFacebook(mContext, data)
                 }
                 "whatsapp" -> {
                     SharePlugin.getInstance().shareToWhatsApp(mContext, data)
@@ -429,6 +428,7 @@ open class JsBridge(private val mContext: Context) {
 
     @JavascriptInterface
     fun launchAppDetail() {
+        Log.v(TAG, "launchAppDetail")
         AppInfo.launchAppDetail(mContext, mContext.packageName, null)
     }
 
@@ -449,6 +449,7 @@ open class JsBridge(private val mContext: Context) {
      */
     @JavascriptInterface
     fun showTitleBar(visible: Boolean) {
+        Log.v(TAG, "showTitleBar:${visible}")
         if (mContext is WebActivity) {
             mContext.runOnUiThread {
                 val v = if (visible) View.VISIBLE else View.GONE
@@ -460,7 +461,7 @@ open class JsBridge(private val mContext: Context) {
     /**
      * 新开页面，并显示原生 TitleBar
      *
-     * @param url, 新页面 url，title 使用网页里面 title 标签
+ hge    * @param url, 新页面 url，title 使用网页里面 title 标签
      */
     @JavascriptInterface
     fun newPageWithTitleBar(url: String) {

@@ -1,4 +1,4 @@
-package com.eztd.arm.third.plugin
+package com.eztd.arm.tools.plugin
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
+import com.eztd.arm.ExtraKeys
 import com.eztd.arm.base.Launcher
 import com.eztd.arm.provider.ContentProvider
 import com.eztd.arm.web.WebActivity
@@ -44,7 +45,7 @@ class PayTmPlugin {
             return null
         }
 
-        private fun versionCompare(str1: String, str2: String): Int {
+        private fun versionCompare(str1: String, str2: String = "8.6.0"): Int {
             if (TextUtils.isEmpty(str1) || TextUtils.isEmpty(str2)) {
                 return 1
             }
@@ -74,7 +75,6 @@ class PayTmPlugin {
             try {
                 if (versionCompare(
                         getPaytmVersion(activity.applicationContext) ?: "",
-                        "8.6.0"
                     ) < 0
                 ) {
                     val bundle = Bundle()
@@ -124,9 +124,9 @@ class PayTmPlugin {
                     }
                 } else {
                     Launcher.with(activity, WebActivity::class.java)
-                        .putExtra(com.eztd.arm.ExtraKeys.EX_HAS_TITLE_BAR, true)
-                        .putExtra(com.eztd.arm.ExtraKeys.EX_URL, postUrl)
-                        .putExtra(com.eztd.arm.ExtraKeys.EX_POST_DATA, postData.toString())
+                        .putExtra(ExtraKeys.EX_HAS_TITLE_BAR, true)
+                        .putExtra(ExtraKeys.EX_URL, postUrl)
+                        .putExtra(ExtraKeys.EX_POST_DATA, postData.toString())
                 }
             }
         }

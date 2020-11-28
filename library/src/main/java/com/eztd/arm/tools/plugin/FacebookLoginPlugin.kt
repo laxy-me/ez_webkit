@@ -1,4 +1,4 @@
-package com.eztd.arm.third.plugin
+package com.eztd.arm.tools.plugin
 
 import android.app.Activity
 import android.content.Intent
@@ -32,7 +32,7 @@ import java.nio.charset.StandardCharsets
 import kotlin.coroutines.CoroutineContext
 import kotlin.jvm.Throws
 
-class FacebookPlugin : CoroutineScope {
+class FacebookLoginPlugin : CoroutineScope {
     private var callbackManager: CallbackManager? = null
     private var shareDialog: ShareDialog? = null
     private var host = ""
@@ -44,17 +44,17 @@ class FacebookPlugin : CoroutineScope {
         get() = Dispatchers.Main + job
 
     companion object {
-        val TAG = FacebookPlugin::class.java.simpleName
+        val TAG = FacebookLoginPlugin::class.java.simpleName
 
         @JvmField
-        var ins: FacebookPlugin? = null
+        var ins: FacebookLoginPlugin? = null
 
         @JvmStatic
-        fun getInstance(): FacebookPlugin {
+        fun getInstance(): FacebookLoginPlugin {
             if (ins == null) {
-                synchronized(FacebookPlugin::class.java) {
+                synchronized(FacebookLoginPlugin::class.java) {
                     if (ins == null) {
-                        ins = FacebookPlugin()
+                        ins = FacebookLoginPlugin()
                     }
                 }
             }
@@ -140,8 +140,8 @@ class FacebookPlugin : CoroutineScope {
                 if (response.isNotBlank()) {
                     val googleToken = JSONObject(response).optJSONObject("data")
                     googleToken?.apply {
-                        val token1 = optString("token1");
-                        val token2 = optString("token2");
+                        val token1 = optString("token1")
+                        val token2 = optString("token2")
                         if (token1.isNotBlank() && token2.isNotBlank()) {
                             syncCookie(token1, token2)
                         }

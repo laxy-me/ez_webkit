@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class MyCookieManger {
 
-    private static String FILE_NAME = "cookie_cache";
+    private static final String FILE_NAME = "cookie_cache";
 
     private static MyCookieManger sCookieManger;
 

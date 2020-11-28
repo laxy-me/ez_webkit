@@ -11,7 +11,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import java.util.*
 
-class SmartDialog private constructor(private val mActivity: Activity?) {
+class AppDialog private constructor(private val mActivity: Activity?) {
 
     private var mBuilder: AlertDialog.Builder? = null
     private var mAlertDialog: AlertDialog? = null
@@ -100,84 +100,84 @@ class SmartDialog private constructor(private val mActivity: Activity?) {
         mAlertDialog!!.window!!.setLayout(width, height)
     }
 
-    fun setOnDismissListener(onDismissListener: OnDismissListener): SmartDialog {
+    fun setOnDismissListener(onDismissListener: OnDismissListener): AppDialog {
         mDismissListener = onDismissListener
         return this
     }
 
-    fun setCustomViewController(customViewController: BaseCustomViewController): SmartDialog {
+    fun setCustomViewController(customViewController: BaseCustomViewController): AppDialog {
         mCustomViewController = customViewController
         return this
     }
 
-    fun setPositive(textId: Int, listener: OnClickListener): SmartDialog {
+    fun setPositive(textId: Int, listener: OnClickListener): AppDialog {
         mPositiveId = textId
         mPositiveListener = listener
         return this
     }
 
-    fun setPositive(textId: Int): SmartDialog {
+    fun setPositive(textId: Int): AppDialog {
         mPositiveId = textId
         return this
     }
 
-    fun setWindowAnim(windowAnim: Int): SmartDialog {
+    fun setWindowAnim(windowAnim: Int): AppDialog {
         mWindowAnim = windowAnim
         return this
     }
 
-    fun setWindowGravity(windowGravity: Int): SmartDialog {
+    fun setWindowGravity(windowGravity: Int): AppDialog {
         mWindowGravity = windowGravity
         return this
     }
 
-    fun setSoftInputMode(softInputMode: Int): SmartDialog {
+    fun setSoftInputMode(softInputMode: Int): AppDialog {
         mSoftInputMode = softInputMode
         return this
     }
 
-    fun setNegative(textId: Int, listener: OnClickListener): SmartDialog {
+    fun setNegative(textId: Int, listener: OnClickListener): AppDialog {
         mNegativeId = textId
         mNegativeListener = listener
         return this
     }
 
-    fun setCancelableOnTouchOutside(cancelable: Boolean): SmartDialog {
+    fun setCancelableOnTouchOutside(cancelable: Boolean): AppDialog {
         mCancelableOnTouchOutside = cancelable
         return this
     }
 
-    fun setCancelListener(cancelListener: OnCancelListener): SmartDialog {
+    fun setCancelListener(cancelListener: OnCancelListener): AppDialog {
         mOnCancelListener = cancelListener
         return this
     }
 
-    fun setMessage(messageRes: Int): SmartDialog {
+    fun setMessage(messageRes: Int): AppDialog {
         mMessageText = mActivity!!.getText(messageRes).toString()
         return this
     }
 
-    fun setMessage(message: String?): SmartDialog {
+    fun setMessage(message: String?): AppDialog {
         mMessageText = message
         return this
     }
 
-    fun setTitle(titleId: Int): SmartDialog {
+    fun setTitle(titleId: Int): AppDialog {
         mTitleText = mActivity!!.getText(titleId).toString()
         return this
     }
 
-    fun setTitle(title: String): SmartDialog {
+    fun setTitle(title: String): AppDialog {
         mTitleText = title
         return this
     }
 
-    fun setWidthScale(widthScale: Float): SmartDialog {
+    fun setWidthScale(widthScale: Float): AppDialog {
         mWidthScale = widthScale
         return this
     }
 
-    fun setHeightScale(heightScale: Float): SmartDialog {
+    fun setHeightScale(heightScale: Float): AppDialog {
         mHeightScale = heightScale
         return this
     }
@@ -290,7 +290,7 @@ class SmartDialog private constructor(private val mActivity: Activity?) {
 
         abstract fun onCreateView(): View
 
-        abstract fun onInitView(view: View, dialog: SmartDialog)
+        abstract fun onInitView(view: View, dialog: AppDialog)
 
         internal fun finishViewInit() {
             isViewInitialized = true
@@ -299,14 +299,14 @@ class SmartDialog private constructor(private val mActivity: Activity?) {
 
     companion object {
 
-        private val mListMap = HashMap<String, List<SmartDialog>>()
+        private val mListMap = HashMap<String, List<AppDialog>>()
 
         @JvmStatic
         @JvmOverloads
-        fun solo(activity: Activity, msg: String? = null): SmartDialog {
+        fun solo(activity: Activity, msg: String? = null): AppDialog {
             val key = getKey(activity)
             val dialogList = mListMap[key]
-            val dialog: SmartDialog
+            val dialog: AppDialog
             dialog = if (dialogList != null && dialogList.isNotEmpty()) {
                 dialogList[0]
             } else {
@@ -318,21 +318,21 @@ class SmartDialog private constructor(private val mActivity: Activity?) {
         }
 
         @JvmStatic
-        fun solo(activity: Activity, msgRes: Int): SmartDialog {
+        fun solo(activity: Activity, msgRes: Int): AppDialog {
             return solo(activity, activity.getText(msgRes).toString())
         }
 
         @JvmStatic
         @JvmOverloads
-        fun with(activity: Activity, msg: String? = null): SmartDialog {
-            val dialog = SmartDialog(activity)
+        fun with(activity: Activity, msg: String? = null): AppDialog {
+            val dialog = AppDialog(activity)
             addMap(activity, dialog)
             dialog.setMessage(msg)
             return dialog
         }
 
         @JvmStatic
-        fun with(activity: Activity, msgRes: Int): SmartDialog {
+        fun with(activity: Activity, msgRes: Int): AppDialog {
             return with(activity, activity.getText(msgRes).toString())
         }
 
@@ -342,9 +342,9 @@ class SmartDialog private constructor(private val mActivity: Activity?) {
         }
 
         @JvmStatic
-        private fun addMap(activity: Activity, dialog: SmartDialog) {
+        private fun addMap(activity: Activity, dialog: AppDialog) {
             val key = getKey(activity)
-            var dialogList: LinkedList<SmartDialog>? = mListMap[key] as LinkedList<SmartDialog>?
+            var dialogList: LinkedList<AppDialog>? = mListMap[key] as LinkedList<AppDialog>?
             if (dialogList == null) {
                 dialogList = LinkedList()
             }

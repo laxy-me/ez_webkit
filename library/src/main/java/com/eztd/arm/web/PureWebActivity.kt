@@ -1,6 +1,7 @@
 package com.eztd.arm.web
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Intent
@@ -19,39 +20,37 @@ import android.webkit.*
 import androidx.core.content.ContextCompat
 import com.eztd.arm.R
 import com.eztd.arm.base.BaseActivity
-import com.eztd.arm.tools.Network
-import kotlinx.android.synthetic.main.activity_web.*
+import com.eztd.arm.tools.Connectivity
+import kotlinx.android.synthetic.main.activity_pure_web.*
+import kotlinx.android.synthetic.main.activity_web.loadingView
+import kotlinx.android.synthetic.main.activity_web.progressbar
+import kotlinx.android.synthetic.main.activity_web.titleBar
+import kotlinx.android.synthetic.main.activity_web.webTitle
 
 class PureWebActivity : BaseActivity() {
-    companion object {
-        const val INFO_HTML_META =
-            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\">"
-    }
-
-    private var mLoadSuccess: Boolean = false
-    private var mPageUrl: String? = null
-    private var mTitle: String? = null
-    private var mTitleTextColor: String? = null
-    private var rewriteTitle: Boolean = true
-    private var mHasTitleBar: Boolean = true
+    private val infoHtmlMeta =
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\">"
+    private var loadStatus: Boolean = false
+    private var pageUrl: String? = null
+    private var viewTitle: String? = null
+    private var titleTextColor: String? = null
+    private var refreshTitle: Boolean = true
+    private var hasTitleBar: Boolean = true
     private var webBack: Boolean = true
-    private var mPureHtml: String? = null
+    private var pureHtmlCode: String? = null
     private var titleBg: String? = null
     private var titleFieldColor: String? = null
     private var mNetworkChangeReceiver: BroadcastReceiver? = null
     private var mWebViewClient: MyWebViewClient? = null
-
-    private var mPostData: String? = null
-
-    private val isNeedViewTitle: Boolean
-        get() = true
+    private var postData: String? = null
+    private val isNeedViewTitle: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pure_web)
         findViewById<View>(R.id.ivBack).setOnClickListener { onBackPressed() }
         mNetworkChangeReceiver = NetworkReceiver()
-        mLoadSuccess = true
+        loadStatus = true
         initData(intent)
         setStatusBar()
         initTitleBar()
@@ -59,7 +58,7 @@ class PureWebActivity : BaseActivity() {
     }
 
     private fun initTitleBar() {
-        titleBar.visibility = if (mHasTitleBar) View.VISIBLE else View.GONE
+        titleBar.visibility = if (hasTitleBar) View.VISIBLE else View.GONE
         titleBar.setBackgroundColor(
             if (!titleBg.isNullOrBlank()) Color.parseColor(titleBg) else ContextCompat.getColor(
                 this,
@@ -67,7 +66,7 @@ class PureWebActivity : BaseActivity() {
             )
         )
         webTitle.setTextColor(
-            if (!mTitleTextColor.isNullOrBlank()) Color.parseColor(mTitleTextColor) else ContextCompat.getColor(
+            if (!titleTextColor.isNullOrBlank()) Color.parseColor(titleTextColor) else ContextCompat.getColor(
                 this,
                 R.color.white
             )
@@ -89,24 +88,24 @@ class PureWebActivity : BaseActivity() {
     private fun initData(intent: Intent) {
         titleBg = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_STATE_BAR_BG)
         titleFieldColor = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_STATE_BAR_FIELD_COLOR)
-        mHasTitleBar = intent.getBooleanExtra(com.eztd.arm.ExtraKeys.EX_HAS_TITLE_BAR, false)
-        mTitle = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_TITLE)
-        mTitleTextColor = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_TITLE_TEXT_COLOR)
-        rewriteTitle = intent.getBooleanExtra(com.eztd.arm.ExtraKeys.EX_REWRITE_TITLE, true)
-        mPageUrl = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_URL)
-        mPureHtml = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_HTML)
-        mPostData = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_POST_DATA)
+        hasTitleBar = intent.getBooleanExtra(com.eztd.arm.ExtraKeys.EX_HAS_TITLE_BAR, false)
+        viewTitle = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_TITLE)
+        titleTextColor = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_TITLE_TEXT_COLOR)
+        refreshTitle = intent.getBooleanExtra(com.eztd.arm.ExtraKeys.EX_REWRITE_TITLE, true)
+        pageUrl = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_URL)
+        pureHtmlCode = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_HTML)
+        postData = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_POST_DATA)
         webBack = intent.getBooleanExtra(com.eztd.arm.ExtraKeys.EX_WEB_BACK, true)
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     private fun setStatusBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val window = window
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.statusBarColor =
+        window.apply {
+            clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            statusBarColor =
                 if (!titleBg.isNullOrBlank()) Color.parseColor(titleBg) else getColor(R.color.colorPrimary)
-            var systemUiVisibility = window.decorView.systemUiVisibility
+            var systemUiVisibility = decorView.systemUiVisibility
             if (!titleFieldColor.isNullOrBlank()) {
                 systemUiVisibility = if ("black" == titleFieldColor) {
                     systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -114,15 +113,13 @@ class PureWebActivity : BaseActivity() {
                     systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
                 }
             }
-            window.decorView.systemUiVisibility = systemUiVisibility
+            decorView.systemUiVisibility = systemUiVisibility
         }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun initWebView() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WebView.setWebContentsDebuggingEnabled(false)
-        }
+        WebView.setWebContentsDebuggingEnabled(false)
         // init webSettings
         webView.settings.apply {
             javaScriptEnabled = true
@@ -144,11 +141,6 @@ class PureWebActivity : BaseActivity() {
 
         webView.apply {
             scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
-            } else {
-                webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-            }
             mWebViewClient = MyWebViewClient()
             webViewClient = mWebViewClient
             webChromeClient = myWebChromeClient.apply { setActivity(this@PureWebActivity) }
@@ -164,39 +156,35 @@ class PureWebActivity : BaseActivity() {
     }
 
     private fun loadPage() {
-        updateTitleText(mTitle)
-        if (!TextUtils.isEmpty(mPageUrl)) {
-            if (TextUtils.isEmpty(mPostData)) {
-                webView.loadUrl(mPageUrl)
+        updateTitleText(viewTitle)
+        if (!TextUtils.isEmpty(pageUrl)) {
+            if (TextUtils.isEmpty(postData)) {
+                webView.loadUrl(pageUrl)
             } else {
-                webView.postUrl(mPageUrl, mPostData!!.toByteArray())
+                webView.postUrl(pageUrl, postData!!.toByteArray())
             }
-        } else if (!TextUtils.isEmpty(mPureHtml)) {
-            openWebView(mPureHtml!!)
-        } else if (TextUtils.isEmpty(mPureHtml)) {
+        } else if (!TextUtils.isEmpty(pureHtmlCode)) {
+            openWebView(pureHtmlCode!!)
+        } else if (TextUtils.isEmpty(pureHtmlCode)) {
             progressbar.visibility = View.GONE
         }
     }
 
     private fun openWebView(urlData: String) {
-        val content = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            "$INFO_HTML_META<body>$urlData</body>"
-        } else {
-            getHtmlData("<body>$urlData</body>")
-        }
+        val content = getHtmlData("<body>$urlData</body>")
         webView.loadDataWithBaseURL(null, content, "text/html", "utf-8", null)
     }
 
     private fun getHtmlData(bodyHTML: String): String {
         val head =
-            "<head><style>img{max-width: 100%; width:auto; height: auto;}</style>$INFO_HTML_META</head>"
+            "<head><style>img{max-width: 100%; width:auto; height: auto;}</style>$infoHtmlMeta</head>"
         return "<html>$head$bodyHTML</html>"
     }
 
     private fun updateTitleText(titleContent: String?) {
         if (isNeedViewTitle) {
-            mTitle = titleContent
-            webTitle.text = mTitle
+            viewTitle = titleContent
+            webTitle.text = viewTitle
             webTitle.isSelected = true
         }
     }
@@ -213,10 +201,10 @@ class PureWebActivity : BaseActivity() {
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
-            mLoadSuccess = true
-            mPageUrl = url
-            if (!Network.isNetworkAvailable && TextUtils.isEmpty(mPureHtml)) {
-                mLoadSuccess = false
+            loadStatus = true
+            pageUrl = url
+            if (!Connectivity.isNetworkAvailable() && TextUtils.isEmpty(pureHtmlCode)) {
+                loadStatus = false
                 webView.stopLoading()
             }
         }
@@ -244,13 +232,13 @@ class PureWebActivity : BaseActivity() {
             super.onPageFinished(view, url)
             if (isNeedViewTitle) {
                 val titleText = view.title
-                if (!TextUtils.isEmpty(titleText) && !url.contains(titleText) && rewriteTitle) {
-                    mTitle = titleText
+                if (!TextUtils.isEmpty(titleText) && !url.contains(titleText) && refreshTitle) {
+                    viewTitle = titleText
                 }
-                webTitle.text = mTitle
+                webTitle.text = viewTitle
                 webTitle.isSelected = true
             } else {
-                webTitle.text = mTitle
+                webTitle.text = viewTitle
                 webTitle.isSelected = true
             }
         }
@@ -263,12 +251,12 @@ class PureWebActivity : BaseActivity() {
             super.onReceivedError(view, request, error)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 val requestUrl = request.url.toString()
-                if (mPageUrl.equals(
+                if (pageUrl.equals(
                         requestUrl,
                         ignoreCase = true
                     ) && error.errorCode <= ERROR_UNKNOWN
                 ) {
-                    mLoadSuccess = false
+                    loadStatus = false
                 }
             }
         }
@@ -291,9 +279,9 @@ class PureWebActivity : BaseActivity() {
         }
     }
 
-    private inner class NetworkReceiver : Network.NetworkChangeReceiver() {
+    private inner class NetworkReceiver : Connectivity.NetworkChangeReceiver() {
         override fun onNetworkChanged(availableNetworkType: Int) {
-            if (availableNetworkType > Network.NET_NONE && !mLoadSuccess) {
+            if (availableNetworkType > Connectivity.NET_NONE && !loadStatus) {
                 if (webView != null) {
                     webView.reload()
                 }
@@ -308,12 +296,12 @@ class PureWebActivity : BaseActivity() {
 
     override fun onPostResume() {
         super.onPostResume()
-        mNetworkChangeReceiver?.let { Network.registerNetworkChangeReceiver(this, it) }
+        mNetworkChangeReceiver?.let { Connectivity.registerNetworkChangeReceiver(this, it) }
     }
 
     override fun onPause() {
         super.onPause()
-        mNetworkChangeReceiver?.let { Network.unregisterNetworkChangeReceiver(this, it) }
+        mNetworkChangeReceiver?.let { Connectivity.unregisterNetworkChangeReceiver(this, it) }
         webView.onPause()
     }
 

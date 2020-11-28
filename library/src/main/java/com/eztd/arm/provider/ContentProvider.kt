@@ -8,11 +8,10 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.util.Log
-import com.facebook.appevents.AppEventsLogger
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.iid.FirebaseInstanceId
-import com.eztd.arm.third.GetGpsAdidTask
+import com.eztd.arm.tools.GpsADidTask
 import com.eztd.arm.tools.Preference
+import com.facebook.appevents.AppEventsLogger
+import com.google.firebase.installations.FirebaseInstallations
 import io.branch.referral.Branch
 
 
@@ -34,7 +33,7 @@ class ContentProvider : ContentProvider() {
             try {
                 val application = context!!.applicationContext as Application
                 Preference.init(application)
-                GetGpsAdidTask().execute(application)
+                GpsADidTask().execute(application)
                 initBranch(application)
                 initFacebook(application)
                 initFCM()
@@ -46,17 +45,14 @@ class ContentProvider : ContentProvider() {
     }
 
     private fun initFCM() {
-        FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener(OnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Log.w("fcm", "getInstanceId failed", task.exception)
-                    return@OnCompleteListener
-                }
+        FirebaseInstallations.getInstance().id.addOnCompleteListener {
+            if (it.isSuccessful) {
                 // Get new Instance ID token
-                val token = task.result?.token ?: ""
+                val token = it.result ?: ""
                 Log.d("fcm", token)
                 Preference.get().fcmToken = token
-            })
+            }
+        }
     }
 
     private fun initFacebook(application: Application) {

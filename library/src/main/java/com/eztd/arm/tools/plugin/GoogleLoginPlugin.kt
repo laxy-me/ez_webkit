@@ -1,4 +1,4 @@
-package com.eztd.arm.third.plugin
+package com.eztd.arm.tools.plugin
 
 import android.app.Activity
 import android.content.Intent
@@ -129,8 +129,8 @@ class GoogleLoginPlugin : CoroutineScope {
                     val googleToken = JSONObject(response).optJSONObject("data")
                     Log.v("google login",googleToken.toString())
                     googleToken?.apply {
-                        val token1 = optString("token1");
-                        val token2 = optString("token2");
+                        val token1 = optString("token1")
+                        val token2 = optString("token2")
                         if (token1.isNotBlank() && token2.isNotBlank()) {
                             syncCookie(token1, token2)
                         }

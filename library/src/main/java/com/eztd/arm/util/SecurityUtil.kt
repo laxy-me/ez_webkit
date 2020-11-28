@@ -1,4 +1,4 @@
-package com.eztd.arm.tools
+package com.eztd.arm.util
 
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -14,7 +14,7 @@ object SecurityUtil {
     private const val CIPHER_ALGORITHM_CBC = "AES/CBC/PKCS5Padding"
 
     private val iv: ByteArray?
-        get() = Str2Byte(AES_SECRET_KEY)
+        get() = str2Byte(AES_SECRET_KEY)
 
     @Throws(NoSuchAlgorithmException::class)
     fun md5Encrypt(value: String): String {
@@ -41,7 +41,7 @@ object SecurityUtil {
      *
      * @return 生成的密钥 它是一个32个字符的16进制字符串.
      */
-    fun AESKey(): String {
+    fun keyAES(): String {
         return try {
             // Get the KeyGenerator
             val keyGenerator = KeyGenerator.getInstance("AES")
@@ -65,9 +65,9 @@ object SecurityUtil {
      * 可以使用[.AESKey]方法生成一个密钥,
      * @return 解密之后的字符串
      */
-    fun AESDecrypt(encrypted: String, rawKey: String): String? {
-        val tmp = Str2Byte(encrypted)
-        val key = Str2Byte(rawKey)
+    fun decryptAES(encrypted: String, rawKey: String): String? {
+        val tmp = str2Byte(encrypted)
+        val key = str2Byte(rawKey)
         return try {
             val sks = SecretKeySpec(key, "AES")
             val cipher = Cipher.getInstance(CIPHER_ALGORITHM_CBC)
@@ -90,9 +90,9 @@ object SecurityUtil {
      * @see .AESDecrypt
      */
 
-    fun AESEncrypt(message: String): String? {
+    fun encryptAES(message: String): String? {
         val key =
-            Str2Byte(AES_SECRET_KEY)
+            str2Byte(AES_SECRET_KEY)
         return try {
             val sks = SecretKeySpec(key, "AES")
             val cipher = Cipher.getInstance(CIPHER_ALGORITHM_CBC)
@@ -106,10 +106,10 @@ object SecurityUtil {
 
     }
 
-    fun AESDecrypt(encrypted: String): String? {
-        val tmp = Str2Byte(encrypted)
+    fun decryptAES(encrypted: String): String? {
+        val tmp = str2Byte(encrypted)
         val key =
-            Str2Byte(AES_SECRET_KEY)
+            str2Byte(AES_SECRET_KEY)
         return try {
             val sks = SecretKeySpec(key, "AES")
             val cipher = Cipher.getInstance(CIPHER_ALGORITHM_CBC)
@@ -125,11 +125,22 @@ object SecurityUtil {
     /**
      * 使用DES算法解密字符串.
      *
+     *     AES和DES 一共有4种工作模式:
+     *     1.电子密码本模式(ECB) -- 缺点是相同的明文加密成相同的密文，明文的规律带到密文。
+     *     2.加密分组链接模式(CBC)
+     *     3.加密反馈模式(CFB)
+     *     4.输出反馈模式(OFB)四种模式
+     *
+     * PKCS5Padding: 填充方式
+     *
+     * 加密方式/工作模式/填充方式
+     * DES/CBC/PKCS5Padding
+     *
      * @param encrypted 要解密的字符串.
      * @param rawKey    密钥字符串, 可以为任意字符, 但最长不得超过8个字符(如最超过，后面的字符会被丢弃).
      * @return 解密之后的字符串.
      */
-    fun DESDecrypt(encrypted: String, rawKey: String): String? {
+    fun decryptDES(encrypted: String, rawKey: String): String? {
         val arrBTmp = rawKey.toByteArray()
         val arrB = ByteArray(8) // 创建一个空的8位字节数组（默认值为0）
         var i = 0
@@ -140,11 +151,11 @@ object SecurityUtil {
         }
         return try {
             val key = SecretKeySpec(arrB, "DES")// 生成密钥
-            val cipher = Cipher.getInstance("DES")
+            val cipher = Cipher.getInstance("DES/CBC/PKCS5Padding")
             cipher.init(Cipher.DECRYPT_MODE, key)
             String(
                 cipher.doFinal(
-                    Str2Byte(
+                    str2Byte(
                         encrypted
                     )
                 )
@@ -180,7 +191,7 @@ object SecurityUtil {
      * @param src 需要转换的字符串
      * @return 转换后的byte数组
      */
-    private fun Str2Byte(src: String): ByteArray? {
+    private fun str2Byte(src: String): ByteArray? {
         if (src.isEmpty()) {
             return null
         }

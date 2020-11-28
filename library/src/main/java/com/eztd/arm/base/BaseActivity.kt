@@ -15,19 +15,18 @@ import android.util.Log
 import android.view.View
 import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.eztd.arm.R
-import com.eztd.arm.permission.GPermission
-import com.eztd.arm.permission.PermissionCallback
+import com.eztd.arm.base.permission.PermissionUtil
+import com.eztd.arm.base.permission.PermissionCallback
 
-abstract class BaseActivity : TranslucentActivity() {
+abstract class BaseActivity : AppCompatActivity() {
     protected var TAG = ""
 
-    @JvmField
-    val REQ_CODE_LOGIN = 808
+    val REQ_LOGIN_CODE = 808
 
-    @JvmField
-    val REQ_CODE_PERMISSION = 8008
+    val REQ_PERMISSION_CODE = 8008
 
     private var mShouldHideInputMethod: Boolean = false
     private var mLastFocusView: View? = null
@@ -48,7 +47,7 @@ abstract class BaseActivity : TranslucentActivity() {
         ration: IntArray,
         callback: AfterPermissionGranted
     ) {
-        GPermission.with(this).permission(
+        PermissionUtil.with(this).permission(
             permissions
         ).callback(object : PermissionCallback {
             override fun onPermissionGranted() {
@@ -148,28 +147,5 @@ abstract class BaseActivity : TranslucentActivity() {
             }
         }
         return sb
-    }
-
-    @Keep
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    open fun isIgnoringBatteryOptimizations(): Boolean {
-        var isIgnoring = false
-        val powerManager = getSystemService(Context.POWER_SERVICE)
-        powerManager?.let {
-            isIgnoring = (it as PowerManager).isIgnoringBatteryOptimizations(packageName)
-        }
-        return isIgnoring
-    }
-
-    @Keep
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    open fun requestIgnoreBatteryOptimizations() {
-        try {
-            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-            intent.data = Uri.parse("package:$packageName")
-            startActivity(intent)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
     }
 }

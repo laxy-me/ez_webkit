@@ -1,4 +1,4 @@
-package com.eztd.arm.permission
+package com.eztd.arm.base.permission
 
 import android.annotation.TargetApi
 import android.app.Activity
@@ -10,19 +10,23 @@ import android.os.Bundle
 import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
 
-class PermissionActivity : Activity() {
+open class BasePermissionActivity : Activity() {
     companion object {
         const val KEY_PERMISSIONS = "permissions"
-        private const val RC_REQUEST_PERMISSION = 100
-        private var CALLBACK: PermissionCallback? = null
+        const val RC_QUEST_PERMISSION = 100
+        var CALLBACK: PermissionCallback? = null
 
         /**
          * 添加一个静态方法方便使用
          */
         @JvmStatic
-        fun request(context: Context, permissions: Array<String>, callback: PermissionCallback) {
+        fun requestPermission(
+            context: Context,
+            permissions: Array<String>,
+            callback: PermissionCallback
+        ) {
             CALLBACK = callback
-            val intent = Intent(context, PermissionActivity::class.java)
+            val intent = Intent(context, BasePermissionActivity::class.java)
             intent.putExtra(KEY_PERMISSIONS, permissions)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
@@ -45,7 +49,7 @@ class PermissionActivity : Activity() {
             } else {
                 requestPermissions(
                     permissions,
-                    RC_REQUEST_PERMISSION
+                    RC_QUEST_PERMISSION
                 )
             }
         } else {
@@ -55,6 +59,12 @@ class PermissionActivity : Activity() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun hasSelfPermissions(permissions: Array<String>): Boolean {
+        permissions.map {
+            checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED
+        }.toList()
+        for(i in 0..permissions.size){
+
+        }
         for (permission in permissions) {
             if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
                 return false
@@ -69,7 +79,7 @@ class PermissionActivity : Activity() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        if (requestCode != RC_REQUEST_PERMISSION) {
+        if (requestCode != RC_QUEST_PERMISSION) {
             return
         }
         // 处理申请结果

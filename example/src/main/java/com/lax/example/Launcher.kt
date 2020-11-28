@@ -101,7 +101,7 @@ class Launcher private constructor() {
         @JvmStatic
         fun with(fragment: Fragment, clazz: Class<*>): Launcher {
             sInstance = Launcher()
-            sInstance!!.mContext = WeakReference<Context>(fragment.getActivity()).get()
+            sInstance!!.mContext = WeakReference<Context>(fragment.activity).get()
             sInstance!!.mIntent.setClass(sInstance!!.mContext!!, clazz)
             return sInstance as Launcher
         }

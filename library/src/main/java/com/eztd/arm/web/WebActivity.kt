@@ -26,50 +26,43 @@ import android.webkit.*
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
-import com.luck.picture.lib.PictureSelector
-import com.luck.picture.lib.config.PictureConfig
-import com.luck.picture.lib.config.PictureMimeType
 import com.eztd.arm.R
 import com.eztd.arm.base.BaseActivity
 import com.eztd.arm.base.Launcher
+import com.eztd.arm.dialog.AppDialog
 import com.eztd.arm.dialog.ImageSelectController
-import com.eztd.arm.dialog.SmartDialog
-import com.eztd.arm.tools.ImageDownloadTask
-import com.eztd.arm.third.GlideEngine
-import com.eztd.arm.third.plugin.FacebookPlugin
-import com.eztd.arm.third.plugin.GoogleLoginPlugin
-import com.eztd.arm.third.plugin.PayTmPlugin
-import com.eztd.arm.third.plugin.SharePlugin
-import com.eztd.arm.tools.AppInfo
-import com.eztd.arm.tools.ImageUtil
-import com.eztd.arm.tools.Network
+import com.eztd.arm.tools.*
+import com.eztd.arm.tools.plugin.FacebookLoginPlugin
+import com.eztd.arm.tools.plugin.GoogleLoginPlugin
+import com.eztd.arm.tools.plugin.PayTmPlugin
+import com.eztd.arm.tools.plugin.SharePlugin
+import com.luck.picture.lib.PictureSelector
+import com.luck.picture.lib.config.PictureConfig
+import com.luck.picture.lib.config.PictureMimeType
 import kotlinx.android.synthetic.main.activity_web.*
 import kotlinx.coroutines.*
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import kotlin.coroutines.CoroutineContext
 
 abstract class WebActivity : BaseActivity(), CoroutineScope {
-    private val INFO_HTML_META =
+    private val infoHtmlMeta =
         "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\">"
-    private val SCHEME_SMS = "sms:"
-    private val INTENT_SCHEME = "intent://"
-    private val OPEN_SYS_CONTENT: Int = 11113
+    private val schemeSms = "sms:"
+    private val schemeIntent = "intent://"
+    private val openSysContent: Int = 11113
 
-    private var mLoadSuccess: Boolean = false
-    private var mPageUrl: String? = null
+    private var loadStatus: Boolean = false
+    private var pageUrl: String? = null
     private var mTitle: String? = null
-    private var rewriteTitle: Boolean = true
-    private var mHasTitleBar: Boolean = true
-    private var mPureHtml: String? = null
+    private var refreshTitle: Boolean = true
+    private var mHasTitleBar: Boolean = false
+    private var htmlCode: String? = null
     private var titleBg: String? = null
     private var titleFieldColor: String? = null
     private var adUrl: String = ""
     private var adContent: String = ""
     private var adTime: Int = 5
 
-    private var mNetworkChangeReceiver: BroadcastReceiver? = null
-    private var mWebViewClient: MyWebViewClient? = null
+    private var networkChangeReceiver: BroadcastReceiver? = null
     private var myWebChromeClient = object : MyWebChromeClient() {
         override fun onProgressChanged(view: WebView, newProgress: Int) {
             super.onProgressChanged(view, newProgress)
@@ -106,8 +99,8 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
         job = Job()
         setContentView(R.layout.activity_web)
         findViewById<View>(R.id.ivBack).setOnClickListener { finish() }
-        mNetworkChangeReceiver = NetworkReceiver()
-        mLoadSuccess = true
+        networkChangeReceiver = NetworkReceiver()
+        loadStatus = true
         initData(intent)
         setStatusBar()
         initTitleBar()
@@ -187,7 +180,7 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
 
     override fun onPostResume() {
         super.onPostResume()
-        mNetworkChangeReceiver?.let { Network.registerNetworkChangeReceiver(this, it) }
+        networkChangeReceiver?.let { Connectivity.registerNetworkChangeReceiver(this, it) }
     }
 
     private var mForbid: Int = 0
@@ -209,11 +202,7 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
             if (mForbid == 1) {
                 if (!TextUtils.isEmpty(mCallbackMethodName)) {
                     val javaScript = "javascript:$mCallbackMethodName"
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        webView.evaluateJavascript(javaScript, null)
-                    } else {
-                        webView.loadUrl(javaScript)
-                    }
+                    webView.evaluateJavascript(javaScript, null)
                 }
                 return
             }
@@ -224,13 +213,15 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
     }
 
     private fun initData(intent: Intent) {
+        var data = intent.getParcelableExtra<TestData>("data")
+        Log.e("wtf", "aaa=${data == null}")
         mTitle = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_TITLE)
-        mPageUrl = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_URL)
+        pageUrl = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_URL)
         titleFieldColor = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_TITLE_FIELD_COLOR)
         titleBg = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_TITLE_BG)
-        mPureHtml = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_HTML)
+        htmlCode = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_HTML)
         mPostData = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_POST_DATA)
-        rewriteTitle = intent.getBooleanExtra(com.eztd.arm.ExtraKeys.EX_REWRITE_TITLE, true)
+        refreshTitle = intent.getBooleanExtra(com.eztd.arm.ExtraKeys.EX_REWRITE_TITLE, true)
         mHasTitleBar = intent.getBooleanExtra(com.eztd.arm.ExtraKeys.EX_HAS_TITLE_BAR, true)
         adUrl = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_AD_URL) ?: ""
         adContent = intent.getStringExtra(com.eztd.arm.ExtraKeys.EX_AD_CONTENT) ?: ""
@@ -257,9 +248,9 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
     }
 
     private fun tryToFixPageUrl() {
-        mPageUrl?.let { url ->
+        pageUrl?.let { url ->
             if (!url.startsWith("http")) { // http or https
-                mPageUrl = "http://$url"
+                pageUrl = "http://$url"
             }
         }
     }
@@ -267,24 +258,16 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
     @SuppressLint("SetJavaScriptEnabled")
     private fun initWebView() {
         // init cookies
-        syncCookies(mPageUrl)
+        syncCookies(pageUrl)
         webView.apply {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 WebView.setWebContentsDebuggingEnabled(false)
             }
             clearHistory()
-            clearCache(true)
-            clearFormData()
+            isDrawingCacheEnabled = true
             scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
             addJavascriptInterface(JsBridge(this@WebActivity), "AppJs")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                setLayerType(View.LAYER_TYPE_HARDWARE, null)
-            } else {
-                setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-            }
-
-            mWebViewClient = MyWebViewClient()
-            webViewClient = mWebViewClient
+            webViewClient = MyWebViewClient()
             webChromeClient = myWebChromeClient.apply { setActivity(this@WebActivity) }
             setOnLongClickListener {
                 val result = webView.hitTestResult
@@ -309,21 +292,22 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
                 userAgentString = getString(R.string.android_web_agent, userAgentString)
                 this.userAgentString = userAgentString
 
-                javaScriptEnabled = true
-                javaScriptCanOpenWindowsAutomatically = true
-                cacheMode = WebSettings.LOAD_NO_CACHE
-                //mWebView.getSettings().setAppCacheEnabled(true);
-                //webSettings.setAppCachePath(getExternalCacheDir().getPath());
-                allowFileAccess = true
-                // performance improve
-                domStorageEnabled = true
-                useWideViewPort = true
-                setSupportZoom(true)
-                builtInZoomControls = true
-                loadWithOverviewMode = true
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 }
+                setRenderPriority(WebSettings.RenderPriority.NORMAL)
+
+                javaScriptEnabled = true
+                javaScriptCanOpenWindowsAutomatically = true
+
+                cacheMode = WebSettings.LOAD_DEFAULT
+                databaseEnabled = true
+                setAppCacheEnabled(true)
+                setAppCachePath(externalCacheDir?.path)
+                allowFileAccess = true
+                domStorageEnabled = true
+                useWideViewPort = true
+                loadWithOverviewMode = true
             }
         }
         loadPage()
@@ -331,31 +315,27 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
 
     private fun loadPage() {
         updateTitleText(mTitle)
-        if (!TextUtils.isEmpty(mPageUrl)) {
+        if (!TextUtils.isEmpty(pageUrl)) {
             if (TextUtils.isEmpty(mPostData)) {
-                webView.loadUrl(mPageUrl)
+                webView.loadUrl(pageUrl)
             } else {
-                webView.postUrl(mPageUrl, mPostData!!.toByteArray())
+                webView.postUrl(pageUrl, mPostData!!.toByteArray())
             }
-        } else if (!TextUtils.isEmpty(mPureHtml)) {
-            openWebView(mPureHtml!!)
-        } else if (TextUtils.isEmpty(mPureHtml)) {
+        } else if (!TextUtils.isEmpty(htmlCode)) {
+            openWebView(htmlCode!!)
+        } else if (TextUtils.isEmpty(htmlCode)) {
             progressbar.visibility = View.GONE
         }
     }
 
     private fun openWebView(urlData: String) {
-        val content: String = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            "$INFO_HTML_META<body>$urlData</body>"
-        } else {
-            getHtmlData("<body>$urlData</body>")
-        }
+        val content: String = getHtmlData("<body>$urlData</body>")
         webView.loadDataWithBaseURL(null, content, "text/html", "utf-8", null)
     }
 
     private fun getHtmlData(bodyHTML: String): String {
         val head =
-            "<head><style>img{max-width: 100%; width:auto; height: auto;}</style>$INFO_HTML_META</head>"
+            "<head><style>img{max-width: 100%; width:auto; height: auto;}</style>$infoHtmlMeta</head>"
         return "<html>$head$bodyHTML</html>"
     }
 
@@ -391,7 +371,6 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
     private fun saveImage(url: String?) {
         requestPermission(
             arrayOf(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ), intArrayOf(), object : AfterPermissionGranted {
                 override fun permissionGranted() {
@@ -402,7 +381,7 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
     }
 
     private fun syncCookies(pageUrl: String?) {
-        val rawCookie: String? = com.eztd.arm.web.MyCookieManger.getInstance().lastCookie
+        val rawCookie: String? = MyCookieManger.getInstance().lastCookie
         Log.d(TAG, "syncCookies: $rawCookie, $pageUrl")
         if (!TextUtils.isEmpty(rawCookie) && !TextUtils.isEmpty(pageUrl)) {
             CookieManager.getInstance().setAcceptCookie(true)
@@ -440,12 +419,12 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
             failingUrl: String?
         ) {
             Log.w(TAG, "onReceivedError$errorCode,$description,$failingUrl")
-            if (mPageUrl.equals(
+            if (pageUrl.equals(
                     failingUrl,
                     ignoreCase = true
                 ) && errorCode <= ERROR_UNKNOWN
             ) {
-                mLoadSuccess = false
+                loadStatus = false
             }
         }
 
@@ -456,22 +435,22 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
             error: WebResourceError
         ) {
             val requestUrl = request.url.toString()
-            if (mPageUrl.equals(
+            if (pageUrl.equals(
                     requestUrl,
                     ignoreCase = true
                 ) && error.errorCode <= ERROR_UNKNOWN
             ) {
-                mLoadSuccess = false
+                loadStatus = false
             }
         }
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             resetForbid()
-            mLoadSuccess = true
-            mPageUrl = url
-            if (!Network.isNetworkAvailable && TextUtils.isEmpty(mPureHtml)) {
-                mLoadSuccess = false
+            loadStatus = true
+            pageUrl = url
+            if (!Connectivity.isNetworkAvailable() && TextUtils.isEmpty(htmlCode)) {
+                loadStatus = false
                 webView.stopLoading()
             }
         }
@@ -498,7 +477,7 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
         override fun onPageFinished(view: WebView, url: String) {
             if (isNeedViewTitle) {
                 val titleText = view.title
-                if (!TextUtils.isEmpty(titleText) && !url.contains(titleText) && rewriteTitle) {
+                if (!TextUtils.isEmpty(titleText) && !url.contains(titleText) && refreshTitle) {
                     mTitle = titleText
                 }
                 webTitle.text = mTitle
@@ -509,22 +488,22 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
             }
         }
 
-        override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-            return onShouldOverrideUrlLoading(url)
-        }
-
-        @TargetApi(Build.VERSION_CODES.N)
-        override fun shouldOverrideUrlLoading(
-            view: WebView,
-            request: WebResourceRequest
-        ): Boolean {
-            return onShouldOverrideUrlLoading(request.url?.toString() ?: "")
-        }
+//        override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+//            return onShouldOverrideUrlLoading(url)
+//        }
+//
+//        @TargetApi(Build.VERSION_CODES.N)
+//        override fun shouldOverrideUrlLoading(
+//            view: WebView,
+//            request: WebResourceRequest
+//        ): Boolean {
+//            return onShouldOverrideUrlLoading(request.url?.toString() ?: "")
+//        }
     }
 
     private fun handleCommonLink(url: String): Boolean {
         if (url.startsWith(WebView.SCHEME_TEL)
-            || url.startsWith(SCHEME_SMS)
+            || url.startsWith(schemeSms)
             || url.startsWith(WebView.SCHEME_MAILTO)
             || url.startsWith(WebView.SCHEME_GEO)
         ) {
@@ -542,7 +521,7 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
 
     private fun handleIntentUrl(intentUrl: String) {
         try {
-            if (TextUtils.isEmpty(intentUrl) || !intentUrl.startsWith(INTENT_SCHEME)) {
+            if (TextUtils.isEmpty(intentUrl) || !intentUrl.startsWith(schemeIntent)) {
                 return
             }
             if (lookup(intentUrl)) {
@@ -570,107 +549,46 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
     }
 
     protected fun onShouldOverrideUrlLoading(url: String): Boolean {
-        if (handleCommonLink(url)) {
-            return true
-        } else if (url.startsWith(INTENT_SCHEME)) {
-            handleIntentUrl(url)
-            return true
-        } else if (url.startsWith("market://")) {
-            val intent = Intent()
-            intent.action = Intent.ACTION_VIEW
-            if ("google" == AppInfo.getMetaData(this, AppInfo.Meta.CHANNEL)) {
-                intent.setPackage("com.android.vending")
+        when {
+            handleCommonLink(url) -> {
+                return true
             }
-            intent.data = Uri.parse(url)
-            if (intent.resolveActivity(packageManager) != null) {
-                startActivity(intent)
-                finish()
-            } else if (url.contains("id=")) {
-                intent.data = Uri.parse(
-                    "https://play.google.com/store/apps/details${
-                        url.subSequence(
-                            url.indexOf("?"), url.length
-                        )
-                    }"
-                )
-                startActivity(intent)
+            url.startsWith(schemeIntent) -> {
+                handleIntentUrl(url)
+                return true
             }
-            return true
+            url.startsWith("market://") -> {
+                val intent = Intent()
+                intent.action = Intent.ACTION_VIEW
+                if ("google" == AppInfo.getMetaData(this, "CHANNEL")) {
+                    intent.setPackage("com.android.vending")
+                }
+                intent.data = Uri.parse(url)
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivity(intent)
+                    finish()
+                } else if (url.contains("id=")) {
+                    intent.data = Uri.parse(
+                        "https://play.google.com/store/apps/details${
+                            url.subSequence(
+                                url.indexOf("?"), url.length
+                            )
+                        }"
+                    )
+                    startActivity(intent)
+                }
+                return true
+            }
+            else -> return false
         }
-//        else if (url.startsWith("https://")) {
-//            try {
-//                val decode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//                    URLDecoder.decode(url, StandardCharsets.UTF_8.name())
-//                } else {
-//                    URLDecoder.decode(url, "UTF-8")
-//                }
-//                val splitArray = decode.split("&")
-//                if (splitArray.count() > 1 && splitArray[1].contains("url")) {
-//                    //截取其中的link 进行跳转
-//                    val uri = splitArray[1].replace("url=", "")
-//                    val intent = Intent().apply {
-//                        action = Intent.ACTION_VIEW
-//                        data = Uri.parse(uri)
-//                    }
-//                    if (intent.resolveActivity(packageManager) != null) {
-//                        startActivity(intent)
-//                        return true
-//                    }
-//                }
-//            } catch (e: Exception) {
-//            }
-//        }
-//        else if (url.startsWith("intent://")) {
-//            try {
-//                val newUrl: String = parseUrlString(url)
-//                intent.action = Intent.ACTION_VIEW
-//                intent.data = Uri.parse(newUrl)
-//                startActivity(intent)
-//                return true
-//            } catch (e: Exception) {
-//            }
-//        }
-        return false
-    }
-
-    /**
-     * 利用正则表达式，提取出：https://play.google.com/store/apps/details?id%3Dcom.whizdm.moneyview.loans
-     */
-    private fun parseUrlString(url: String): String {
-        val regEx = "(link=)(.*)(#)"
-        val p: Pattern = Pattern.compile(regEx)
-        val m: Matcher = p.matcher(url)
-        var matchString = ""
-        if (m.find()) {
-            matchString = m.group()
-        }
-        matchString = matchString.substring(5, matchString.length - 1)
-        return unicodeDecode(matchString)
-    }
-
-    /**
-     * 转义成：https://play.google.com/store/apps/details?id=com.whizdm.moneyview.loans
-     */
-    private fun unicodeDecode(string: String): String {
-        var newString = string
-        val pattern = Pattern.compile("(\\\\u(\\p{XDigit}{4}))")
-        val matcher = pattern.matcher(newString)
-        var ch: Char
-        while (matcher.find()) {
-            ch = (matcher.group(2) ?: "").toInt(16).toChar()
-            newString = newString.replace(matcher.group(1) ?: "", ch.toString() + "")
-        }
-        return newString
     }
 
     private lateinit var mCallbackMethodName: String
-    private var mIsBase64: Boolean = true
 
     fun takePortraitPicture(callbackMethod: String) {
         requestPermission(
             arrayOf(
                 Manifest.permission.CAMERA,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ), intArrayOf(), object : AfterPermissionGranted {
                 override fun permissionGranted() {
@@ -684,8 +602,7 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
         val customViewController = ImageSelectController(this)
         customViewController.setOnGetPhotoClickListener(object :
             ImageSelectController.OnGetPhotoClickListener {
-            override fun takePhoto(dialog: SmartDialog) {
-                mIsBase64 = true
+            override fun takePhoto(dialog: AppDialog) {
                 mCallbackMethodName = callbackMethod
                 PictureSelector.create(this@WebActivity)
                     .openCamera(PictureMimeType.ofImage())
@@ -694,8 +611,7 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
                 dialog.dismiss()
             }
 
-            override fun takeFromGallery(dialog: SmartDialog) {
-                mIsBase64 = true
+            override fun takeFromGallery(dialog: AppDialog) {
                 mCallbackMethodName = callbackMethod
                 PictureSelector.create(this@WebActivity)
                     .openGallery(PictureMimeType.ofImage())
@@ -706,7 +622,7 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
                 dialog.dismiss()
             }
         })
-        SmartDialog.solo(this)
+        AppDialog.solo(this)
             .setCustomViewController(customViewController)
             .setWindowGravity(Gravity.BOTTOM)
             .setWidthScale(1f)
@@ -717,25 +633,18 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
         Log.d(TAG, "callback2Web: " + str?.length)
         if (!TextUtils.isEmpty(mCallbackMethodName)) {
             val builder = StringBuilder(mCallbackMethodName).append("(")
-            if (mIsBase64) {
-                builder.append("'").append("data:image/png;base64,$str").append("'")
-            } else {
-                builder.append("'").append(str).append("'")
-            }
+            builder.append("'").append("data:image/png;base64,$str").append("'")
             builder.append(")")
             val methodName = builder.toString()
             val javaScript = "javascript:$methodName"
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                webView.evaluateJavascript(javaScript, null)
-            } else {
-                webView.loadUrl(javaScript)
-            }
+            Log.e("wtf", javaScript)
+            webView.evaluateJavascript(javaScript, null)
         }
     }
 
-    private inner class NetworkReceiver : Network.NetworkChangeReceiver() {
+    private inner class NetworkReceiver : Connectivity.NetworkChangeReceiver() {
         override fun onNetworkChanged(availableNetworkType: Int) {
-            if (availableNetworkType > Network.NET_NONE && !mLoadSuccess) {
+            if (availableNetworkType > Connectivity.NET_NONE && !loadStatus) {
                 if (webView != null) {
                     webView.reload()
                 }
@@ -745,17 +654,17 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         PayTmPlugin.onActivityResult(requestCode, resultCode, data)
-        FacebookPlugin.onActivityResult(requestCode, resultCode, data)
+        FacebookLoginPlugin.onActivityResult(requestCode, resultCode, data)
         GoogleLoginPlugin.onActivityResult(requestCode, resultCode, data)
         SharePlugin.onActivityResult(requestCode, resultCode, data)
         myWebChromeClient.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
             when (requestCode) {
-                REQ_CODE_LOGIN ->
+                REQ_LOGIN_CODE ->
                     // init cookies
                     webView.postDelayed({
-                        syncCookies(mPageUrl)
+                        syncCookies(pageUrl)
                         webView.reload()
                     }, 200)
                 PictureConfig.CHOOSE_REQUEST -> {
@@ -784,7 +693,7 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
                 }
             }
         }
-        if (resultCode == OPEN_SYS_CONTENT) {
+        if (resultCode == openSysContent) {
             val uri = data?.data
             val path = getImagePath(uri)
             if (path.isNotBlank()) {
@@ -811,7 +720,7 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
 
     override fun onPause() {
         super.onPause()
-        mNetworkChangeReceiver?.let { Network.unregisterNetworkChangeReceiver(this, it) }
+        networkChangeReceiver?.let { Connectivity.unregisterNetworkChangeReceiver(this, it) }
         webView.onPause()
     }
 
@@ -819,7 +728,7 @@ abstract class WebActivity : BaseActivity(), CoroutineScope {
         destroy(webView)
         job.cancel()
         GoogleLoginPlugin.onDetach()
-        FacebookPlugin.onDetach()
+        FacebookLoginPlugin.onDetach()
         super.onDestroy()
     }
 

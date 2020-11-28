@@ -22,6 +22,7 @@
                 android:id="@+id/ivBack"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
+                android:paddingStart="14dp"
                 android:paddingLeft="14dp"
                 android:src="@mipmap/ic_navigation_white_back" />
 
@@ -29,7 +30,9 @@
                 android:id="@+id/webTitle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginStart="50dp"
                 android:layout_marginLeft="50dp"
+                android:layout_marginEnd="50dp"
                 android:layout_marginRight="50dp"
                 android:layout_weight="1"
                 android:ellipsize="marquee"
@@ -41,6 +44,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
+                android:paddingEnd="14dp"
                 android:paddingRight="14dp"
                 android:src="@mipmap/ic_navigation_white_back"
                 android:visibility="invisible" />
@@ -92,6 +96,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
+            android:layout_marginEnd="40dp"
             android:layout_marginRight="40dp"
             android:background="@drawable/skip_bg"
             android:gravity="center"
@@ -101,4 +106,21 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="2s sikp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/skipCountDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/skip_bg"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            tools:text="2s sikp" />
+    </RelativeLayout>
 </FrameLayout>

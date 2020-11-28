@@ -1,4 +1,4 @@
-package com.eztd.arm.third.plugin
+package com.eztd.arm.tools.plugin
 
 import android.app.Activity
 import android.content.Context
@@ -77,7 +77,7 @@ class SharePlugin {
                 }
             }
             if (response in 200..299) {
-                Log.e(FacebookPlugin.TAG, "share success")
+                Log.e(FacebookLoginPlugin.TAG, "share success")
                 val activity = activity.get()
                 if (activity is WebActivity) {
                     activity.getWebView().reload()

@@ -1,4 +1,4 @@
-package com.eztd.arm.permission
+package com.eztd.arm.base.permission
 
 import androidx.annotation.Keep
 

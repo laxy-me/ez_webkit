@@ -2,4 +2,5 @@
     <string name="app_name">example</string>
     <string name="android_web_agent">ANDROID_AGENT_NATIVE/2.0&#8194;%1$s</string>
     <string name="facebook_app_id">190001148735996</string>
+    <string name="fb_login_protocol_scheme">fb190001148735996</string>
 </resources>

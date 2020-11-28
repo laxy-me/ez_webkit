@@ -20,43 +20,33 @@ import com.eztd.arm.tools.Preference
 import com.eztd.arm.web.WebActivity
 import org.json.JSONObject
 
-class MyFirebaseMessagingService : FirebaseMessagingService() {
-    var TAG: String = MyFirebaseMessagingService::class.java.simpleName
+class FCMService : FirebaseMessagingService() {
+    var tag: String = FCMService::class.java.simpleName
     override fun onNewToken(s: String) {
         super.onNewToken(s)
-        Log.i(TAG, "onNewToken===$s")
+        Log.i(tag, "onNewToken===$s")
         Preference.get().fcmToken = s
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Log.d(TAG, "From: ${remoteMessage.from}")
+        Log.d(tag, "From: ${remoteMessage.from}")
 
         // Check if message contains a data payload.
         remoteMessage.data.isNotEmpty().let {
-            Log.d(TAG, "Message data payload: " + remoteMessage.data)
+            Log.d(tag, "Message data payload: " + remoteMessage.data)
             if (it) {
-                if (/* Check if data needs to be processed by long running job */ false) {
-                    // For long-running tasks (10 seconds or more) use WorkManager.
-                    scheduleJob()
-                } else {
-                    // Handle message within 10 seconds
-                    val pushMessage = JSONObject(remoteMessage.data["data"] ?: "")
-                    createNotification(baseContext, pushMessage)
-                }
+                val pushMessage = JSONObject(remoteMessage.data["data"] ?: "")
+                createNotification(baseContext, pushMessage)
             }
         }
 
         // Check if message contains a notification payload.
         remoteMessage.notification?.let {
-            Log.d(TAG, "Message Notification Body: ${it.body}")
+            Log.d(tag, "Message Notification Body: ${it.body}")
             showNotification(baseContext, it)
         }
-    }
-
-    private fun scheduleJob() {
-
     }
 
     private fun showNotification(context: Context, notification: RemoteMessage.Notification) {
@@ -87,9 +77,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         notificationManager?.apply {
             val notificationId = System.currentTimeMillis().toInt()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                //android 8.0 消息通知渠道
-                val notificationChannel =
-                    createNotificationChannel(channelId, this)
+                createNotificationChannel(channelId, this)
             }
             this.notify(notificationId, builder.build())
         }
@@ -128,9 +116,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         notificationManager?.apply {
             val notificationId = System.currentTimeMillis().toInt()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                //android 8.0 消息通知渠道
-                val notificationChannel =
-                    createNotificationChannel(channelId, this)
+                createNotificationChannel(channelId, this)
             }
             this.notify(notificationId, builder.build())
         }

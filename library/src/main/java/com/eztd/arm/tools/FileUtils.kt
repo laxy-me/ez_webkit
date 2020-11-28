@@ -31,7 +31,7 @@ object FileUtils {
     private var sExternalStorageAvailable = false
     private var sExternalStorageWriteable = false
 
-    val isExteralStorageAvailable: Boolean
+    val isExternalStorageAvailable: Boolean
         get() {
             updateExternalStorageState()
             return sExternalStorageAvailable

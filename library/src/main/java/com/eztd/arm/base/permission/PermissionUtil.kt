@@ -1,4 +1,4 @@
-package com.eztd.arm.permission
+package com.eztd.arm.base.permission
 
 import android.app.Activity
 import android.content.Context
@@ -7,16 +7,16 @@ import android.os.Build
 import androidx.annotation.Keep
 
 @Keep
-class GPermission(private val context: Context) {
+class PermissionUtil(private val context: Context) {
     private var callback: PermissionCallback? = null
     private var permissions: Array<String>? = null
 
-    fun permission(permissions: Array<String>): GPermission {
+    fun permission(permissions: Array<String>): PermissionUtil {
         this.permissions = permissions
         return this
     }
 
-    fun callback(callback: PermissionCallback): GPermission {
+    fun callback(callback: PermissionCallback): PermissionUtil {
         this.callback = callback
         return this
     }
@@ -46,17 +46,8 @@ class GPermission(private val context: Context) {
         }
 
         @JvmStatic
-        var globalConfigCallback: PermissionGlobalConfigCallback? = null
-            private set
-
-        @JvmStatic
-        fun init(callback: PermissionGlobalConfigCallback) {
-            globalConfigCallback = callback
-        }
-
-        @JvmStatic
-        fun with(context: Context): GPermission {
-            return GPermission(context)
+        fun with(context: Context): PermissionUtil {
+            return PermissionUtil(context)
         }
     }
 }

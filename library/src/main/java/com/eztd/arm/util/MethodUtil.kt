@@ -1,4 +1,4 @@
-package com.eztd.arm.tools
+package com.eztd.arm.util
 
 import java.lang.reflect.Method
 import java.lang.reflect.ReflectPermission
@@ -6,7 +6,7 @@ import java.lang.reflect.ReflectPermission
 class MethodUtil {
     companion object {
         fun getClassMethods(cls: Class<*>): Array<Method?>? {
-            val uniqueMethods: HashMap<String, Method> = HashMap<String, Method>()
+            val uniqueMethods: HashMap<String, Method> = HashMap()
             var currentClass: Class<*>? = cls
             while (currentClass != null && currentClass != Any::class.java) {
                 addUniqueMethods(uniqueMethods, currentClass.declaredMethods)
@@ -51,9 +51,7 @@ class MethodUtil {
         private fun getSignature(method: Method): String? {
             val sb = StringBuilder()
             val returnType = method.returnType
-            if (returnType != null) {
-                sb.append(returnType.name).append('#')
-            }
+            sb.append(returnType.name).append('#')
             sb.append(method.name)
             val parameters = method.parameterTypes
             for (i in parameters.indices) {

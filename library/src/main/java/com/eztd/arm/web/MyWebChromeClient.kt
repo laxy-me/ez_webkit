@@ -20,7 +20,7 @@ import java.util.*
  */
 @Keep
 open class MyWebChromeClient : WebChromeClient() {
-    var TAG = "MyWebChromeClient"
+    var TAG = MyWebChromeClient::class.java.simpleName
 
     //定义接受返回值
     private var uploadFile: ValueCallback<Uri>? = null
@@ -108,7 +108,7 @@ open class MyWebChromeClient : WebChromeClient() {
         )
         val mIntent: Intent? = fileChooserParams?.createIntent()
         if (mIntent != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && mIntent.action == Intent.ACTION_GET_CONTENT) {
+            if (mIntent.action == Intent.ACTION_GET_CONTENT) {
                 mIntent.action = Intent.ACTION_OPEN_DOCUMENT
             }
             val activity = mActivity?.get()
@@ -118,11 +118,7 @@ open class MyWebChromeClient : WebChromeClient() {
             )
         }
         val i = Intent()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            i.action = Intent.ACTION_OPEN_DOCUMENT
-        } else {
-            i.action = Intent.ACTION_GET_CONTENT
-        }
+        i.action = Intent.ACTION_OPEN_DOCUMENT
         i.addCategory(Intent.CATEGORY_OPENABLE)
 //        if (TextUtils.isEmpty(this.mAcceptType)) {
         i.type = "*/*"
@@ -147,7 +143,7 @@ open class MyWebChromeClient : WebChromeClient() {
                     if (null != uploadFiles) {
                         val result =
                             if (data == null || resultCode != Activity.RESULT_OK) null else data.data
-                        uploadFiles!!.onReceiveValue(arrayOf<Uri>(result!!))
+                        uploadFiles!!.onReceiveValue(arrayOf(result!!))
                         uploadFiles = null
                     }
                 }
